@@ -21,20 +21,21 @@ const WelcomeScreen = () => {
       </motion.div>
 
       {/* main content */}
-      <div className='flex flex-col items-center gap-8 my-auto'>
-        <p className='text-center text-2xl'>
+      <div className='flex flex-col items-center my-auto'>
+        <p className='text-center text-2xl '>
           welcome to
         </p>
-        <img src="/logo-grad.png" alt="resonix logo" className="w-100 mx-auto" />
+        <img src="/logo-grad.png" alt="resonix logo" className="w-[34rem] mx-auto mb-6" />
+        <p className='text-center italic mb-8'>
+          ...let the music resonates in your soul!
+        </p>
 
         {/* next arrow */}
         <button className='mx-auto bg-[#212121] rounded-full p-2 h-14 w-14 border-neutral-800 border'>
           <ChevronRight className='mx-auto h-8 w-8' />
         </button>
 
-        <p className='text-center italic'>
-          ...let the beat resonates in your soul!
-        </p>
+
       </div>
     </div>
   )

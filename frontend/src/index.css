@@ -2,18 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+@layer base {
+  html {
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.87);
   background-color: #181818;
   font-family: 'Inter', sans-serif;
   text-rendering: optimizeLegibility;
-
-  color-scheme: light dark;
-
+  
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
 }
 
 a {
