@@ -54,7 +54,7 @@ const Login = () => {
         <form className="grid w-96 h-auto -mt-32" onSubmit={handleSubmit}>
           <p className="text-2xl">Sign in</p>
           <p className="text-sm mt-5">
-            If you don't have an account, <Link to="/register" className="text-sky-500">Register here!</Link>
+            If you don't have an account, <Link to="/signup" className="text-sky-500">Register here!</Link>
           </p>
 
           <div className="mt-10 text-sm">
@@ -100,7 +100,7 @@ const Login = () => {
           <div className="inline-flex items-center gap-2 text-xs mt-2">
             <input type="checkbox" className="bg-slate-50 w-4 pointer" />
             <p>Remember me</p>
-            <Link to="/forgot-password" className="text-right ml-auto cursor-pointer text-sky-500">Forgot Password?</Link>
+            <Link to="/forgot-password" className="text-right ml-auto cursor-pointer">Forgot Password?</Link>
           </div>
 
           <button type="submit" className="w-full bg-sky-500 rounded-full text-sm my-8 py-2">Login</button>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, LockKeyhole, EyeOff, Eye, UserRound } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -56,7 +57,7 @@ const Signup = () => {
         <form className="grid w-96 h-auto -mt-20" onSubmit={handleSubmit}>
           <p className="text-2xl">Sign up</p>
           <p className="text-sm mt-5">
-            If you already have an account, <span className="text-sky-500">Login here!</span>
+            If you already have an account, <Link to="/login" className="text-sky-500">Login here!</Link>
           </p>
 
           <div className="mt-8 text-sm">
