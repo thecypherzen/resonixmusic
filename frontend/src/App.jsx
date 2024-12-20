@@ -6,8 +6,8 @@ function App() {
   return (
     <>
       {/* <WelcomeScreen /> */}
-      {/* <Login /> */}
-      <Signup />
+      <Login />
+      {/* <Signup /> */}
     </>
   )
 }
