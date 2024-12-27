@@ -1,10 +1,10 @@
 import React from 'react';
+import SideBar from '../components/SideBar';
 
 const MusicPlayer = () => {
   return (
-    <div className="music-player">
-      <h1>Welcome to Resonix</h1>
-
+    <div className="w-screen">
+      <SideBar />
     </div>
   );
 };

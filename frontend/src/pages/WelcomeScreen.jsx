@@ -32,11 +32,9 @@ const WelcomeScreen = () => {
         </p>
 
         {/* next arrow */}
-        <Link to='/login' className='mx-auto bg-[#212121] rounded-full p-2 h-10 w-10 lg:h-14 lg:w-14 border-neutral-800 border'>
-          <ChevronRight className='mx-auto h-6 w-6 lg:h-8 lg:w-8' />
+        <Link to='/login' className='flex mx-auto bg-[#212121] rounded-full h-10 w-10 lg:h-14 lg:w-14 border-neutral-800 border'>
+          <ChevronRight className='m-auto h-6 w-6 lg:h-8 lg:w-8' />
         </Link>
-
-
       </div>
     </div>
   )
