@@ -1,0 +1,25 @@
+#+title: Resonix Backend Tasks Checklist [0%]
+* API Routes [0%]
+- [ ] Playlists: filter by `stream` permission [0%]
+  - [ ] Trending with parameters [0%]
+    - [ ] Time: month, week, year, all time
+    - [ ] Sort order: no of tracks, play_count
+  - [ ] Get by Id
+  - [ ] Get Playlist tracks by id
+  - [ ] Search For playlists by query with filters:
+    - [ ] genre: string[]
+    - [ ] mood: string[]
+    - [ ] sort: by relevant, popular, recent: string
+  - [ ] Actions [0%]:
+    - [ ] Like
+    - [ ] Create New
+    - [ ] Add track(s)
+    - [ ] Remove tracks
+- [ ] Tracks [0%]
+  - [ ] Trending tracks
+  - [ ] Get track by id
+  - [ ] Stream track
+  - [ ] Download
+  - [ ] Track details
+  - [ ] Search
+* API Documentation [0%]
