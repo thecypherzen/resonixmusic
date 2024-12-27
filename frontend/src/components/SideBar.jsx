@@ -3,9 +3,9 @@ import { Menu, Radio, ListMusic, Disc, Music, MicVocal } from 'lucide-react';
 
 const SideBar = () => {
   return (
-    <div className='flex flex-col min-h-screen max-w-[15rem] p-4 bg-[#212124]'>
+    <div className='flex flex-col min-h-screen min-w-[15rem] px-6 py-6 bg-[#212124] border-r border-neutral-800'>
 
-      {/* Top bar */}
+      {/* Navbar */}
       <div className="flex flex-row gap-4 items-center mb-6">
         <a href="#">
           <div className="flex w-[1.45rem] h-[1.45rem] bg-[#63676F] rounded-full">
