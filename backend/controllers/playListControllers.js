@@ -1,9 +1,23 @@
 // define controllers for playlist route
-import axios from 'axios';
-import { requestClient } from '../utils';
+import {
+  globalErrorHandler,
+  requestClient,
+} from '../utils';
 
 const getPlaylistById = async (req, res) => {
   // fetch playlist by id
+  console.log('fetching playlist by id....>', req.params.id);
+  const config = {
+    url: `/playlists/${req.params.id}`,
+  };
+
+  // make request and process response
+  try {
+    const result = await requestClient.client(config);
+    return res.send(result?.data?.data ?? 'no data found');
+  } catch(err) {
+    return globalErrorHandler(err, res);
+  }
 };
 
 const getPlaylistTracks = async(req, res) => {
@@ -19,18 +33,12 @@ const getTrendingPlaylists = async (req, res) => {
     },
   };
   // make request and process response
-  const result = await requestClient.client(config);
-  if (result.status !== 200) {
-    if (result.status === 400) {
-      res.status(400).send({ error: 'Bad Request' });
-    }
-    if (res.status === 500) {
-      res.status(500).send({ error: 'Internal server error' });
-    }
-    res.status(result.status)
-      .send({ error: result.statusText || 'Unknown error occured' });
+  try {
+    const result = await requestClient.client(config);
+    return res.send({ data: result.data.data });
+  } catch (err) {
+    return globalErrorHandler(err, res);
   }
-  return res.send({ data: result.data.data });
 };
 
 const searchPlaylists = async(req, res) => {
