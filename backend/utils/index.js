@@ -1,3 +1,7 @@
-import { requestMaker } from './config';
+import { requestClient } from './config';
 
-export { requestMaker };
+const nothing = null;
+export {
+  nothing,
+  requestClient,
+};

@@ -4,8 +4,8 @@ import getHostUrl from './getHostUrl';
 
 class LocalRequest {
   constructor() {
-    this.hostUrl = null;
-    this.axios = axios.create({
+    this.client = axios.create({
+      timeout: 10000,
       params: {
         app_name: 'Resonixmusic',
       },
@@ -13,17 +13,17 @@ class LocalRequest {
   }
 
   get isReady() {
-    return this.hostUrl === null;
+    return this.baseUrl === null;
   }
 
   init() {
     let count = 0;
-    const geturl = async() => {
+    const geturl = async () => {
       const result = await getHostUrl();
       if (result.failed) {
         return false;
       }
-      this.hostUrl = result.next().value;
+      this.client.defaults.baseURL = `${result.next().value}/v1`;
       return true;
     };
 
@@ -40,12 +40,12 @@ class LocalRequest {
   }
 }
 
-const requestMaker = new LocalRequest();
-requestMaker.init();
+const requestClient = new LocalRequest();
+requestClient.init();
 
 const nothing = null;
 
 export {
-  requestMaker,
+  requestClient,
   nothing,
 };
