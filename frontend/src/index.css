@@ -21,7 +21,6 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  place-items: center;
 }
 
 h1 {
@@ -30,7 +29,7 @@ h1 {
 }
 
 button {
-  padding: 0.6em 1.2em;
+  
   border: 1px solid transparent;
   border-radius: 8px;
   background-color: #0ea5e9;
@@ -40,9 +39,7 @@ button {
   font-size: 1em;
   font-weight: 500;
 }
-button:hover {
-  border-color: #424242;
-}
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;

@@ -62,7 +62,7 @@ const SideBar = () => {
         </div>
 
         {/* My playlist */}
-        <div className="flex flex-col gap-4 my-6 text-[0.875rem]">
+        <div className="flex flex-col gap-4 my-6 text-[0.875rem] pb-[5rem]">
           <p className="text-white opacity-40 text-xs font-400">MY PLAYLISTS</p>
           <div className="flex flex-col ml-2 gap-6">
             <a href='#' className='hover:text-[#08B2F0]'>Mixes and Radio</a>
