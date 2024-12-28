@@ -132,3 +132,4 @@ test.js
 *backend/test.js
 singlePlaylist.txt
 trendingPlaylists.txt
+*.txt
