@@ -18,7 +18,7 @@ const getPlaylistById = async (req, res) => {
   // make request and process response
   try {
     const result = await requestClient.client(config);
-    return res.send(result?.data?.data ?? 'no data found');
+    return res.send({ data: result?.data?.data ?? [] });
   } catch(err) {
     return globalErrorHandler(err, res);
   }
@@ -31,7 +31,7 @@ const getPlaylistTracks = async(req, res) => {
   };
   try {
     const result = await requestCient.client(config);
-    return res.send({ data: result?.data?.data ?? null });
+    return res.send({ data: result?.data?.data ?? [] });
   } catch (err) {
     return globalErrorHandler(err, res);
   }
@@ -48,7 +48,7 @@ const getTrendingPlaylists = async (req, res) => {
   // make request and process response
   try {
     const result = await requestClient.client(config);
-    return res.send({ data: result.data.data });
+    return res.send({ data: result?.data?.data ?? [] });
   } catch (err) {
     return globalErrorHandler(err, res);
   }
@@ -76,7 +76,7 @@ const searchPlaylists = async(req, res) => {
     // make request
     try {
       const response = await requestClient.client(config);
-      return res.send({ data: response.data.data });
+      return res.send({ data: response?.data?.data ?? [] });
     } catch (err) {
       return globalErrorHandler(err, res);
     }
