@@ -25,7 +25,16 @@ const getPlaylistById = async (req, res) => {
 };
 
 const getPlaylistTracks = async(req, res) => {
-  // fetch playlist tracks
+  // fetch a playlist's tracks
+  const config = {
+    url: `/playlists/${req.params.id}/tracks`,
+  };
+  try {
+    const result = await requestCient.client(config);
+    return res.send({ data: result?.data?.data ?? null });
+  } catch (err) {
+    return globalErrorHandler(err, res);
+  }
 };
 
 const getTrendingPlaylists = async (req, res) => {
