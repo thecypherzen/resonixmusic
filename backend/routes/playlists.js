@@ -2,6 +2,7 @@ import { Router, json } from 'express';
 import { query } from 'express-validator';
 import {
   getPlaylistById,
+  getPlaylistTracks,
   getTrendingPlaylists,
   searchPlaylists,
 } from '../controllers';
@@ -52,6 +53,8 @@ router.get(
   ],
   searchPlaylists,
 );
-router.get('/trending', getTrendingPlaylists);
 router.get('/:id', getPlaylistById);
+router.get('/:id/tracks', getPlaylistTracks);
+router.get('/trending', getTrendingPlaylists);
+
 export default router;

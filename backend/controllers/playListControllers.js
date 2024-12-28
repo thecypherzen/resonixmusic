@@ -30,7 +30,7 @@ const getPlaylistTracks = async(req, res) => {
     url: `/playlists/${req.params.id}/tracks`,
   };
   try {
-    const result = await requestCient.client(config);
+    const result = await requestClient.client(config);
     return res.send({ data: result?.data?.data ?? [] });
   } catch (err) {
     return globalErrorHandler(err, res);
