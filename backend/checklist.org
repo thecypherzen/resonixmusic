@@ -17,12 +17,29 @@
     - [ ] Add track(s)
     - [ ] Remove tracks
 - [ ] Tracks [0%]
-  - [ ] Trending tracks
-  - [ ] Get track by id
-  - [ ] Stream track
-  - [ ] Download
-  - [ ] Track details
-  - [ ] Search
+  - [ ] Trending tracks [0%]
+    - [ ] filter out unstreamable tracks (is_streamable)
+    - [ ] filter by genre (optional)
+    - [ ] filter by time (optional)
+    - [ ] validate query strings
+    - [ ] validate app_name
+    - [ ] sort by release_date | play_count(default)
+    - [ ] paginate results
+  - [ ] Get track by id [0%]
+    - [ ] Validate track id
+    - [ ] Validate app_name
+  - [ ] Stream track [0%]
+    - [ ] Validate app_name
+    - [ ] Validate right headers
+  - [ ] Download [0%]
+    - [ ]
+  - [ ] Track details [0%]
+  - [ ] Search [0%]
+    - [ ] validate app_name
+    - [ ] validate track_id
+    - [ ] validate query parameter
+    - [ ] filter out unstreamable tracks
+    - [ ] order_by release date | play_count(default)
 
 * Pending Features/Checks [0%]
 - [ ] Validate app_name for all incoming requests
