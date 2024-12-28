@@ -10,6 +10,7 @@ import {
 
 
 const getPlaylistById = async (req, res) => {
+  console.log('paylist by id')
   // fetch playlist by id
   const config = {
     url: `/playlists/${req.params.id}`,
@@ -39,16 +40,43 @@ const getPlaylistTracks = async(req, res) => {
 
 const getTrendingPlaylists = async (req, res) => {
   // fetch trending playlists
+  const validation = validationResult(req);
+  if (!validation.isEmpty()) {
+    return res.status(400).send({ errors: validation.array() });
+  }
   const config = {
     url: '/playlists/trending',
     params: {
-      time: req.query.time || 'week',
+      time: req.query.time,
     },
   };
   // make request and process response
   try {
     const result = await requestClient.client(config);
-    return res.send({ data: result?.data?.data ?? [] });
+    const data = result?.data?.data ?? null;
+    if (!data) {
+      return res.send({ data: [] });
+    }
+    // filter out unstreamable playlists
+    const cleanData = data.filter((list) => list.access.stream);
+
+    const limit = parseInt(req.query.limit);
+    // sort playlist by specified order
+    if (!req.query.sort_by) {
+      return res.send({ data: limit >= 0
+                        ? data.slice(0, limit)
+                        : data });
+    }
+    const sortField = req.query.sort_by === 'tracks'
+          ? 'track_count' : 'total_play_count';
+    cleanData.sort((pListA, pListB) => {
+      return pListB[sortField] - pListA[sortField];
+    });
+
+    // send response
+    return res.send({ data: limit >= 0
+                      ? cleanData.slice(0, limit)
+                      : cleanData });
   } catch (err) {
     return globalErrorHandler(err, res);
   }
