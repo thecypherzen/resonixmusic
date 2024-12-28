@@ -1,12 +1,16 @@
 // define controllers for playlist route
 import {
+  matchedData,
+  validationResult,
+} from 'express-validator';
+import {
   globalErrorHandler,
   requestClient,
 } from '../utils';
 
+
 const getPlaylistById = async (req, res) => {
   // fetch playlist by id
-  console.log('fetching playlist by id....>', req.params.id);
   const config = {
     url: `/playlists/${req.params.id}`,
   };
@@ -43,7 +47,32 @@ const getTrendingPlaylists = async (req, res) => {
 
 const searchPlaylists = async(req, res) => {
   // fetch playlist by search criteria
-  console.log('searching playlists');
+  const result = validationResult(req);
+  if (result.isEmpty()) {
+    const config = {
+      url: '/playlists/search',
+      params: {
+        query: req.query.query,
+      }
+    };
+    // extract validated query params and extend config
+    const requestQuery = matchedData(req);
+    if (requestQuery.genre) {
+      config.params['genre'] = requestQuery.genre;
+    }
+    if (requestQuery.mood) {
+      config.params['mood'] = requestQuery.mood;
+    }
+    config.params['sort_method'] = requestQuery.sort_by;
+    // make request
+    try {
+      const response = await requestClient.client(config);
+      return res.send({ data: response.data.data });
+    } catch (err) {
+      return globalErrorHandler(err, res);
+    }
+  }
+  return res.status(400).send({ errors: result.array() });
 };
 
 export {
