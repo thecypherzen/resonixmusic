@@ -10,8 +10,8 @@ const TopNav = () => {
 
       {/* Profile */}
 
-      <button className="flex w-[2.5rem] h-[2.5rem] bg-[#212121] rounded-full ml-auto border border-neutral-800">
-        <p className="text-white opacity-60 text-xs text-center m-auto ">Gi</p>
+      <button className="flex w-[2.5rem] h-[2.5rem] bg-[#08B2F0] rounded-full ml-auto border border-neutral-800 ">
+        <p className="text-white text-xs text-center m-auto shadow-lg hover:opacity-40">Gi</p>
       </button>
     </div>
   )

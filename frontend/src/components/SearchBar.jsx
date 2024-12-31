@@ -10,7 +10,7 @@ const SearchBar = () => {
         name='searchbar'
         id='searchbar'
         placeholder='Search'
-        className='bg-transparent w-full focus:outline-none p-2'
+        className='bg-transparent w-full focus:outline-none p-2 placeholder:text-sm'
       />
     </div>
   );

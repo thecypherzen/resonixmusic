@@ -40,7 +40,7 @@ const BottomPlayer = () => {
   }, []);
 
   return (
-    <div className='h-[7rem] border-t fixed bottom-0 left-0 z-50 w-full bg-white-400 bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30 border-neutral-800 items-center'>
+    <div className='h-[7rem] fixed bottom-0 left-0 z-50 w-full bg-white-400 bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30 items-center'>
       <div className="flex mx-2 gap-10">
 
         {/* Track Thumbnail, Title, Artist */}
@@ -53,7 +53,7 @@ const BottomPlayer = () => {
         </div>
 
         {/* Playback */}
-        <div className="flex flex-col w-full mx-auto gap-4 content-center my-auto pt-4">
+        <div className="flex flex-col w-full mx-auto gap-3 content-center my-auto pt-4">
 
           {/* Play, shuffle next, repeat... */}
           <div className="flex flex-row gap-6 items-center mx-auto">
@@ -63,7 +63,7 @@ const BottomPlayer = () => {
             <button className='bg-transparent'>
               <FaBackwardStep className='w-[1.3rem] h-[1.3rem]' />
             </button>
-            <button className='p-1 rounded-full w-[2.5rem] h-[2.5rem] border border-neutral-800 bg-transparent hover:bg-[#212121] hover:border-neutral-700 transition-colors 0.25s'>
+            <button className='p-1 rounded-full w-[2.7rem] h-[2.7rem] bg-transparent transition-colors 0.25s'>
               <FaPlay className='w-[1.25rem] h-[1.425rem] mx-auto my-auto ' />
             </button>
             <button className='bg-transparent'>
