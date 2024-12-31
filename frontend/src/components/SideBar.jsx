@@ -3,15 +3,11 @@ import { Menu, Radio, ListMusic, Disc, Music, MicVocal } from 'lucide-react';
 
 const SideBar = () => {
   return (
-    <div className='flex flex-col min-h-screen min-w-[15rem] px-6 py-6 bg-[#212124] border-r border-neutral-800'>
+    <div className='flex flex-col min-h-screen min-w-[15rem] px-6 py-6 bg-[#212124] bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-30
+'>
 
       {/* Navbar */}
       <div className="flex flex-row gap-4 items-center mb-6">
-        <a href="#">
-          <div className="flex w-[1.45rem] h-[1.45rem] bg-[#63676F] rounded-full">
-            <p className="text-white opacity-40 text-xs text-center m-auto ">Gi</p>
-          </div>
-        </a>
         <img src="/logo-grad.png" alt="resonix logo" className='w-[5.313rem] h-[0.875rem]' />
         <a href="#" className='ml-auto' >
           <Menu />
@@ -24,7 +20,7 @@ const SideBar = () => {
           Home
         </a>
         <a href='#' className="text-white hover:text-[#08B2F0] text-base">Explore</a>
-        <a href='#' className="text-white hover:text-[#08B2F0] text-base">Videos</a>
+        <a href='#' className="text-white hover:text-[#08B2F0] text-base">Trending</a>
       </div>
 
       {/* My collection */}

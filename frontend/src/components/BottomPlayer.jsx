@@ -1,88 +1,112 @@
-import React from 'react';
-import { Heart, Ellipsis, Shuffle, Play, SkipForward, SkipBack, Repeat, Volume2, Cast, Menu, ChevronUp } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { FaShuffle, FaRepeat, FaVolumeLow, FaVolumeHigh, FaVolumeOff, FaForwardStep, FaBackwardStep, FaPlay } from 'react-icons/fa6';
 
 const BottomPlayer = () => {
   const thumbnail = '../src/assets/png-jpg/thumbnail.png';
   const artist = 'The XX';
   const title = 'Angels';
-  const albumTitle = 'Coexist'.toUpperCase();
   const duration = '3:10';
   const timeRem = '1:30';
 
+  const [volume, setVolume] = useState(50);
+
+  const handleVolumeChange = (e) => {
+    setVolume(e.target.value);
+  };
+
+  const getVolumeIcon = () => {
+    if (volume == 0) {
+      return <FaVolumeOff className='w-[1rem] h-[1rem]' />;
+    } else if (volume <= 60) {
+      return <FaVolumeLow className='w-[1rem] h-[1rem]' />;
+    } else {
+      return <FaVolumeHigh className='w-[1rem] h-[1rem]' />;
+    }
+  };
+
+  useEffect(() => {
+    const rangeInput = document.getElementById('playProgress');
+    const updateRangeValue = () => {
+      const value = (rangeInput.value - rangeInput.min) / (rangeInput.max - rangeInput.min) * 100;
+      rangeInput.style.setProperty('--value', `${value}%`);
+    };
+
+    rangeInput.addEventListener('input', updateRangeValue);
+    updateRangeValue(); // Initial update
+
+    return () => {
+      rangeInput.removeEventListener('input', updateRangeValue);
+    };
+  }, []);
+
   return (
-    <div className='bg-[#1F1F22] h-[5.875rem] border-t border-neutral-800 w-full fixed bottom-0 left-0 z-50'>
-      <div className="flex">
+    <div className='h-[7rem] border-t fixed bottom-0 left-0 z-50 w-full bg-white-400 bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30 border-neutral-800 items-center'>
+      <div className="flex mx-2 gap-10">
 
         {/* Track Thumbnail, Title, Artist */}
-        <div className="flex flex-row items-center m-4 w-[16rem] gap-4">
-          <img src={thumbnail} alt='Thumbnail' className=" w-[4rem] h-[4rem] rounded-sm " />
-          <div className="flex flex-col text-[0.875rem] gap-[0.15rem] font-semibold">
-            <div className="inline-flex gap-2">
-              <p>{title}</p>
-              <a href="#" className='ml-auto'>
-                <Heart />
-              </a>
-              <a href="#">
-                <Ellipsis className='' />
-              </a>
-            </div>
-            <p className='text-neutral-400'>{artist}</p>
-            <p className='text-[0.625rem] text-neutral-400 '>PLAYING FROM: {albumTitle}</p>
+        <div className="flex flex-row items-center m-4 w-[20rem] gap-4">
+          <img src={thumbnail} alt='Thumbnail' className=" w-[4rem] h-[4rem] rounded-full " />
+          <div className="flex flex-col text-[0.875rem] font-semibold">
+            <p className='text-lg'>{title}</p>
+            <p className='text-neutral-500'>{artist}</p>
           </div>
         </div>
 
         {/* Playback */}
-        <div className="flex flex-col w-[43.125rem] mx-auto gap-4 content-center my-auto">
+        <div className="flex flex-col w-full mx-auto gap-4 content-center my-auto pt-4">
+
           {/* Play, shuffle next, repeat... */}
-          <div className="flex flex-row gap-4 items-center mx-auto">
+          <div className="flex flex-row gap-6 items-center mx-auto">
             <button className='bg-transparent'>
-              <Shuffle className='w-[0.875rem] h-[0.875rem]' />
+              <FaShuffle className='w-[0.875rem] h-[0.875rem]' />
             </button>
             <button className='bg-transparent'>
-              <SkipBack className='w-[1rem] h-[1rem]' />
+              <FaBackwardStep className='w-[1.3rem] h-[1.3rem]' />
+            </button>
+            <button className='p-1 rounded-full w-[2.5rem] h-[2.5rem] border border-neutral-800 bg-transparent hover:bg-[#212121] hover:border-neutral-700 transition-colors 0.25s'>
+              <FaPlay className='w-[1.25rem] h-[1.425rem] mx-auto my-auto ' />
             </button>
             <button className='bg-transparent'>
-              <Play className='w-[1.25rem] h-[1.25rem]' />
+              <FaForwardStep className='w-[1.3rem] h-[1.3rem]' />
             </button>
             <button className='bg-transparent'>
-              <SkipForward className='w-[1rem] h-[1rem]' />
-            </button>
-            <button className='bg-transparent'>
-              <Repeat className='w-[0.875rem] h-[0.875rem]' />
+              <FaRepeat className='w-[0.875rem] h-[0.875rem]' />
             </button>
           </div>
 
-          {/* Progress bar */}
-          <div className="flex flex-row gap-4 items-center">
-            <p className="text-neutral-500 text-sm">
+          {/* Duration container */}
+          <div className="flex flex-row gap-2 items-center">
+            <p className="text-neutral-400 text-xs">
               {duration}
             </p>
-            <div className="w-full bg-neutral-600 rounded-full h-1.5">
-              <div className="bg-white h-1.5 rounded-full"></div>
-            </div>
-            <p className="text-neutral-500 text-sm">
+            <input
+              type="range"
+              name="playProgress"
+              id="playProgress"
+              className="w-full h-1.5 rounded-full bg-white cursor-pointer"
+            />
+            <p className="text-neutral-400 text-xs">
               {timeRem}
             </p>
           </div>
         </div>
 
-        {/* Right container */}
-        <div className="flex flex-row gap-4 m-4 my-auto h-[2.5rem] ">
-          <button className='bg-transparent p-1.5 hover:border-neutral-700'>
-            <Volume2 className='w-[1.5rem] h-[1.5rem]' />
-          </button>
-          <button className='bg-transparent p-1.5 hover:border-neutral-700'>
-            <Cast className='w-[1.5rem] h-[1.5rem]' />
-          </button>
-          <button className='bg-transparent p-1.5 hover:border-neutral-700'>
-            <Menu className='w-[1.5rem] h-[1.5rem]' />
-          </button>
-          <button className='bg-transparent p-1.5 hover:border-neutral-700'>
-            <ChevronUp className='w-[1.5rem] h-[1.5rem]' />
-          </button>
+        {/* Volume slider */}
+        <div className="flex flex-row gap-2 m-4 my-auto h-[2.5rem] w-[18rem] items-center pr-4">
+          {getVolumeIcon()}
+          <input
+            type="range"
+            name="volumeBar"
+            id="volumeBar"
+            className='w-full h-1.5 rounded-full bg-white cursor-pointer'
+            value={volume}
+            onChange={handleVolumeChange}
+            min="0"
+            max="100"
+          />
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 
