@@ -1,25 +1,47 @@
 #+title: Resonix Backend Tasks Checklist [0%]
 * API Routes [0%]
-- [ ] Playlists: filter by `stream` permission [0%]
-  - [ ] Trending with parameters [0%]
-    - [ ] Time: month, week, year, all time
-    - [ ] Sort order: no of tracks, play_count
-  - [ ] Get by Id
-  - [ ] Get Playlist tracks by id
-  - [ ] Search For playlists by query with filters:
-    - [ ] genre: string[]
-    - [ ] mood: string[]
-    - [ ] sort: by relevant, popular, recent: string
+- [-] Playlists: filter by `stream` permission [66%]
+  - [X] Trending with parameters [100%]
+    - [X] Time: month, week, year, all time
+    - [X] Sort order: no of tracks, play_count
+  - [X] Get by Id
+  - [X] Get Playlist tracks by id
+  - [X] Search For playlists by query with filters:
+    - [X] genre: string[]
+    - [X] mood: string[]
+    - [X] sort: by relevant, popular, recent: string
+  - [ ] add pagination to all routes by query params
   - [ ] Actions [0%]:
     - [ ] Like
     - [ ] Create New
     - [ ] Add track(s)
     - [ ] Remove tracks
 - [ ] Tracks [0%]
-  - [ ] Trending tracks
-  - [ ] Get track by id
-  - [ ] Stream track
-  - [ ] Download
-  - [ ] Track details
-  - [ ] Search
+  - [ ] Trending tracks [0%]
+    - [ ] filter out unstreamable tracks (is_streamable)
+    - [ ] filter by genre (optional)
+    - [ ] filter by time (optional)
+    - [ ] validate query strings
+    - [ ] validate app_name
+    - [ ] sort by release_date | play_count(default)
+    - [ ] paginate results
+  - [ ] Get track by id [0%]
+    - [ ] Validate track id
+    - [ ] Validate app_name
+  - [ ] Stream track [0%]
+    - [ ] Validate app_name
+    - [ ] Validate right headers
+  - [ ] Download [0%]
+    - [ ]
+  - [ ] Track details [0%]
+  - [ ] Search [0%]
+    - [ ] validate app_name
+    - [ ] validate track_id
+    - [ ] validate query parameter
+    - [ ] filter out unstreamable tracks
+    - [ ] order_by release date | play_count(default)
+
+* Pending Features/Checks [0%]
+- [ ] Validate app_name for all incoming requests
+- [ ] Validage ids for all incoming request parameters/queries
 * API Documentation [0%]
