@@ -1,12 +1,12 @@
-// Backend server
 import express from 'express';
 import { playlistRouter } from './routes';
-
+import 'dotenv/config';
+ const RXSERVER = process.env.RXSERVER || 5000;
 const app = express();
 app.set('query parser', 'extended');
 app.use('/playlists', playlistRouter);
 
-app.listen(process.env.RXSERVER || 5000, () => {
-  console.log('resonix server listening on port',
-    process.env.RXSERVER || 5000);
-});
+app.listen(RXSERVER, () => {
+  console.log(`Resonix Server listening on port ${RXSERVER}`)
+  }
+);

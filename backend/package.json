@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "./node_modues/.bin/eslint",
-    "start": "nodemon --exec babel-node --presets @babel/preset-env"
+    "start": "nodemon --exec npx babel-node --presets @babel/preset-env"
   },
   "repository": {
     "type": "git",
@@ -34,14 +34,13 @@
     "@babel/node": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/register": "^7.25.9",
-    "babel": "^5.8.38",
-    "babel-node": "^0.0.1-security",
     "eslint": "^9.17.0",
     "jest": "^29.7.0"
   },
   "dependencies": {
     "@audius/sdk": "^7.1.1",
     "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-validator": "^7.2.0",
     "nodemon": "^3.1.9",
