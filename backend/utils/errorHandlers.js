@@ -7,9 +7,17 @@ const globalErrorHandler = (error, response) => {
       .status(500)
       .send({ error: 'Internal server error' });
   }
-  return response
-    .status(error.response.status)
-    .send({ error: `${error.response.statusText || ''}` });
+  const requestErr = error ?.response?.status ?? null;
+  return requestErr
+    ? response.status(error.response.status)
+              .send({ error: `${error.response.statusText || ''}` })
+    : response.status(500)
+              .send({ error: error?.code ?? 'some error',
+                       details: {
+                         message: error?.message ?? error.code,
+                         stack: error?.stack ?? null
+                       }});
+
 };
 
 export default globalErrorHandler;
