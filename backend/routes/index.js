@@ -1,8 +1,7 @@
 import playlistRouter from './playlists';
-
-const name = null;
+import tracksRouter from './tracks';
 
 export {
-  name,
   playlistRouter,
+  tracksRouter,
 };
