@@ -3,21 +3,25 @@ import {
   validationResult,
 } from 'express-validator';
 import {
+  getPageFromArray,
   globalErrorHandler,
   requestClient,
 } from '../utils';
 
+const downloadTrack = async (req, res) => {
+
+};
+
+const getTrackById = async (req, res) => {
+
+};
+
+const getTrackDetails = async(req, res) => {
+
+};
+
 // get trending tracks
 const getTrendingTracks = async (req, res) => {
-  /* query parameters:
-   *  => genre(optional)
-   *  => time (required) - week(default), month, year, allTime
-   *  => sort_by(optional) - release_date only
-   *  => page (optional) - default 1
-   *  => page_size (optional) - default 20
-   * * filter out unstreamable tracks
-   */
-
   const validation = validationResult(req);
   if (!validation.isEmpty()) {
     return res.status(400).send({ errors: validation.array() });
@@ -29,9 +33,14 @@ const getTrendingTracks = async (req, res) => {
       time: validParams.time,
     },
   };
-  if (validParams.genre) {
-    config['genre'] = validParams.genre;
+
+  const extraParams = ['genre', 'time', 'sort_by']
+  for (let param of extraParams) {
+    if (validParams[param]) {
+      config.params[param] = validParams[param];
+    }
   }
+
   try {
     const response = await requestClient.client(config);
     // handle empty data set
@@ -45,20 +54,41 @@ const getTrendingTracks = async (req, res) => {
     // sort if needed
     if (validParams.sort_by) {
       streamableTracks.sort(
-        (trackA, trackB) => trackB.release_date - trackA.release_date)
-      ;
+        (trackA, trackB) => {
+          const da = Date.parse(trackA.release_date);
+          const db = Date.parse(trackB.release_date);
+          return db - da;
+        });
     }
-    // paginate response data
-    const page = parseInt(validParams.page);
-    const pageSize = parseInt(validParams.page_size);
-    const iStart = (page - 1) * pageSize;
-    const iEnd = (page * pageSize);
-    return res.send({
-      page: `${page}/${Math.ceil(stremableTracks.length/pageSize)}`;
-      data: stremableTracks.slice(iStart, iEnd),
-    });
 
+    // paginate response data
+    const pageResults = getPageFromArray({
+      page: validParams.page,
+      pageSize: validParams.page_size,
+      array: streamableTracks,
+    });
+    return res.send({
+      page: `${pageResults.page}/${pageResults.max}`,
+      data: pageResults.data,
+    });
   } catch(err) {
     return globalErrorHandler(err, res);
   }
+}
+
+const searchTracks = async (req, res) => {
+
+};
+
+const streamTrack = async (req, res) => {
+
+};
+
+export {
+  downloadTrack,
+  getTrackById,
+  getTrackDetails,
+  getTrendingTracks,
+  searchTracks,
+  streamTrack
 }
