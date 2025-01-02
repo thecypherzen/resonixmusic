@@ -11,7 +11,7 @@ import {
 
 const router = Router();
 router.use(json());
-router.use(
+router.get(
   '/trending',
   [
     query('genre')
@@ -52,7 +52,65 @@ router.use(
   getTrendingTracks,
 );
 
-router.use(
+router.get(
+  '/search',
+  [
+    query('query')
+      .notEmpty()
+      .trim()
+      .withMessage('search requires `query` parameter')
+      .escape(),
+    query(['genre', 'key', 'mood'])
+      .optional()
+      .trim()
+      .isArray()
+      .withMessage(' must be an Array')
+      .notEmpty()
+      .withMessage('cannot be empty')
+      .escape(),
+    query('genre.*')
+      .trim()
+      .notEmpty()
+      .withMessage('cannot be empty or falsy')
+      .matches(/^[a-zA-Z &-_/]+$/)
+      .withMessage('genre can only be letters, &, -, _ or /')
+      .escape(),
+    query('key.*')
+      .trim()
+      .notEmpty()
+      .escape(),
+    query('mood.*')
+      .notEmpty()
+      .withMessage('values cannot be empty or falsy')
+      .trim()
+      .matches(/^[a-zA-Z]+$/)
+      .withMessage(' values can only be alphabets')
+      .escape(),
+    query(['bpm_max', 'bpm_min'])
+      .optional()
+      .trim()
+      .isNumeric()
+      .withMessage('must be a number')
+      .escape(),
+    query(['has_downloads', 'is_purchaseable',
+      'includePurchaseable', 'only_downloadable'])
+      .optional()
+      .trim()
+      .isBoolean({ strict: false })
+      .isIn(['true', 'false'])
+      .withMessage('can only be `true` or `false`')
+      .escape(),
+    query('sort_by')
+      .optional()
+      .trim()
+      .isIn(['relevant', 'popular', 'recent'])
+      .withMessage('only accepts `relevant`, `popular`, `recent`')
+      .escape(),
+  ],
+  searchTracks,
+);
+
+router.get(
   '/:id',
   [
     param('id')
