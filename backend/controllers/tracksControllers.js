@@ -3,9 +3,11 @@ import {
   validationResult,
 } from 'express-validator';
 import {
+  filterBy,
   getPageFromArray,
   globalErrorHandler,
   requestClient,
+  sortBy,
 } from '../utils';
 
 const downloadTrack = async (req, res) => {
@@ -13,13 +15,11 @@ const downloadTrack = async (req, res) => {
 };
 
 const getTrackById = async (req, res) => {
-  console.log('getting track: ', req.params.id);
   const config = {
     url: `/tracks/${req.params.id}`,
   };
   try {
     const result = await requestClient.client(config);
-    console.log('track_id found:',result?.data?.data?.id ?? null);
     return res.send({ data: result?.data?.data ?? [] });
   } catch (error) {
     return globalErrorHandler(error, res);
@@ -60,15 +60,10 @@ const getTrendingTracks = async (req, res) => {
     }
     // filter out unstreamable tracks
     const streamableTracks = rawTracks
-          .filter((track) => track.is_streamable);
+          .filter((track) => JSON.parse(track.is_streamable));
     // sort if needed
     if (validParams.sort_by) {
-      streamableTracks.sort(
-        (trackA, trackB) => {
-          const da = Date.parse(trackA.release_date);
-          const db = Date.parse(trackB.release_date);
-          return db - da;
-        });
+      sortBy.releaseDate(streamableTracks);
     }
 
     // paginate response data
@@ -86,8 +81,45 @@ const getTrendingTracks = async (req, res) => {
   }
 }
 
+// search for tracks
 const searchTracks = async (req, res) => {
+  const config = {
+    url: '/tracks/search',
+    params: {},
+  };
+  const validation = validationResult(req);
+  if (!validation.isEmpty()) {
+    return res.status(400).send({ errors: validation.array() });
+  }
+  const validQueries = matchedData(req);
 
+  // set request query parameters
+  const allowedQueries = [
+    'bpm_max', 'bpm_min', 'genre', 'has_downloads',
+    'is_purchaseable', 'includePurchaseable', 'key',
+    'mood', 'only_downloadable', 'query','sort_by',
+  ];
+  for (let [key, value] of Object.entries(validQueries)) {
+    if (allowedQueries.some((query) => query === key)) {
+      if (key === 'sort_by'){
+        key = 'sort_method'
+      }
+      config.params[key] = value;
+    }
+  }
+  // make request and send result
+  try {
+    let results = await requestClient.client(config);
+    if (!results?.data?.data ?? null) {
+      res.send({ data: [] })
+    }
+    results = results.data.data;
+    // filter out non-streamable values
+    const streamables = filterBy.streamable(results);
+    return res.send({ data: streamables })
+  } catch (error) {
+    return globalErrorHandler(error, res);
+  }
 };
 
 const streamTrack = async (req, res) => {
