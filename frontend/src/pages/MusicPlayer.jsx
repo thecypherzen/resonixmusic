@@ -7,13 +7,12 @@ import SongList from '../components/SongList';
 
 const MusicPlayer = () => {
   return (
-    <div className="max-w-screen flex">
+    <div className="flex">
       <SideBar />
-      <div className="flex flex-col h-screen ">
+      <div className="flex flex-col min-h-screen w-full ml-[15rem]">
         <TopNav />
-        <div className="flex flex-row">
+        <div className="flex-1">
           <PlayerHome />
-          {/* <SongList className='absolute right-0 top-0' /> */}
         </div>
         <BottomPlayer />
       </div>

@@ -1,77 +1,178 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaPlay, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { usePlayer } from '../context/PlayerContext';
+import api from '../services/api';
 
 const PlayerHome = () => {
-  const thumbnail = '../src/assets/png-jpg/thumbnail.png';
-  const artistName = 'Artist Name';
-  const albumTile = 'Album Title';
-  const albumArtist = 'Artist';
-  const songTitle = 'Nice badass song';
-  const songArtist = 'Great Singer';
-  const numOfLikes = '500k Likes'
+  const { setCurrentTrack, setQueue } = usePlayer();
 
-  // keep track of the visible card indexes
+  // State for data
+  const [artists, setArtists] = useState([]);
+  const [albums, setAlbums] = useState([]);
+  const [trendingSongs, setTrendingSongs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // State for pagination
   const [visibleArtists, setVisibleArtists] = useState(0);
   const [visibleAlbums, setVisibleAlbums] = useState(0);
   const [visibleTrending, setVisibleTrending] = useState(0);
 
-  const trendingSongs = new Array(24).fill({
-    title: songTitle,
-    artist: songArtist,
-    likes: numOfLikes,
-    thumbnail: thumbnail
-  });
-
-  // Number of cards to show per set
+  // Constants
   const cardsPerSet = 5;
   const trendingCardsPerPage = 12;
+  const defaultThumbnail = '/src/assets/png-jpg/thumbnail.png';
 
-  // Function to handle next set of cards
+  // Add loading state message component
+  const LoadingMessage = () => (
+    <div className="flex justify-center items-center ml-[30rem] h-[80vh] fixed">
+      <div className="animate-pulse flex flex-col items-center">
+        <div className="h-8 w-32 bg-gray-700 rounded mb-4"></div>
+        <div className="text-gray-500">Loading content...</div>
+      </div>
+    </div>
+  );
+
+  // Add error message component
+  const ErrorMessage = ({ message }) => (
+    <div className="flex justify-center items-center h-[50vh]fixed">
+      <div className="text-red-500 flex flex-col items-center">
+        <p className="text-xl mb-2">Unable to load content</p>
+        <p className="text-sm">{message}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 bg-gray-800 rounded-lg hover:bg-gray-600 mx-auto"
+        >
+          Retry
+        </button>
+      </div>
+    </div>
+  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch trending playlists
+        const response = await api.getPlaylists();
+        console.log('Received data:', response);
+
+        // Fetch all data in parallel
+        const [artistsResponse, playlistsResponse, tracksResponse] = await Promise.all([
+          api.getTopArtists({ limit: 15 }),
+          api.getPlaylists({ limit: 15, time: 'week' }),
+          api.getTrendingTracks({ limit: 30 })
+        ]);
+
+        // Transform artists data
+        const transformedArtists = artistsResponse.data.map(artist => ({
+          id: artist.id,
+          name: artist.name,
+          thumbnail: artist.profile_picture?.["150x150"] || defaultThumbnail,
+          followerCount: artist.follower_count
+        }));
+        setArtists(transformedArtists);
+
+        // Transform playlists/albums data
+        const transformedAlbums = playlistsResponse.data.map(playlist => ({
+          id: playlist.id,
+          title: playlist.playlist_name || "Untitled Playlist",
+          artist: playlist.user?.name || "Unknown Artist",
+          thumbnail: playlist.artwork?.["150x150"] || defaultThumbnail,
+          trackCount: playlist.track_count
+        }));
+        setAlbums(transformedAlbums);
+
+        // Transform tracks data
+        const transformedTracks = tracksResponse.data.map(track => ({
+          id: track.id,
+          title: track.title || "Untitled Track",
+          artist: track.user?.name || "Unknown Artist",
+          likes: `${Math.floor((track.play_count || 0) / 1000)}k Plays`,
+          thumbnail: track.artwork?.["150x150"] || defaultThumbnail,
+          url: track.stream_url,
+          duration: track.duration
+        }));
+        setTrendingSongs(transformedTracks);
+
+      } catch (err) {
+        console.error('Error in PlayerHome:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) return <LoadingMessage />;
+  if (error) return <ErrorMessage message={error} />;
+
+
+  // Handlers for navigation
   const handleNext = (setVisible, visible, totalItems) => {
     if (visible + cardsPerSet < totalItems) {
       setVisible(visible + cardsPerSet);
     }
   };
 
-  // Function to handle previous set of cards
   const handlePrevious = (setVisible, visible) => {
     if (visible - cardsPerSet >= 0) {
       setVisible(visible - cardsPerSet);
     }
   };
 
-  // Example data for artists and albums
-  const artists = new Array(10).fill({ name: artistName, thumbnail });
-  const albums = new Array(10).fill({ title: 'Album Title', thumbnail });
+  // Handler for playing a song
+  const handlePlaySong = (song) => {
+    setCurrentTrack(song);
+    // Set the rest of the songs as queue
+    const currentIndex = trendingSongs.findIndex(s => s.id === song.id);
+    const remainingSongs = trendingSongs.slice(currentIndex + 1);
+    setQueue(remainingSongs);
+  };
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center h-screen text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div className='w-full min-h-screen flex flex-col mt-6 mx-16 gap-10'>
-
-      {/* Popular Artists */}
+      {/* Popular Artists Section */}
       <div className="flex flex-col mb-10 w-full">
         <div className='flex flex-row w-full mb-4 items-center'>
           <p className='text-3xl font-extrabold'>Popular Artists</p>
           <div className='ml-auto flex gap-2 items-center'>
-            <button className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm">More</button>
+            <button className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm">
+              More
+            </button>
             <button
               onClick={() => handlePrevious(setVisibleArtists, visibleArtists)}
-              className="bg-transparent hover:bg-[#212121] p-2 rounded-full border border-neutral-800">
+              className="bg-transparent hover:bg-[#212121] p-2 rounded-full border border-neutral-800"
+            >
               <FaChevronLeft />
             </button>
             <button
               onClick={() => handleNext(setVisibleArtists, visibleArtists, artists.length)}
-              className="bg-transparent hover:bg-[#212121] p-2 rounded-full border border-neutral-800">
+              className="bg-transparent hover:bg-[#212121] p-2 rounded-full border border-neutral-800"
+            >
               <FaChevronRight />
             </button>
           </div>
         </div>
+        {/* Artists Cards */}
         <div className="flex flex-row bg-transparent h-[16rem] w-full gap-4">
           {artists.slice(visibleArtists, visibleArtists + cardsPerSet).map((artist, index) => (
             <a key={index} href='#' className='flex flex-col bg-transparent hover:bg-gradient-to-b from-transparent via-neutral-950 to-neutral-900 hover:bg-opacity-5 rounded-2xl w-[11.5rem] h-[15rem] px-4 py-2 gap-4 hover:border-none transition-all relative group mt-4'>
               <div className="opacity-0 group-hover:opacity-100 flex bg-[#08B2F0] w-10 h-10 rounded-full shadow-lg absolute right-6 top-[7rem]">
                 <FaPlay className='m-auto shadow-lg fill-black' />
               </div>
-              <img src={artist.thumbnail} className="rounded-full h-[8.75rem] w-[8.75rem] shadow-lg mx-auto" />
+              <img src={artist.thumbnail} className="rounded-full h-[8.75rem] w-[8.75rem] shadow-lg mx-auto" alt={artist.name} />
               <div className="flex flex-col text-left">
                 <p className='font-bold text-lg'>{artist.name}</p>
                 <p className='font-bold text-sm text-neutral-400'>Artist</p>
@@ -81,7 +182,7 @@ const PlayerHome = () => {
         </div>
       </div>
 
-      {/* Albums for You */}
+      {/* Albums section */}
       <div className="flex flex-col mb-10">
         <div className='flex flex-row w-full mb-4 items-center'>
           <p className='text-3xl font-extrabold'>Albums for you</p>
@@ -107,14 +208,14 @@ const PlayerHome = () => {
               <img src={album.thumbnail} className="rounded-xl h-auto w-full shadow-md" />
               <div className="flex flex-col text-left">
                 <p className='font-bold text-lg'>{album.title}</p>
-                <p className='font-bold text-sm text-neutral-400'>{albumArtist}</p>
+                <p className='font-bold text-sm text-neutral-400'>{album.artist}</p>
               </div>
             </a>
           ))}
         </div>
       </div>
 
-      {/* Trending Songs */}
+      {/* Trending Songs Section */}
       <div className="flex flex-col mb-10">
         <div className='flex flex-row w-full mb-4 items-center'>
           <p className='text-3xl font-extrabold'>Trending Songs</p>
@@ -140,9 +241,13 @@ const PlayerHome = () => {
           {trendingSongs
             .slice(visibleTrending, visibleTrending + trendingCardsPerPage)
             .map((song, index) => (
-              <button key={index} className="flex flex-row bg-transparent hover:bg-white hover:bg-opacity-[2%] p-2 rounded-xl gap-3 group text-left transition-all">
+              <button
+                key={index}
+                onClick={() => handlePlaySong(song)}
+                className="flex flex-row bg-transparent hover:bg-white hover:bg-opacity-[2%] p-2 rounded-xl gap-3 group text-left transition-all"
+              >
                 <div className="flex relative">
-                  <img src={song.thumbnail} className='h-[3rem] w-[3rem] rounded-lg' />
+                  <img src={song.thumbnail} className='h-[3rem] w-[3rem] rounded-lg' alt={song.title} />
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
                     <FaPlay className='fill-white drop-shadow-lg' />
                   </div>
@@ -160,7 +265,7 @@ const PlayerHome = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default PlayerHome;

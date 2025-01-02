@@ -2,81 +2,77 @@ import React, { useState } from 'react';
 import { Menu, Radio, ListMusic, Disc, Music, MicVocal, Plus, Trash2 } from 'lucide-react';
 
 const SideBar = () => {
-  // State to manage playlists
   const [playlists, setPlaylists] = useState([]);
+  const userLogin = 'janetjohn';
+  const initials = userLogin.substring(0, 2).toUpperCase();
 
-  // Function to handle creating a new playlist
   const handleCreatePlaylist = () => {
     const newPlaylistName = `New Playlist ${playlists.length + 1}`;
     setPlaylists([...playlists, newPlaylistName]);
   };
 
-  // Function to handle deleting a playlist
   const handleDeletePlaylist = (indexToDelete) => {
     setPlaylists(playlists.filter((_, index) => index !== indexToDelete));
   };
 
   return (
-    <div className='flex flex-col min-h-screen min-w-[15rem] px-6 py-6 bg-[#212124] bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-30'>
-      {/* Navbar */}
-      <div className="flex flex-row gap-4 items-center mb-6">
-        <img src="/logo-grad.png" alt="resonix logo" className='w-[5.313rem] h-[0.875rem]' />
-        <a href="#" className='ml-auto'>
-          <Menu />
-        </a>
-      </div>
+    <div className='fixed left-0 top-0 bottom-0 w-[15rem] flex flex-col h-screen overflow-hidden bg-[#212124] bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-30 z-40'>
+      <div className='px-6 py-6'>
+        {/* Navbar */}
+        <div className="w-full h-[4.375rem]">
+          <div className="flex flex-row gap-4 items-center">
+            {/* Profile */}
+            <button className="flex w-[2rem] h-[2rem] bg-[#212124] rounded-full border border-neutral-800 items-start">
+              <p className="text-white text-xs text-center justify-center m-auto shadow-lg hover:opacity-60 transition-opacity duration-200">{initials}</p>
+            </button>
 
-      {/* Home, Explore, Videos */}
-      <div className="flex flex-col gap-6 my-8">
-        <a href='#' className="text-white hover:text-[#08B2F0] text-base">
-          Home
-        </a>
-        <a href='#' className="text-white hover:text-[#08B2F0] text-base">Explore</a>
-        <a href='#' className="text-white hover:text-[#08B2F0] text-base">Trending</a>
-      </div>
-
-      {/* My collection */}
-      <div className="flex flex-col gap-6 my-6 text-[0.875rem]">
-        <p className="text-white opacity-40 text-xs font-400 -mb-2">MY COLLECTION</p>
-        <div className="flex flex-col ml-2">
-          <a href='#' className="inline-flex gap-2 hover:text-[#08B2F0]">
-            <Radio />
-            <p>Mixes and Radio</p>
-          </a>
-        </div>
-        <div className="flex flex-col ml-2">
-          <a href='#' className="inline-flex gap-2 hover:text-[#08B2F0]">
-            <ListMusic />
-            <p>Playlist</p>
-          </a>
-        </div>
-        <div className="flex flex-col ml-2">
-          <a href='#' className="inline-flex gap-2 hover:text-[#08B2F0]">
-            <Disc />
-            <p>Albums</p>
-          </a>
-        </div>
-        <div className="flex flex-col ml-2">
-          <a href='#' className="inline-flex gap-2 hover:text-[#08B2F0]">
-            <Music />
-            <p>Tracks</p>
-          </a>
-        </div>
-        <div className="flex flex-col ml-2">
-          <a href='#' className="inline-flex gap-2 hover:text-[#08B2F0]">
-            <MicVocal />
-            <p>Artists</p>
-          </a>
+            <img src="/logo-grad.png" alt="resonix logo" className='w-[5.313rem] h-[0.875rem]' />
+            <a href="#" className='ml-auto'>
+              <Menu />
+            </a>
+          </div>
         </div>
 
-        {/* My playlist */}
-        <div className="flex flex-col gap-4 my-6 text-[0.875rem] pb-[5rem]">
+        {/* Navigation Links */}
+        <div className="flex flex-col gap-6 mb-8">
+          <a href='#' className="text-white hover:text-[#08B2F0] text-base transition-colors duration-200">
+            Home
+          </a>
+          <a href='#' className="text-white hover:text-[#08B2F0] text-base transition-colors duration-200">Explore</a>
+          <a href='#' className="text-white hover:text-[#08B2F0] text-base transition-colors duration-200">Trending</a>
+        </div>
+
+        {/* Collection Section */}
+        <div className="flex flex-col gap-6 my-6 text-[0.875rem]">
+          <p className="text-white opacity-40 text-xs font-400 -mb-2">MY COLLECTION</p>
+          <div className="flex flex-col ml-2 space-y-6">
+            <a href='#' className="inline-flex gap-2 hover:text-[#08B2F0] transition-colors duration-200">
+              <ListMusic />
+              <p>Playlist</p>
+            </a>
+            <a href='#' className="inline-flex gap-2 hover:text-[#08B2F0] transition-colors duration-200">
+              <Disc />
+              <p>Albums</p>
+            </a>
+            {/* <a href='#' className="inline-flex gap-2 hover:text-[#08B2F0] transition-colors duration-200">
+              <Music />
+              <p>Tracks</p>
+            </a> */}
+            <a href='#' className="inline-flex gap-2 hover:text-[#08B2F0] transition-colors duration-200">
+              <MicVocal />
+              <p>Artists</p>
+            </a>
+          </div>
+        </div>
+
+        {/* Playlists Section */}
+        <div className="flex flex-col gap-4 my-6 text-[0.875rem] pb-[7rem] overflow-y-auto">
           <p className="text-white opacity-40 text-xs font-400">MY PLAYLISTS</p>
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap- group">
             {playlists.length === 0 ? (
               <button
                 onClick={handleCreatePlaylist}
-                className="inline-flex items-center justify-center py-2 px-4 bg-transparent gap-1 hover:bg-[#212121] transition-colors rounded-full border border-neutral-700 w-full"
+                className="inline-flex items-center justify-center py-2 px-4 bg-transparent gap-1 group-hover:bg-[#212121] transition-all duration-200 rounded-full border border-neutral-700 w-full"
               >
                 <Plus size={16} />
                 <span className="text-xs">Create Playlist</span>
@@ -86,14 +82,14 @@ const SideBar = () => {
                 {playlists.map((playlist, index) => (
                   <div
                     key={index}
-                    className="group flex items-center justify-between transition-colors"
+                    className="group flex items-center justify-between transition-colors group"
                   >
                     <a href='#' className="flex-grow">
                       {playlist}
                     </a>
                     <button
                       onClick={() => handleDeletePlaylist(index)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-400 ml-2 bg-transparent"
+                      className="opacity-0 group-hover:opacity-100 transition-all duration-200 ml-2 bg-transparent "
                     >
                       <Trash2 size={16} />
                     </button>
