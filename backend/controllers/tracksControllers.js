@@ -13,7 +13,17 @@ const downloadTrack = async (req, res) => {
 };
 
 const getTrackById = async (req, res) => {
-
+  console.log('getting track: ', req.params.id);
+  const config = {
+    url: `/tracks/${req.params.id}`,
+  };
+  try {
+    const result = await requestClient.client(config);
+    console.log('track_id found:',result?.data?.data?.id ?? null);
+    return res.send({ data: result?.data?.data ?? [] });
+  } catch (error) {
+    return globalErrorHandler(error, res);
+  }
 };
 
 const getTrackDetails = async(req, res) => {
