@@ -1,4 +1,3 @@
-// src/components/BottomPlayer.jsx
 import React from 'react';
 import { FaShuffle, FaRepeat, FaVolumeLow, FaVolumeHigh, FaVolumeOff, FaForwardStep, FaBackwardStep, FaPlay, FaPause } from 'react-icons/fa6';
 import { usePlayer } from '../context/PlayerContext';
@@ -18,6 +17,7 @@ const BottomPlayer = () => {
     playPrevious,
     currentTime,
     duration,
+    seekTo
   } = usePlayer();
 
   const formatTime = (time) => {
@@ -27,9 +27,7 @@ const BottomPlayer = () => {
   };
 
   const handleProgressChange = (e) => {
-    const time = parseFloat(e.target.value);
-    audioRef.current.currentTime = time;
-    setCurrentTime(time);
+    seekTo(parseFloat(e.target.value));
   };
 
   const handleVolumeChange = (e) => {
