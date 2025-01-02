@@ -1,11 +1,12 @@
 {
+  "type": "module",
   "name": "resonixbe",
   "version": "1.0.0",
   "description": "Music player backend",
   "main": "index.js",
   "scripts": {
     "lint": "./node_modues/.bin/eslint",
-    "start": "nodemon --exec npx babel-node --presets @babel/preset-env"
+    "start": "nodemon --exec npx babel-node --presets @babel/preset-env server.js"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,7 @@
   "dependencies": {
     "@audius/sdk": "^7.1.1",
     "axios": "^1.7.9",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-validator": "^7.2.0",

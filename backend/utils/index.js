@@ -1,7 +1,3 @@
-import globalErrorHandler from './errorHandlers';
-import { requestClient } from './config';
-
-export {
-  globalErrorHandler,
-  requestClient,
-};
+export { globalErrorHandler, validateQueryParams } from './errorHandlers.js';
+export { requestClient } from './requestClient.js';
+export { default as getHostUrl } from './getHostUrl.js';

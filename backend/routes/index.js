@@ -1,8 +1,9 @@
-import playlistRouter from './playlists';
-
-const name = null;
+import playlistRouter from './playlists.js';
+import trackRouter from './tracks.js';
+import userRouter from './users.js';
 
 export {
-  name,
   playlistRouter,
+  trackRouter,
+  userRouter
 };
