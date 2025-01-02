@@ -122,4 +122,25 @@ router.get(
   ],
   getTrackById,
 );
+
+router.get(
+  '/:id/inspect',
+  [
+    param('id')
+      .trim()
+      .notEmpty()
+      .withMessage('missing track id')
+      .isAlphanumeric()
+      .withMessage('can only be alphanumeric')
+      .escape(),
+    query('original')
+      .optional()
+      .trim()
+      .isBoolean({ strict: false })
+      .isIn(['true', 'false'])
+      .withMessage('expects true/false')
+      .escape(),
+  ],
+  getTrackDetails,
+);
 export default router;
