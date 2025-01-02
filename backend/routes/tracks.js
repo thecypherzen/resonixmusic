@@ -1,12 +1,16 @@
 import { Router, json } from 'express';
-import { query } from 'express-validator';
+import { param, query } from 'express-validator';
 import {
+  downloadTrack,
+  getTrackById,
+  getTrackDetails,
   getTrendingTracks,
+  searchTracks,
+  streamTrack,
 } from '../controllers';
 
 const router = Router();
 router.use(json());
-
 router.use(
   '/trending',
   [
@@ -48,4 +52,16 @@ router.use(
   getTrendingTracks,
 );
 
+router.use(
+  '/:id',
+  [
+    param('id')
+      .trim()
+      .notEmpty()
+      .matches(/^[a-zA-Z0-9]+$/)
+      .withMessage('invalid id: can only be alphanumeric')
+      .escape(),
+  ],
+  getTrackById,
+);
 export default router;
