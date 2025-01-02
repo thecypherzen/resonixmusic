@@ -32,24 +32,20 @@
     - [ ] Get playlist tracks by id
     - [ ] Search playlist by query with filters
     - [ ] Pagination
-- [-] Tracks [0%]
-  - [-] Trending tracks [83%]
+- [-] Tracks [42%]
+  - [X] Trending tracks [100%]
     - [X] filter out unstreamable tracks (is_streamable)
     - [X] filter by genre (optional)
     - [X] filter by time (default week)
     - [X] sort by default or release_date
     - [X] paginate results based on page_size (default = 20)
-    - [-] validate query strings [83%]
+    - [X] validate query strings [100%]
       - [X] genre [100%]
         - [X] is optional
         - [X] trim whitespace
         - [X] is not empty
         - [X] only matches alphabets
         - [X] code escape
-      - [ ] app_name [0%]
-        - [ ] trim whitespace
-        - [ ] name only matches our appname
-        - [ ] escape
       - [X] time [100%]
         - [X] default is 'week'
         - [X] trim
@@ -70,24 +66,35 @@
         - [X] trim
         - [X] is integer
         - [X] is btw 10 and 40
-        - [X] escape
-  - [ ] Get track by id [0%]
-    - [ ] Validate track id [0%]
-      - [ ] can only be alphanumeric
-    - [ ] Validate app_name
+          - [X] escape
+  - [X] Get track by id [100%]
+    - [X] Validate track id [100%]
+      - [X] can only be alphanumeric
   - [ ] Stream track [0%]
     - [ ] Validate app_name
     - [ ] Validate right headers
   - [ ] Download [0%]
     - [ ] Validate filename - for downloading (optional)
     - [ ] Validate param 'original' (optional)
-  - [ ] Track details [0%]
-  - [ ] Search [0%]
-    - [ ] validate app_name
-    - [ ] validate track_id
-    - [ ] validate query parameter
-    - [ ] filter out unstreamable tracks
-    - [ ] order_by release date | play_count(default)
+  - [X] Track details [0%]
+  - [-] Search [75%]
+    - [X] validate query parameters [100%]
+      - [X] query is not empty and escaped
+      - [X] genre (optional) is and escaped
+      - [X] sort_method (optional)is only 'relevant', 'popular' or 'recent'
+      - [X] mood (optional):
+        - [X] is a list
+        - [X] elements are only alphabetic strings
+      - [X] only_downloadable (optional) is boolean
+      - [X] includePurchaseable (optional) is boolean
+      - [X] is_purchaseable (optional) is boolean
+      - [X] has_downloads (optional) is boolean
+      - [X] key (optional) is array of  strings
+      - [X] bpm_min (optional) is numeric
+      - [X] bpm_max (optional) is numeric
+    - [X] implement controller and expose router
+    - [ ] Tests
+    - [X] filter out unstreamable tracks
   - [ ] Swagger Documentation [0%]
     - [ ] Trending Tracks
     - [ ] Get track by id
