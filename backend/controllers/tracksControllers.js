@@ -27,7 +27,32 @@ const getTrackById = async (req, res) => {
 };
 
 const getTrackDetails = async(req, res) => {
-
+  const validation = validationResult(req);
+  if (!validation.isEmpty()) {
+    return res.status(400).send({ errors: validation.array() });
+  }
+  const validParams = matchedData(req);
+  console.log('fetching details of track: ', validParams.id);
+  const config = {
+    url: `tracks/${validParams.id}/inspect`,
+    params: {  },
+  };
+  if (validParams.original) {
+    config.params['original'] = validParams.original;
+  }
+  try {
+    let details = await requestClient.client(config);
+    if (!details?.data?.data ?? null) {
+      return res.status(404).send({ error: 'NOT_FOUND' })
+    }
+    return res.send({
+      track_id: validParams.id,
+      data: details.data.data
+    });
+  } catch(error) {
+    console.log(error);
+    return globalErrorHandler(error, res);
+  }
 };
 
 // get trending tracks
