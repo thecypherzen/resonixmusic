@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaPlay, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { usePlayer } from '../context/PlayerContext';
 import api from '../services/api';
+import { MdErrorOutline } from "react-icons/md";
 
 const PlayerHome = () => {
   const { setCurrentTrack, setQueue } = usePlayer();
@@ -23,25 +25,65 @@ const PlayerHome = () => {
   const trendingCardsPerPage = 12;
   const defaultThumbnail = '/src/assets/png-jpg/thumbnail.png';
 
+  const navigate = useNavigate();
+
+  const handleSongClick = (song) => {
+    // Update the current track
+    setCurrentTrack(song);
+    // Navigate to the song details page
+    navigate(`/song/${song.id}`);
+  };
+
   // Add loading state message component
   const LoadingMessage = () => (
-    <div className="flex justify-center items-center ml-[30rem] h-[80vh] fixed">
-      <div className="animate-pulse flex flex-col items-center">
-        <div className="h-8 w-32 bg-gray-700 rounded mb-4"></div>
-        <div className="text-gray-500">Loading content...</div>
+    <div className="flex mx-16 h-screen max-w-[60rem]">
+      <div className="flex flex-col mt-[1.75rem]">
+        <div className="animate-pulse flex flex-col ">
+          <div className="h-10 w-[20rem] bg-neutral-800 rounded-2xl "></div>
+          <div className="grid grid-cols-5 gap-4 mt-[1rem]">
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+          </div>
+        </div>
+
+        <div className="animate-pulse flex flex-col mt-[5rem]">
+          <div className="h-10 w-[20rem] bg-neutral-800 rounded-2xl "></div>
+          <div className="grid grid-cols-5 gap-4 mt-[1rem]">
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+          </div>
+        </div>
+
+        <div className="animate-pulse flex flex-col mt-[5rem]">
+          <div className="h-10 w-[20rem] bg-neutral-800 rounded-2xl "></div>
+          <div className="grid grid-cols-5 gap-4 mt-[1rem]">
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+            <div className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+          </div>
+        </div>
       </div>
     </div>
   );
 
   // Add error message component
   const ErrorMessage = ({ message }) => (
-    <div className="flex justify-center items-center h-[50vh]fixed">
+    <div className="flex justify-center items-center h-[75vh] w-[60rem] mx-16 fixed">
       <div className="text-red-500 flex flex-col items-center">
-        <p className="text-xl mb-2">Unable to load content</p>
+        <MdErrorOutline size={102} className='m-auto' />
+        <p className="text-xl mb-2 font-extrabold ">Unable to load content</p>
         <p className="text-sm">{message}</p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-4 px-4 py-2 bg-gray-800 rounded-lg hover:bg-gray-600 mx-auto"
+          className="mt-4 px-8 py-2 bg-transparent border rounded-full border-neutral-700 hover:bg-neutral-600 transition-all duration-200"
         >
           Retry
         </button>
@@ -141,8 +183,10 @@ const PlayerHome = () => {
     return <div className="flex justify-center items-center h-screen text-red-500">Error: {error}</div>;
   }
 
+  const truncateTitle = (title, maxLength) => title.length > maxLength ? title.slice(0, maxLength) + '...' : title;
+
   return (
-    <div className='w-full min-h-screen flex flex-col mt-6 mx-16 gap-10'>
+    <div className='max-w-[60rem] min-h-screen flex flex-col mt-6 mx-16 gap-10'>
       {/* Popular Artists Section */}
       <div className="flex flex-col mb-10 w-full">
         <div className='flex flex-row w-full mb-4 items-center'>
@@ -207,7 +251,7 @@ const PlayerHome = () => {
               </div>
               <img src={album.thumbnail} className="rounded-xl h-auto w-full shadow-md" />
               <div className="flex flex-col text-left">
-                <p className='font-bold text-lg'>{album.title}</p>
+                <p className='font-bold text-lg'>{truncateTitle(album.title, 25)}</p>
                 <p className='font-bold text-sm text-neutral-400'>{album.artist}</p>
               </div>
             </a>
@@ -216,7 +260,7 @@ const PlayerHome = () => {
       </div>
 
       {/* Trending Songs Section */}
-      <div className="flex flex-col mb-10">
+      <div className="flex flex-col mb-[6rem]">
         <div className='flex flex-row w-full mb-4 items-center'>
           <p className='text-3xl font-extrabold'>Trending Songs</p>
           <div className='ml-auto flex gap-2 items-center'>
@@ -237,7 +281,7 @@ const PlayerHome = () => {
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-2 ">
           {trendingSongs
             .slice(visibleTrending, visibleTrending + trendingCardsPerPage)
             .map((song, index) => (
@@ -246,14 +290,14 @@ const PlayerHome = () => {
                 onClick={() => handlePlaySong(song)}
                 className="flex flex-row bg-transparent hover:bg-white hover:bg-opacity-[2%] p-2 rounded-xl gap-3 group text-left transition-all"
               >
-                <div className="flex relative">
+                <div className="flex relative ">
                   <img src={song.thumbnail} className='h-[3rem] w-[3rem] rounded-lg' alt={song.title} />
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
                     <FaPlay className='fill-white drop-shadow-lg' />
                   </div>
                 </div>
                 <div className="flex flex-col flex-1">
-                  <p className='text-base truncate'>{song.title}</p>
+                  <p className='text-base truncate'>{truncateTitle(song.title, 20)}</p>
                   <div className="flex flex-row items-center gap-2">
                     <p className='text-sm opacity-45 truncate'>{song.artist}</p>
                     <span className='h-2 w-2 bg-white opacity-45 rounded-full flex-shrink-0'></span>
