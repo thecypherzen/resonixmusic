@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Menu, Radio, ListMusic, Disc, Music, MicVocal, Plus, Trash2 } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, House, Compass, ChartNoAxesCombined, ListMusic, Disc, Music, MicVocal, Plus, Trash2 } from 'lucide-react';
 
 const SideBar = () => {
   const [playlists, setPlaylists] = useState([]);
-  const userLogin = 'janetjohn';
+  const userLogin = 'gabrielisaacs'; // Updated to current user's login
   const initials = userLogin.substring(0, 2).toUpperCase();
+  const location = useLocation();
 
   const handleCreatePlaylist = () => {
     const newPlaylistName = `New Playlist ${playlists.length + 1}`;
@@ -27,41 +29,70 @@ const SideBar = () => {
             </button>
 
             <img src="/logo-grad.png" alt="resonix logo" className='w-[5.313rem] h-[0.875rem]' />
-            <a href="#" className='ml-auto'>
+            <button className='ml-auto bg-transparent'>
               <Menu />
-            </a>
+            </button>
           </div>
         </div>
 
         {/* Navigation Links */}
-        <div className="flex flex-col gap-6 mb-8">
-          <a href='#' className="text-white hover:text-[#08B2F0] text-base transition-colors duration-200">
-            Home
-          </a>
-          <a href='#' className="text-white hover:text-[#08B2F0] text-base transition-colors duration-200">Explore</a>
-          <a href='#' className="text-white hover:text-[#08B2F0] text-base transition-colors duration-200">Trending</a>
+        <div className="flex flex-col gap-6 mb-10 mt-2 ml-2">
+          <Link
+            to='/music'
+            className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${location.pathname === '/music' ? 'text-[#08B2F0]' : ''
+              }`}
+          >
+            <House />
+            <p>Home</p>
+          </Link>
+          <Link
+            to='/explore'
+            className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${location.pathname === '/explore' ? 'text-[#08B2F0]' : ''
+              }`}
+            onClick={(e) => e.preventDefault()}
+          >
+            <Compass />
+            <p>Explore</p>
+          </Link>
+          <Link
+            to='/trending'
+            className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${location.pathname === '/trending' ? 'text-[#08B2F0]' : ''
+              }`}
+            onClick={(e) => e.preventDefault()}
+          >
+            <ChartNoAxesCombined />
+            <p>Trending</p>
+          </Link>
         </div>
 
         {/* Collection Section */}
         <div className="flex flex-col gap-6 my-6 text-[0.875rem]">
           <p className="text-white opacity-40 text-xs font-400 -mb-2">MY COLLECTION</p>
           <div className="flex flex-col ml-2 space-y-6">
-            <a href='#' className="inline-flex gap-2 hover:text-[#08B2F0] transition-colors duration-200">
+            <Link
+              to="/playlists"
+              className="inline-flex gap-2 hover:text-[#08B2F0] transition-colors duration-200"
+              onClick={(e) => e.preventDefault()}
+            >
               <ListMusic />
               <p>Playlist</p>
-            </a>
-            <a href='#' className="inline-flex gap-2 hover:text-[#08B2F0] transition-colors duration-200">
+            </Link>
+            <Link
+              to="/albums"
+              className="inline-flex gap-2 hover:text-[#08B2F0] transition-colors duration-200"
+              onClick={(e) => e.preventDefault()}
+            >
               <Disc />
               <p>Albums</p>
-            </a>
-            {/* <a href='#' className="inline-flex gap-2 hover:text-[#08B2F0] transition-colors duration-200">
-              <Music />
-              <p>Tracks</p>
-            </a> */}
-            <a href='#' className="inline-flex gap-2 hover:text-[#08B2F0] transition-colors duration-200">
+            </Link>
+            <Link
+              to="/artists"
+              className="inline-flex gap-2 hover:text-[#08B2F0] transition-colors duration-200"
+              onClick={(e) => e.preventDefault()}
+            >
               <MicVocal />
               <p>Artists</p>
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -84,12 +115,16 @@ const SideBar = () => {
                     key={index}
                     className="group flex items-center justify-between transition-colors group"
                   >
-                    <a href='#' className="flex-grow">
+                    <Link
+                      to={`/playlist/${index}`}
+                      className="flex-grow"
+                      onClick={(e) => e.preventDefault()}
+                    >
                       {playlist}
-                    </a>
+                    </Link>
                     <button
                       onClick={() => handleDeletePlaylist(index)}
-                      className="opacity-0 group-hover:opacity-100 transition-all duration-200 ml-2 bg-transparent "
+                      className="opacity-0 group-hover:opacity-100 transition-all duration-200 ml-2 bg-transparent"
                     >
                       <Trash2 size={16} />
                     </button>
