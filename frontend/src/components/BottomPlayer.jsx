@@ -49,7 +49,7 @@ const BottomPlayer = () => {
       <div className="flex mx-2 gap-10">
         {/* Track info */}
         <div className="flex flex-row items-center m-4 w-[25rem] gap-4">
-          <img src={currentTrack.thumbnail} alt='Thumbnail' className="w-[4rem] h-[4rem] rounded-full" />
+          <img src={currentTrack.artwork} alt='Thumbnail' className="w-[4rem] h-[4rem] rounded-full" />
           <div className="flex flex-col text-[0.875rem] font-semibold w-full">
             <p className='text-lg'>{truncateTitle(currentTrack.title, 12)}</p>
             <p className='text-neutral-500'>{currentTrack.artist}</p>
@@ -94,7 +94,7 @@ const BottomPlayer = () => {
         </div>
 
         {/* Volume control */}
-        <div className="flex flex-row gap-2 m-4 my-auto h-[2.5rem] w-[18rem] items-center pr-4">
+        <div className="flex flex-row gap-3 m-4 my-auto h-[2.5rem] w-[18rem] items-center pr-4">
           {getVolumeIcon()}
           <input
             type="range"
