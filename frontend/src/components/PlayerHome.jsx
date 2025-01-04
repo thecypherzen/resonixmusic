@@ -63,7 +63,7 @@ const PlayerHome = () => {
   // Error message component
   const ErrorMessage = ({ message }) => (
     <div className="flex justify-center items-center h-[75vh] w-[60rem] mx-16 fixed">
-      <div className="text-red-500 flex flex-col items-center">
+      <div className="text-neutral-600 flex flex-col items-center">
         <MdErrorOutline size={102} className='m-auto' />
         <p className="text-2xl mb-2 font-extrabold">Unable to load content</p>
         <p className="text-sm">{message}</p>
