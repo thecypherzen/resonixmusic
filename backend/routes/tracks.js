@@ -143,4 +143,44 @@ router.get(
   ],
   getTrackDetails,
 );
+
+router.get(
+  '/:id/stream',
+  [
+    param('id')
+      .notEmpty()
+      .withMessage('missing track id')
+      .isAlphanumeric()
+      .withMessage('can only be alphanumeric')
+      .escape(),
+    query('chunck_size')
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('missing value')
+      .isNumeric()
+      .withMessage('expects a number')
+      .escape(),
+    query(['no_redirect', 'preview',
+      'skip_check', 'skip_play_count'])
+      .optional()
+      .trim()
+      .notEmpty()
+      .isString()
+      .withMessage('expects value of type string')
+      .isBoolean({ strict: false })
+      .isIn(['true', 'false'])
+      .withMessage('expects true/false')
+      .escape(),
+    query(['api_key', 'user_data', 'user_id'])
+      .optional()
+      .notEmpty()
+      .isString()
+      .withMessage('expects value of type string')
+      .withMessage('missing value')
+      .escape(),
+  ],
+  streamTrack,
+);
+
 export default router;
