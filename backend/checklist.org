@@ -1,4 +1,4 @@
-#+title: Resonix Backend Tasks Checklist [0%]
+ #+ title: Resonix Backend Tasks Checklist [0%]
 * API Routes [0%]
 - [-] Playlists: filter by `stream` permission [50%]
   - [X] Trending with parameters [100%]
@@ -32,7 +32,7 @@
     - [ ] Get playlist tracks by id
     - [ ] Search playlist by query with filters
     - [ ] Pagination
-- [-] Tracks [42%]
+- [-] Tracks [57%]
   - [X] Trending tracks [100%]
     - [X] filter out unstreamable tracks (is_streamable)
     - [X] filter by genre (optional)
@@ -70,9 +70,9 @@
   - [X] Get track by id [100%]
     - [X] Validate track id [100%]
       - [X] can only be alphanumeric
-  - [ ] Stream track [0%]
-    - [ ] Validate app_name
-    - [ ] Validate right headers
+  - [X] Stream track [100%]
+    - [X] Validate right headers
+    - [X] Che
   - [ ] Download [0%]
     - [ ] Validate filename - for downloading (optional)
     - [ ] Validate param 'original' (optional)
