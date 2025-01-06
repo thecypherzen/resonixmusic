@@ -6,7 +6,8 @@
   html {
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #181818;
+  background: rgb(0,0,0);
+  background: linear-gradient(149deg, rgb(10, 10, 10) 35%, rgb(0, 0, 0) 100%);
   font-family: 'Inter', sans-serif;
   text-rendering: optimizeLegibility;
   
@@ -21,7 +22,6 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  place-items: center;
 }
 
 h1 {
@@ -30,7 +30,7 @@ h1 {
 }
 
 button {
-  padding: 0.6em 1.2em;
+  
   border: 1px solid transparent;
   border-radius: 8px;
   background-color: #0ea5e9;
@@ -40,10 +40,46 @@ button {
   font-size: 1em;
   font-weight: 500;
 }
-button:hover {
-  border-color: #424242;
-}
+
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: none;
+}
+
+button:hover {
+  transition: border-color 0.25s;
+}
+
+/* Custom Scrollbar Styles */
+
+/* Webkit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+  height: 8px; /* Height of the scrollbar (for horizontal scrollbars) */
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 100px; /* Rounded corners for the track */
+  background: #1F1F22; /* Background of the scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid #1F1F22; /* Adds space around the thumb */
+  border-radius: 100px; /* Rounded corners for the thumb */
+  background: #575757; /* Color of the scrollbar thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #fff; /* Color of the scrollbar thumb on hover */
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin; /* Makes the scrollbar thinner */
+  scrollbar-color: #575757 #111111; /* Thumb color and track color */
+}
+
+/* Optional: Customize the scrollbar corner (useful for overflow: scroll elements) */
+::-webkit-scrollbar-corner {
+  background: #1F1F22; /* Background color of the scrollbar corner */
 }
