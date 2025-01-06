@@ -5,7 +5,7 @@ import getHostUrl from './getHostUrl';
 class LocalRequest {
   constructor() {
     this.client = axios.create({
-      timeout: 10000,
+      timeout: 15000,
       params: {
         app_name: 'Resonixmusic',
       },
