@@ -22,7 +22,12 @@ class ErrorBoundary extends Component {
           <div className="flex flex-col w-full m-auto gap-3 text-neutral-600">
             <MdErrorOutline size={102} className='m-auto' />
             <h1 className='text-2xl m-auto'>Oops... Something went wrong!</h1>
-            <p className='text-sm m-auto'>Press <span className='font-extrabold'>CTRL + R</span> to Reload the browser</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="text-sm mt-4 px-8 py-2 bg-transparent border rounded-full border-neutral-700 hover:bg-neutral-800 transition-all duration-200"
+            >
+              Retry
+            </button>
           </div>
         </div>
       );
