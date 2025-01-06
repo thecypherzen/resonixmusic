@@ -5,7 +5,7 @@ import {
   playlistRouter,
   tracksRouter,
   userRouter
-} from './routes';
+} from './routes/index.js';
 
 const app = express();
 const RXSERVER = process.env.RXSERVER || 5005;

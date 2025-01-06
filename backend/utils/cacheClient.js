@@ -1,5 +1,5 @@
 import { createClient } from 'redis';
-import { CACHE_EXP_SECS } from '../defaults';
+import { CACHE_EXP_SECS } from '../defaults/index.js';
 
 class CacheClient {
   constructor() {

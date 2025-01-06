@@ -1,10 +1,10 @@
-import { filterBy, sortBy } from './filters';
-import getPageFromArray from './getPageFrom';
-import globalErrorHandler, { validateQueryParams } from './errorHandlers';
-import { requestClient } from './config';
-import { requestClient as requestClientFromRequestClient } from './requestClient';
-import { cacheClient, cacheClientReady } from './cacheClient';
-import getHostUrl from './getHostUrl';
+import { filterBy, sortBy } from './filters.js';
+import getPageFromArray from './getPageFrom.js';
+import { globalErrorHandler, validateQueryParams } from './errorHandlers.js';
+import { requestClient } from './config.js';
+import { requestClient as requestClientFromRequestClient } from './requestClient.js';
+import { cacheClient, cacheClientReady } from './cacheClient.js';
+import getHostUrl from './getHostUrl.js';
 
 export {
   cacheClient,
