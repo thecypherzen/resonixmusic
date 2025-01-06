@@ -21,7 +21,11 @@ export const globalErrorHandler = (err, res) => {
     return res.status(500).json({
       error: 'Internal Server Error',
       message: err.message || 'An unexpected error occurred',
-      status: 500
+      status: 500,
+      details: {
+        message: err.message,
+        stack: err.stack
+      }
     });
   }
 };

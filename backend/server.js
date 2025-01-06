@@ -1,10 +1,29 @@
 import express from 'express';
 import cors from 'cors';
-import { playlistRouter, trackRouter, userRouter } from './routes/index.js';
 import 'dotenv/config';
+import {
+  playlistRouter,
+  tracksRouter,
+  userRouter
+} from './routes';
 
 const app = express();
 const RXSERVER = process.env.RXSERVER || 5005;
+
+// Ensure only supported routes are treated
+app.use('/', (req, res, next) => {
+  const acceptedRoutes = [
+    'playlists', 'tracks', 'users',
+  ];
+  const requestRoutes = req.url.split('/').filter((val) => val);
+  if (requestRoutes.length < 2) {
+    return res.status(403).send({ error: 'route is not supported' });
+  }
+  if (!acceptedRoutes.some((path) => path === requestRoutes[0])) {
+    return res.status(403).send({ end: 'route is not supported' });
+  }
+  return next();
+});
 
 // CORS middleware
 app.use(cors({
@@ -19,7 +38,7 @@ app.set('query parser', 'extended');
 
 // Routes
 app.use('/playlists', playlistRouter);
-app.use('/tracks', trackRouter);
+app.use('/tracks', tracksRouter);
 app.use('/users', userRouter);
 
 // Error handling middleware
