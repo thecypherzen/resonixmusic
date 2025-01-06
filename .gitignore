@@ -1,1 +1,5 @@
 *.rdb
+*.txt
+node_modules
+test.js
+*package*
