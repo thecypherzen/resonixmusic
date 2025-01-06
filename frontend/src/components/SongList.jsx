@@ -11,11 +11,11 @@ const SongList = () => {
         <p className="text-sm text-neutral-400">{queue.length} in queue</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-4 mb-[6rem] divide-y divide-neutral-800 divide-solid">
+      <div className="flex-1 overflow-y-auto space-y-4 divide-y divide-neutral-800 divide-solid">
         {queue.map((track, index) => (
           <div
             key={track.id || index}
-            className="flex items-center space-x-4 py-2  cursor-pointer transition-all"
+            className="flex items-center space-x-4 py-2  cursor-pointer transition-all hover:opacity-50"
             onClick={() => handleTrackSelect(track, queue)}
           >
             <img

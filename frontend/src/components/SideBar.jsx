@@ -18,7 +18,7 @@ const CreatePlaylistModal = ({ isOpen, onClose, onSubmit }) => {
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100]">
-      <div className="bg-[#121212] w-[30rem] p-6 shadow-2xl border border-neutral-700/50">
+      <div className="bg-[#121212] w-[30rem] p-6 shadow-2xl border rounded-xl border-neutral-700/50">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold">Create playlist</h2>
           <button

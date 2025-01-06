@@ -2,6 +2,7 @@ import React from 'react';
 import { usePlayer } from '../context/PlayerContext';
 import { useNavigate } from 'react-router-dom';
 import SongList from './SongList';
+import { FaPlay, FaPause } from "react-icons/fa6";
 
 const SongDetails = () => {
   const { currentTrack, isPlaying, togglePlay, queue } = usePlayer();
@@ -19,7 +20,7 @@ const SongDetails = () => {
   }
 
   return (
-    <div className="flex ml-auto h-[calc(100vh-8rem)]">
+    <div className="flex ml-auto h-[calc(100vh-13rem)]">
       {/* Left side - Song Details */}
       <div className="flex-grow px-8 flex flex-col items-center justify-center">
         <div className="flex flex-col items-center max-w-2xl">
@@ -34,7 +35,7 @@ const SongDetails = () => {
               className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <span className="text-white text-6xl">
-                {isPlaying ? '⏸️' : '▶️'}
+                {isPlaying ? <FaPause className='bg-transparent' /> : <FaPlay className='bg-transparent' />}
               </span>
             </button>
           </div>
@@ -42,7 +43,7 @@ const SongDetails = () => {
       </div>
 
       {/* Right side - Queue */}
-      <div className="w-[400px] ">
+      <div className="w-[30rem] ">
         <SongList />
       </div>
     </div>
