@@ -1,16 +1,19 @@
 import axios from 'axios';
 
 export default async function getHostUrl() {
-  try {
-    const response = await axios.get('https://api.audius.co');
-    if (!response?.data?.data?.[0]) {
-      throw new Error('No Audius hosts available');
-    }
-    
-    // Return the first available host
-    return response.data.data[0];
-  } catch (error) {
-    console.error('Failed to get Audius host:', error);
-    throw error;
+  const response = await axios.get('https://api.audius.co/');
+  if (!response?.data.data.length) {
+    return { failed: true };
+  }
+  const data = response.data.data;
+  const max = data.length
+  let i = 0;
+  return {
+    next() {
+      if (i < 0 || i >= max) {
+        i = 0;
+      }
+      return { value: data[i], done: false }
+    },
   }
 }

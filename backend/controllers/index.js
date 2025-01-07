@@ -5,7 +5,6 @@ import {
   searchPlaylists,
 } from './playlistControllers.js';
 
-import { getTrendingTracks } from './trackControllers.js';
 import { getTopArtists } from './userControllers.js';
 
 import {
@@ -15,7 +14,7 @@ import {
   getTrendingTracks,
   searchTracks,
   streamTrack,
-} from './tracksControllers';
+} from './tracksControllers.js';
 
 export {
   downloadTrack,
@@ -26,9 +25,7 @@ export {
   getTrendingPlaylists,
   getTrendingTracks,
   searchPlaylists,
-  tracks
   searchTracks,
   streamTrack,
-  getTrendingTracks,
   getTopArtists,
 };

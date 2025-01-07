@@ -7,7 +7,7 @@ import {
   getTrendingTracks,
   searchTracks,
   streamTrack,
-} from '../controllers';
+} from '../controllers/index.js';
 
 const router = Router();
 router.use(json());

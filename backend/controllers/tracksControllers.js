@@ -10,11 +10,11 @@ import {
   globalErrorHandler,
   requestClient,
   sortBy,
-} from '../utils';
+} from '../utils/index.js';
 import {
   AUDIO_CHUNK_SIZE,
   CACHE_EXP_SECS,
-} from '../defaults';
+} from '../defaults/index.js';
 
 const audioIsComplete = (header) => {
   console.log('verifying if complete in:', header);
