@@ -31,7 +31,6 @@ class LocalRequest {
           }
           geturl();
         }
-        console.log('RESULT:\n\t', result,'\n');
         this.client.defaults.baseURL = `${result.next().value}/v1`;
         console.log('hostname set to',
           this.client.defaults.baseURL, `after ${count}s`);
