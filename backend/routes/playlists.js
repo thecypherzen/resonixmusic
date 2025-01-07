@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { query } from 'express-validator';
+import { param, query } from 'express-validator';
+
 import {
   getPlaylistById,
   getPlaylistTracks,

@@ -1,7 +1,7 @@
 // defines some reusable configurations
 import axios from 'axios';
 import getHostUrl from './getHostUrl.js';
-
+import { sdk } from '@audius/sdk';
 class LocalRequest {
   constructor() {
     this.client = axios.create({
@@ -49,12 +49,28 @@ class LocalRequest {
   }
 }
 
+class AudiusClient {
+  constructor() {
+    this.client = sdk({
+      apiKey: process.env.AUDIUS_API_KEY,
+      apiSecret: process.env.AUDIUS_API_SECRET,
+    });
+  }
+
+  async getTrack(trackId) {
+    const track = await this.client.tracks.getTrack({ trackId });
+    console.log('track fecthced', track);
+    return track;
+  }
+}
+
+const audius = null;
+// const audius = new AudiusClient();
 const requestClient = new LocalRequest();
 requestClient.init();
 
-const nothing = null;
-
 export {
+  audius,
   requestClient,
-  nothing,
 };
+
