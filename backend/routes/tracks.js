@@ -11,6 +11,8 @@ import {
 
 const router = Router();
 router.use(json());
+
+// Routes definition
 router.get(
   '/trending',
   [

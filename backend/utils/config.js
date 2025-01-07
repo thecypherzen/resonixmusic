@@ -2,7 +2,6 @@
 import axios from 'axios';
 import getHostUrl from './getHostUrl.js';
 import { sdk } from '@audius/sdk';
-
 class LocalRequest {
   constructor() {
     this.client = axios.create({
@@ -22,19 +21,28 @@ class LocalRequest {
     let count = 0;
     const geturl = () => {
       setTimeout(async () => {
-        count += 1;
-        const result = await getHostUrl();
-        if (result.failed) {
+        try {
+          count += 1;
+          const result = await getHostUrl(); // Assume this returns an object with a 'url' property
+
+          if (result.failed) {
+            if (!this.isReady && count >= 10) {
+              console.log('count: ', count);
+              throw new Error('failed to fetch resonix hosturl');
+            }
+            geturl();
+          } else {
+            this.client.defaults.baseURL = `${result.url}/v1`; // Access the 'url' property
+            console.log('hostname set to', this.client.defaults.baseURL, `after ${count}s`);
+            return true;
+          }
+        } catch (error) {
+          console.error('Error fetching host URL:', error);
           if (!this.isReady && count >= 10) {
-            console.log('count: ', count);
             throw new Error('failed to fetch resonix hosturl');
           }
           geturl();
         }
-        this.client.defaults.baseURL = `${result.next().value}/v1`;
-        console.log('hostname set to',
-          this.client.defaults.baseURL, `after ${count}s`);
-        return true;
       }, 1000);
     };
     geturl();
@@ -65,3 +73,4 @@ export {
   audius,
   requestClient,
 };
+
