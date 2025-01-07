@@ -9,7 +9,15 @@
 
 const AUDIO_CHUNK_SIZE = Math.ceil(2 ** 20);
 const CACHE_EXP_SECS = 24 * 7 * 3600;
+const PAGE_SIZE = 10;
+const TIMEOUT = 15000;
+const MIN_RETRIES = 3;
+const MAX_RETRIES = 10;
 export {
   AUDIO_CHUNK_SIZE,
   CACHE_EXP_SECS,
+  MIN_RETRIES,
+  MAX_RETRIES,
+  PAGE_SIZE,
+  TIMEOUT,
 };

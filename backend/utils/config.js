@@ -2,10 +2,15 @@
 import axios from 'axios';
 import getHostUrl from './getHostUrl.js';
 import { sdk } from '@audius/sdk';
+import {
+  MAX_RETRIES,
+  TIMEOUT
+} from '../defaults/index.js';
+
 class LocalRequest {
   constructor() {
     this.client = axios.create({
-      timeout: 15000,
+      timeout: TIMEOUT,
       params: {
         app_name: 'Resonixmusic',
       },
@@ -13,6 +18,20 @@ class LocalRequest {
     this.client.defaults.baseURL = null;
   }
 
+  #hosts = null;
+
+  get host() {
+    return this.client.defaults.baseURL ?? null;
+  }
+
+  async #setHosts() {
+    const itr = await getHostUrl();
+    if (!itr.error) {
+      this.#hosts = itr;
+      return { error: false }
+    }
+    return { ...itr };
+  }
   get isReady() {
     return this.client.defaults.baseURL !== null;
   }
@@ -23,25 +42,34 @@ class LocalRequest {
       setTimeout(async () => {
         try {
           count += 1;
-          const result = await getHostUrl(); // Assume this returns an object with a 'url' property
-
-          if (result.failed) {
-            if (!this.isReady && count >= 10) {
-              console.log('count: ', count);
-              throw new Error('failed to fetch resonix hosturl');
+          if (!this.#hosts) {
+            const setHosts  = await this.#setHosts();
+            if (setHosts.error) {
+              if (count >= MAX_RETRIES) {
+                throw new Error(`[FATAL] Failed to fetch hosturl after ${count} attempts`);
+              }
+              console.log(`Connection failed. Retrying...${count}`);
+              geturl();
+              return;
             }
-            geturl();
-          } else {
-            this.client.defaults.baseURL = `${result.url}/v1`; // Access the 'url' property
-            console.log('hostname set to', this.client.defaults.baseURL, `after ${count}s`);
-            return true;
           }
+          // Access the current next-available url
+          this.client.defaults.baseURL = `${this.#hosts.next().value}/v1`;
+          console.log(
+            '[SUCCESS] Connected to',
+            this.client.defaults.baseURL,
+            `after ${count} attempt ${count > 1 ? 's' : ''}`
+          );
+          return { error: false };
         } catch (error) {
-          console.error('Error fetching host URL:', error);
-          if (!this.isReady && count >= 10) {
-            throw new Error('failed to fetch resonix hosturl');
+          console.log(error.message);
+          if (!this.isReady && count >= MAX_RETRIES) {
+            return ({
+              error: true,
+              message: error.message,
+              details: { stack: error?.stack ?? null }
+            });
           }
-          geturl();
         }
       }, 1000);
     };
@@ -59,7 +87,7 @@ class AudiusClient {
 
   async getTrack(trackId) {
     const track = await this.client.tracks.getTrack({ trackId });
-    console.log('track fecthced', track);
+    console.log('track fectched', track);
     return track;
   }
 }

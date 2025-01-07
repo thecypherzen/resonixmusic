@@ -16,8 +16,8 @@ import {
   CACHE_EXP_SECS,
 } from '../defaults/index.js';
 
+
 const audioIsComplete = (header) => {
-  console.log('verifying if complete in:', header);
   const [start, end] = header
         .replace(/^bytes (\d+)-/, '')
         .split('/').map(Number);
@@ -89,7 +89,6 @@ const getTrendingTracks = async (req, res) => {
       config.params[param] = validParams[param];
     }
   }
-
   try {
     const response = await requestClient.client(config);
     // handle empty data set
@@ -113,6 +112,8 @@ const getTrendingTracks = async (req, res) => {
     });
     return res.send({
       page: `${pageResults.page}/${pageResults.max}`,
+      size: `${validParams.page_size}`,
+      total: `${streamableTracks.length}`,
       data: pageResults.data,
     });
   } catch(err) {
@@ -150,12 +151,23 @@ const searchTracks = async (req, res) => {
   try {
     let results = await requestClient.client(config);
     if (!results?.data?.data ?? null) {
-      res.send({ data: [] })
+      res.send({ page: '1/1', data: [] })
     }
     results = results.data.data;
     // filter out non-streamable values
     const streamables = filterBy.streamable(results);
-    return res.send({ data: streamables })
+    const pageResults = getPageFromArray({
+      page: validQueries.page,
+      pageSize: validQueries.page_size,
+      array: streamables,
+    });
+
+    return res.send({
+      page: `${pageResults.page}/${pageResults.max}`,
+      size: `${validQueries.page_size}`,
+      total: `${streamables.length}`,
+      data: pageResults.data,
+    });
   } catch (error) {
     return globalErrorHandler(error, res);
   }

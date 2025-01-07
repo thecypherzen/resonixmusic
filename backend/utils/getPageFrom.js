@@ -1,12 +1,13 @@
 // Extracts a page from an array of results
+import { PAGE_SIZE } from '../defaults/index.js';
 
 export default function getPageFrom({
   page, pageSize, array,
 }) {
   const tracksLength = array.length;
-  const pSize = parseInt(pageSize, 10);
+  const pSize = parseInt(pageSize, PAGE_SIZE);
   const maxPages = Math.ceil(tracksLength / pSize);
-  let p = parseInt(page, 10);
+  let p = parseInt(page, PAGE_SIZE);
   if (p > maxPages) {
     p = maxPages;
   }
