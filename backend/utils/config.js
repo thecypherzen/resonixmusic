@@ -86,9 +86,17 @@ class AudiusClient {
   }
 
   async getTrack(trackId) {
-    const track = await this.client.tracks.getTrack({ trackId });
-    console.log('track fectched', track);
-    return track;
+    try {
+      const track = await this.client.tracks.getTrack({ trackId });
+      console.log('track fectched', track);
+      return { error: false, track };
+    } catch (error) {
+      return {
+        error: true,
+        message: error.message,
+        stack: error.stack
+      };
+    }
   }
 }
 

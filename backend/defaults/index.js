@@ -7,17 +7,26 @@
  * => CACHE_EXP_SECS: expiry time (in seconds) for cached values.
  */
 
-const AUDIO_CHUNK_SIZE = Math.ceil(2 ** 20);
-const CACHE_EXP_SECS = 24 * 7 * 3600;
-const PAGE_SIZE = 10;
-const TIMEOUT = 15000;
-const MIN_RETRIES = 3;
-const MAX_RETRIES = 10;
+const AUDIO_CHUNK_SIZE = Math.ceil(2 ** 20),
+      CACHE_EXP_SECS = 24 * 7 * 3600,
+      JAM_CLIENT_ID = process.env.JAM_CLIENT_ID,
+      JAM_CLIENT_SECRET = process.env.JAM_CLIENT_SECRET,
+      MIN_PAGE_SIZE = 20,
+      MAX_PAGE_SIZE = 200,
+      MIN_TIMEOUT = 10000,
+      MIN_RETRIES = 5,
+      MAX_RETRIES = 10;
+
 export {
   AUDIO_CHUNK_SIZE,
   CACHE_EXP_SECS,
-  MIN_RETRIES,
+  JAM_CLIENT_ID,
+  JAM_CLIENT_SECRET,
+  MAX_PAGE_SIZE,
   MAX_RETRIES,
+  MAX_TIMEOUT,
+  MIN_PAGE_SIZE,
+  MIN_RETRIES,
+  MIN_TIMEOUT,
   PAGE_SIZE,
-  TIMEOUT,
 };
