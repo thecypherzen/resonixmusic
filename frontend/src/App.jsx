@@ -15,7 +15,8 @@ function App() {
       <PlayerProvider>
         <ErrorBoundary>
           <Routes>
-            <Route path="/" element={<WelcomeScreen />} />
+            <Route path="/" element={<MusicPlayer />} />
+            <Route path="/welcome" element={<WelcomeScreen />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
