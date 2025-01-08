@@ -205,7 +205,7 @@ const PlayerHome = () => {
   if (error) return <ErrorMessage message={error} />;
 
   return (
-    <div className='max-w-[60rem] min-h-screen flex flex-col mt-6 mx-16 gap-10'>
+    <div className='max-w-[60rem] min-h-screen flex flex-col mt-6 mx-16 gap-10 transition-all duration-300'>
       {/* Popular Artists Section */}
       <div className="flex flex-col mb-10 w-full">
         <div className='flex flex-row w-full mb-4 items-center'>
