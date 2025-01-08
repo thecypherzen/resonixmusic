@@ -6,7 +6,7 @@ import api from '../services/api';
 import { MdErrorOutline } from "react-icons/md";
 
 const PlayerHome = () => {
-  const { setCurrentTrack, setQueue } = usePlayer();
+  const { handleTrackSelect } = usePlayer();
   const navigate = useNavigate();
 
   // State for data
@@ -114,9 +114,10 @@ const PlayerHome = () => {
           artist: track.user?.name || "Unknown Artist",
           likes: `${Math.floor((track.play_count || 0) / 1000)}k Plays`,
           thumbnail: track.artwork?.["150x150"] || defaultThumbnail,
-          url: track.stream_url,
+          url: `https://discoveryprovider.audius.co/v1/tracks/${track.id}/stream`,
           duration: track.duration
         }));
+
         setTrendingSongs(transformedTracks);
       } catch (err) {
         console.error('Error in PlayerHome:', err);
@@ -144,29 +145,49 @@ const PlayerHome = () => {
 
   // Playback handlers
   const handlePlaySong = (song, index) => {
+    console.log('Playing song:', song); // Debug log
+
     const trackToPlay = {
       id: song.id,
       title: song.title,
       artist: song.artist,
       artwork: song.thumbnail,
-      url: song.url,
+      // Ensure URL is properly constructed
+      url: `https://discoveryprovider.audius.co/v1/tracks/${song.id}/stream`,
       duration: song.duration
     };
 
-    const remainingSongs = trendingSongs
+    console.log('Track to play:', trackToPlay); // Debug log
+
+    // Create remaining tracks array with proper URLs
+    const remainingTracks = trendingSongs
       .slice(index + 1)
       .map(track => ({
         id: track.id,
         title: track.title,
         artist: track.artist,
         artwork: track.thumbnail,
-        url: track.url,
+        url: `https://discoveryprovider.audius.co/v1/tracks/${track.id}/stream`,
         duration: track.duration
       }));
 
-    setCurrentTrack(trackToPlay);
-    setQueue(remainingSongs);
+    handleTrackSelect(trackToPlay, remainingTracks);
     navigate(`/song/${song.id}`);
+  };
+
+  const handlePlayAll = () => {
+    if (trendingSongs.length > 0) {
+      const firstTrack = trendingSongs[0];
+      const trackToPlay = {
+        id: firstTrack.id,
+        title: firstTrack.title,
+        artist: firstTrack.artist,
+        artwork: firstTrack.thumbnail,
+        url: firstTrack.url,
+        duration: firstTrack.duration
+      };
+      handleTrackSelect(trackToPlay, trendingSongs);
+    }
   };
 
   const handleArtistClick = (artist) => {
@@ -271,7 +292,7 @@ const PlayerHome = () => {
         <div className='flex flex-row w-full mb-4 items-center'>
           <p className='text-3xl font-extrabold'>Trending Songs</p>
           <div className='ml-auto flex gap-2 items-center transition-all duration-300'>
-            <button className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm">
+            <button onClick={handlePlayAll} className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm">
               Play all
             </button>
             <button
