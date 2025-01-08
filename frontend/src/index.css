@@ -84,27 +84,21 @@ button:hover {
   background: #1F1F22; /* Background color of the scrollbar corner */
 }
 
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-}
 
 input[type="range"]::-webkit-slider-thumb {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #08B2F0;
+  cursor: pointer;
   -webkit-appearance: none;
   appearance: none;
-  width: 12px;
-  height: 12px;
-  background: #ffffff;
-  border-radius: 50%;
-  cursor: pointer;
-  margin-top: -4px;
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-  height: 4px;
-  background: #4a4a4a;
-  border-radius: 2px;
+  height: 2px;
+  margin-top: -12px;
+  border-radius: 100px;
 }
 
 input[type="range"]:hover::-webkit-slider-thumb {
