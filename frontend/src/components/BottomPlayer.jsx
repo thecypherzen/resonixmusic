@@ -51,17 +51,17 @@ const BottomPlayer = () => {
   };
 
   return (
-    <div className='h-[7rem] fixed bottom-0 left-0 z-50 w-full bg-white-400 bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30 items-center'>
+    <div className='h-[7rem] fixed bottom-0 left-0 z-50 w-full bg-white-400 bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30 items-center justify-center'>
       <div className="flex mx-2 gap-10">
         {/* Track info */}
-        <div className="flex flex-row items-center m-4 w-[40rem] gap-4">
+        <div className="flex flex-row items-center m-4 w-[25rem] h-[4rem] gap-4">
           <img
             src={currentTrack.artwork || '/default-artwork.png'}
             alt='Thumbnail'
             className="w-[4rem] h-[4rem] rounded-xl object-cover"
           />
           <div className="flex flex-col text-[0.875rem] font-semibold w-full">
-            <p className='text-lg'>{truncateTitle(currentTrack.title, 25)}</p>
+            <p className='text-lg'>{truncateTitle(currentTrack.title, 12)}</p>
             <p className='text-neutral-500'>{currentTrack.artist}</p>
           </div>
         </div>
@@ -83,11 +83,11 @@ const BottomPlayer = () => {
             </button>
             <button
               onClick={togglePlay}
-              className='p-1 rounded-full w-[2.7rem] h-[2.7rem] bg-white hover:bg-[#08B2F0] transition-colors duration-200'
+              className='bg-transparent transition-colors duration-200'
             >
               {isPlaying
-                ? <FaPause className='w-[1.25rem] h-[1.425rem] mx-auto my-auto text-black' />
-                : <FaPlay className='w-[1.25rem] h-[1.425rem] mx-auto my-auto text-black' />
+                ? <FaPause className=' mx-auto my-auto text-white hover:text-[#08b2f0] w-[1.7rem] h-[1.7rem]' />
+                : <FaPlay className=' mx-auto my-auto text-white hover:text-[#08b2f0] w-[1.7rem] h-[1.7rem]' />
               }
             </button>
             <button
