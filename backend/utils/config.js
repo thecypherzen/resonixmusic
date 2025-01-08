@@ -22,12 +22,15 @@ class RequestClient {
 
   get url() { return this.#url }
 
-  init() {
-    this.client.defaults.baseURL = this.#url;
+  get isReady(){
+    return this.client.defaults.baseURL != null;
   }
 
-  isReady(){
-    return this.client.defaults.baseURL != null;
+  init() {
+    this.client.defaults.baseURL = this.#url;
+    if (this.isReady) {
+      console.log(`[INIT SUCCESS]: HostUrl set to ${this.url}`);
+    }
   }
 }
 const nothing = null;

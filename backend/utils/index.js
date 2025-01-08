@@ -4,12 +4,11 @@ import {
   globalErrorHandler,
   validateQueryParams,
 } from './errorHandlers.js';
-import { audius, requestClient } from './config.js';
+import { requestClient } from './config.js';
 import { cacheClient, cacheClientReady } from './cacheClient.js';
 import getHostUrl from './getHostUrl.js';
 
 export {
-  audius,
   cacheClient,
   cacheClientReady,
   filterBy,

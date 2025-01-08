@@ -1,5 +1,7 @@
 // Extracts a page from an array of results
-import { PAGE_SIZE } from '../defaults/index.js';
+import {
+  MIN_PAGE_SIZE as PAGE_SIZE
+} from '../defaults/index.js';
 
 export default function getPageFrom({
   page, pageSize, array,

@@ -5,8 +5,6 @@ import {
   searchPlaylists,
 } from './playlistControllers.js';
 
-import { getTopArtists } from './userControllers.js';
-
 import {
   downloadTrack,
   getTrackById,
@@ -16,16 +14,29 @@ import {
   streamTrack,
 } from './tracksControllers.js';
 
+import {
+  download as downloadAlbums,
+  getInfo as getAlbumsInfo,
+  getTracks as getAlbumTracks,
+} from './albumsControllers.js'
+
 export {
+  // albums
+  downloadAlbums,
+  getAlbumsInfo,
+  getAlbumTracks,
+
+  // tracks
   downloadTrack,
-  getPlaylistById,
-  getPlaylistTracks,
   getTrackById,
   getTrackDetails,
+  searchTracks,
+  streamTrack,
+
+  // playlists
+  getPlaylistById,
+  getPlaylistTracks,
   getTrendingPlaylists,
   getTrendingTracks,
   searchPlaylists,
-  searchTracks,
-  streamTrack,
-  getTopArtists,
-};
+ };
