@@ -21,17 +21,20 @@ const BottomPlayer = () => {
   } = usePlayer();
 
   const formatTime = (time) => {
+    if (!time) return '0:00';
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const handleProgressChange = (e) => {
-    seekTo(parseFloat(e.target.value));
+    const value = parseFloat(e.target.value);
+    seekTo(value);
   };
 
   const handleVolumeChange = (e) => {
-    setVolume(parseInt(e.target.value));
+    const value = parseInt(e.target.value, 10);
+    setVolume(value);
   };
 
   const getVolumeIcon = () => {
@@ -42,16 +45,23 @@ const BottomPlayer = () => {
 
   if (!currentTrack) return null;
 
-  const truncateTitle = (title, maxLength) => title.length > maxLength ? title.slice(0, maxLength) + '...' : title;
+  const truncateTitle = (title, maxLength) => {
+    if (!title) return '';
+    return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
+  };
 
   return (
     <div className='h-[7rem] fixed bottom-0 left-0 z-50 w-full bg-white-400 bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30 items-center'>
       <div className="flex mx-2 gap-10">
         {/* Track info */}
-        <div className="flex flex-row items-center m-4 w-[25rem] gap-4">
-          <img src={currentTrack.artwork} alt='Thumbnail' className="w-[4rem] h-[4rem] rounded-full" />
+        <div className="flex flex-row items-center m-4 w-[40rem] gap-4">
+          <img
+            src={currentTrack.artwork || '/default-artwork.png'}
+            alt='Thumbnail'
+            className="w-[4rem] h-[4rem] rounded-xl object-cover"
+          />
           <div className="flex flex-col text-[0.875rem] font-semibold w-full">
-            <p className='text-lg'>{truncateTitle(currentTrack.title, 12)}</p>
+            <p className='text-lg'>{truncateTitle(currentTrack.title, 25)}</p>
             <p className='text-neutral-500'>{currentTrack.artist}</p>
           </div>
         </div>
@@ -59,37 +69,57 @@ const BottomPlayer = () => {
         {/* Playback controls */}
         <div className="flex flex-col w-full mx-auto gap-3 content-center my-auto pt-4">
           <div className="flex flex-row gap-6 items-center mx-auto">
-            <button onClick={toggleShuffle} className={`bg-transparent ${shuffle ? 'text-[#08B2F0]' : ''}`}>
+            <button
+              onClick={toggleShuffle}
+              className={`bg-transparent hover:text-[#08B2F0] transition-colors ${shuffle ? 'text-[#08B2F0]' : ''}`}
+            >
               <FaShuffle className='w-[0.875rem] h-[0.875rem]' />
             </button>
-            <button onClick={playPrevious} className='bg-transparent'>
+            <button
+              onClick={playPrevious}
+              className='bg-transparent hover:text-[#08B2F0] transition-colors'
+            >
               <FaBackwardStep className='w-[1.3rem] h-[1.3rem]' />
             </button>
-            <button onClick={togglePlay} className='p-1 rounded-full w-[2.7rem] h-[2.7rem] bg-transparent transition-colors 0.25s'>
-              {isPlaying ?
-                <FaPause className='w-[1.25rem] h-[1.425rem] mx-auto my-auto' /> :
-                <FaPlay className='w-[1.25rem] h-[1.425rem] mx-auto my-auto' />
+            <button
+              onClick={togglePlay}
+              className='p-1 rounded-full w-[2.7rem] h-[2.7rem] bg-white hover:bg-[#08B2F0] transition-colors duration-200'
+            >
+              {isPlaying
+                ? <FaPause className='w-[1.25rem] h-[1.425rem] mx-auto my-auto text-black' />
+                : <FaPlay className='w-[1.25rem] h-[1.425rem] mx-auto my-auto text-black' />
               }
             </button>
-            <button onClick={playNext} className='bg-transparent'>
+            <button
+              onClick={playNext}
+              className='bg-transparent hover:text-[#08B2F0] transition-colors'
+            >
               <FaForwardStep className='w-[1.3rem] h-[1.3rem]' />
             </button>
-            <button onClick={toggleRepeat} className={`bg-transparent ${repeat !== 'none' ? 'text-[#08B2F0]' : ''}`}>
+            <button
+              onClick={toggleRepeat}
+              className={`bg-transparent hover:text-[#08B2F0] transition-colors ${repeat !== 'none' ? 'text-[#08B2F0]' : ''}`}
+            >
               <FaRepeat className='w-[0.875rem] h-[0.875rem]' />
             </button>
           </div>
 
           {/* Progress bar */}
           <div className="flex flex-row gap-2 items-center">
-            <p className="text-neutral-400 text-xs">{formatTime(currentTime)}</p>
+            <span className="text-neutral-400 text-xs min-w-[40px]">
+              {formatTime(currentTime)}
+            </span>
             <input
               type="range"
-              value={currentTime}
-              max={duration}
+              min="0"
+              max={duration || 100}
+              value={currentTime || 0}
               onChange={handleProgressChange}
-              className="w-full h-1.5 rounded-full bg-white cursor-pointer"
+              className="w-full h-1.5 rounded-full bg-neutral-600 cursor-pointer"
             />
-            <p className="text-neutral-400 text-xs">{formatTime(duration)}</p>
+            <span className="text-neutral-400 text-xs min-w-[40px]">
+              {formatTime(duration)}
+            </span>
           </div>
         </div>
 
@@ -100,9 +130,10 @@ const BottomPlayer = () => {
             type="range"
             value={volume}
             onChange={handleVolumeChange}
-            className='w-full h-1.5 rounded-full bg-white cursor-pointer'
+            className='w-full h-1.5 rounded-full bg-neutral-600 cursor-pointer'
             min="0"
             max="100"
+            step="1"
           />
         </div>
       </div>
