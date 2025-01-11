@@ -123,10 +123,6 @@ const STATUS_CODES = {
     code: 500,
     message: `${APP} request client encountered an error`,
   },
-
-
-
-
 }
 
 const APIS = { jamendo: 'jamendo' },
@@ -141,7 +137,7 @@ const APIS = { jamendo: 'jamendo' },
       },
       MIN_PAGE_SIZE = 20,
       MAX_PAGE_SIZE = 200,
-      RXBE_PORT = process.env.RXBE_PORT || 5005,
+      RXBE_PORT = process.env.RXBE_PORT || 5001,
       TIMEOUT = 500,
       MIN_RETRIES = 5,
       MAX_RETRIES = 10;

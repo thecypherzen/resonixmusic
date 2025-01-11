@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import swaggerDocs from './utils/swagger.js';
 import {
   albumsRouter,
   playlistRouter,
@@ -16,7 +17,7 @@ const app = express();
 // Ensure only supported routes are treated
 app.use('/', (req, res, next) => {
   const acceptedRoutes = [
-    'albums', 'artists', 'feeds',
+    'albums', 'artists', 'docs', 'feeds',
     'playlists', 'radios', 'reviews',
     'tracks', 'users',
   ];
@@ -46,14 +47,6 @@ app.use(cors({
 app.use(express.json());
 // - query-parser setting
 app.set('query parser', 'extended');
-// Error catching
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    error: 'Something broke!',
-    message: err.message
-  });
-});
 
 // Routers
 app.use('/albums', albumsRouter);
@@ -68,8 +61,9 @@ app.get('/health', (req, res) => {
 
 
 // Global listener
-app.listen(RXBE_PORT, () => {
+app.listen(RXBE_PORT, '0.0.0.0', () => {
   console.log(`Resonix Server listening on port ${RXBE_PORT}`);
+  swaggerDocs(app);
 });
 
 // Events
