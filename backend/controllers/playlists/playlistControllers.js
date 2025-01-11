@@ -1,4 +1,7 @@
-import { globalErrorHandler, requestClient } from '../utils/index.js';
+import {
+  globalErrorHandler,
+  requestClient,
+} from '../../utils/index.js';
 
 export const getPlaylistById = async (req, res) => {
   const config = {

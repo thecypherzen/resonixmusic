@@ -6,7 +6,7 @@ import {
   getPlaylistTracks,
   getTrendingPlaylists,
   searchPlaylists,
-} from '../controllers/playlistControllers.js';
+} from '../controllers/index.js';
 
 const router = Router();
 

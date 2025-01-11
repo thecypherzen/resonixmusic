@@ -10,11 +10,11 @@ import {
   globalErrorHandler,
   requestClient,
   sortBy,
-} from '../utils/index.js';
+} from '../../utils/index.js';
 import {
   AUDIO_CHUNK_SIZE,
   CACHE_EXP_SECS,
-} from '../defaults/index.js';
+} from '../../defaults/index.js';
 
 
 const audioIsComplete = (header) => {

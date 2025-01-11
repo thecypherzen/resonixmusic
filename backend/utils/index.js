@@ -4,7 +4,7 @@ import {
   globalErrorHandler,
   validateQueryParams,
 } from './errorHandlers.js';
-import { requestClient } from './config.js';
+import { requestClient } from './requestClient.js';
 import { cacheClient, cacheClientReady } from './cacheClient.js';
 import getHostUrl from './getHostUrl.js';
 

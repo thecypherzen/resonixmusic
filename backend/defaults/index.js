@@ -7,6 +7,7 @@
  * => CACHE_EXP_SECS: expiry time (in seconds) for cached values.
  */
 
+const APP = 'ResonixMusic';
 const RESPONSE_CODES = {
   0: {
     code: 0,
@@ -61,6 +62,73 @@ const RESPONSE_CODES = {
   }
 };
 
+const COLOURS = {
+  red: '\x1b[31m',
+  green: '\x1b[32m',
+  blue: '\x1b[33m',
+  yellow: '\x1b[34m',
+  normal: '\x1b[0m',
+};
+
+const STATUS_CODES = {
+  ETIMEDOUT: {
+    code: 408,
+    message: `${APP} reequest timed out`,
+  },
+  ENETUNREACH: {
+    code: 502,
+    message: `${APP} was unable to connect. Check internet`,
+  },
+  ENOTFOUND: {
+    code: 502,
+    message: `${APP} could not resolve host`,
+  },
+  ECONNABORTED: {
+    code: 408,
+    message: `${APP} upstream server took too long to respond`,
+  },
+  ECONNREFUSED: {
+    code: 503,
+    message: `${APP} upstream server unavailable`,
+  },
+  ERR_NETWORK: {
+    code: 500,
+    message: `${APP} request client encountered or received an error while processing request`,
+  },
+  ERR_BAD_RESPONSE: {
+    code: 502,
+    message: `${APP} request client received a bad response`,
+  },
+  ERR_BAD_REQUEST: {
+    code: 400,
+    message: `${APP} request client received a bad request`,
+  },
+  EAI_AGAIN: {
+    code: 503,
+    message: `${APP} upstream server unavailable`,
+  },
+  ERR_FR_TOO_MANY_REDIRECTS: {
+    code: 310,
+    message: `Too many redirects were followed by ${APP} request client`,
+  },
+  ERR_DEPRECATED: {
+    code: 400,
+    message: `Requested function deprecated`,
+  },
+  ERR_INVALID_URL: {
+    code: 400,
+    message: `${APP} request client received a bad url`,
+  },
+  ERR_UNKNOWN: {
+    code: 500,
+    message: `${APP} request client encountered an error`,
+  },
+
+
+
+
+}
+
 const APIS = { jamendo: 'jamendo' },
       AUDIO_CHUNK_SIZE = Math.ceil(2 ** 20),
       CACHE_EXP_SECS = 24 * 7 * 3600,
@@ -74,13 +142,14 @@ const APIS = { jamendo: 'jamendo' },
       MIN_PAGE_SIZE = 20,
       MAX_PAGE_SIZE = 200,
       RXBE_PORT = process.env.RXBE_PORT || 5005,
-      TIMEOUT = 10000,
+      TIMEOUT = 500,
       MIN_RETRIES = 5,
       MAX_RETRIES = 10;
 
 export {
   AUDIO_CHUNK_SIZE,
   CACHE_EXP_SECS,
+  COLOURS,
   JAMENDO,
   MAX_PAGE_SIZE,
   MAX_RETRIES,
@@ -88,5 +157,6 @@ export {
   MIN_RETRIES,
   RESPONSE_CODES,
   RXBE_PORT,
+  STATUS_CODES,
   TIMEOUT,
 };
