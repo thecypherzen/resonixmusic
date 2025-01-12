@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import swaggerDocs from './utils/swagger.js';
+import swaggerDocs from './utils/swagger/config.js';
 import {
   albumsRouter,
   playlistRouter,
@@ -17,8 +17,8 @@ const app = express();
 // Ensure only supported routes are treated
 app.use('/', (req, res, next) => {
   const acceptedRoutes = [
-    'albums', 'artists', 'docs', 'feeds',
-    'playlists', 'radios', 'reviews',
+    'albums', 'artists', 'docs', 'docs.json',
+    'feeds', 'playlists', 'radios', 'reviews',
     'tracks', 'users',
   ];
   const requestRoutes = req.url.split('/').filter((val) => val);
@@ -55,6 +55,18 @@ app.use('/tracks', tracksRouter);
 app.use('/users', userRouter);
 
 // Native routes
+/**
+ * @openapi
+ * /health:
+ *   get:
+ *     tags:
+ *       - Healthcheck
+ *     summary: Verify status of server
+ *     description: Checks if the api is alive an active. If alive, a json respons is sent back else, nothing.
+ *     responses:
+ *       200:
+ *         description: Resonix API is up and running.
+ */
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });

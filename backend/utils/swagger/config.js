@@ -1,12 +1,12 @@
 import swaggerJsdoc from  'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import version from '../package.json' assert { type: 'json' };
-import { RXBE_PORT } from '../defaults/index.js';
+import version from '../../package.json' assert { type: 'json' };
+import { RXBE_PORT } from '../../defaults/index.js';
 
 const options = {
   definition: {
     openapi: '3.1.0',
-    details: {
+    info: {
       title: 'ResonixMusic Public API Documentation',
       version: '1.0.0',
       description: 'Ineteract with ResonixMusic through our robust and public api',
@@ -16,7 +16,7 @@ const options = {
     `http://127.0.0.1:${RXBE_PORT}`,
   ],
   apis: [
-    '../routes/*.js',
+    './components.js', './routes/*.js', './server.js',
   ],
 }
 

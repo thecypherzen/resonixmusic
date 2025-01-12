@@ -137,7 +137,7 @@ const APIS = { jamendo: 'jamendo' },
       },
       MIN_PAGE_SIZE = 20,
       MAX_PAGE_SIZE = 200,
-      RXBE_PORT = process.env.RXBE_PORT || 5001,
+      RXBE_PORT = process.env.RXBE_PORT || 5000,
       TIMEOUT = 500,
       MIN_RETRIES = 5,
       MAX_RETRIES = 10;

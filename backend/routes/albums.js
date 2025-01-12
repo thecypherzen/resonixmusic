@@ -13,6 +13,17 @@ import {
 const router = Router();
 router.use(json());
 
+/**
+ * @openapi
+ * /albums:
+ *   get:
+ *     tags:
+ *       - Albums
+ *     description: fetches albums
+ *     responses:
+ *       200:
+ *         description: fetching is successful
+ */
 router.get(
   ['/'],
   [
