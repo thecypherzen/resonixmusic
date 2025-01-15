@@ -6,7 +6,6 @@
  *    audio file's chunk.
  * => CACHE_EXP_SECS: expiry time (in seconds) for cached values.
  */
-
 const APP = 'ResonixMusic';
 const RESPONSE_CODES = {
   0: {
@@ -125,6 +124,14 @@ const STATUS_CODES = {
   },
 }
 
+const PARAMS = {
+  full_count: 'fullcount',
+  date_between: 'datebetween',
+  image_size: 'imagesize',
+  audio_format: 'imagesize',
+  order_by: 'order',
+};
+
 const APIS = { jamendo: 'jamendo' },
       AUDIO_CHUNK_SIZE = Math.ceil(2 ** 20),
       CACHE_EXP_SECS = 24 * 7 * 3600,
@@ -151,6 +158,7 @@ export {
   MAX_RETRIES,
   MIN_PAGE_SIZE,
   MIN_RETRIES,
+  PARAMS,
   RESPONSE_CODES,
   RXBE_PORT,
   STATUS_CODES,
