@@ -16,7 +16,7 @@ const options = {
     `http://127.0.0.1:${RXBE_PORT}`,
   ],
   apis: [
-    './components.js', './routes/*.js', './server.js',
+    './utils/swagger/components.yaml', './routes/*.js', './server.js',
   ],
 }
 
