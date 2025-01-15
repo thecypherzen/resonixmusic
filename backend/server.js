@@ -21,15 +21,19 @@ app.use('/', (req, res, next) => {
     'feeds', 'playlists', 'radios', 'reviews',
     'tracks', 'users',
   ];
-  const requestRoutes = req.url.split('/').filter((val) => val);
+  const requestRoutes = req.url.split('/')
+                           .filter((val) => val)[0]
+                           .split('?')
+                           .filter((val) => val);
   if (!requestRoutes.length
       || !acceptedRoutes.some((path) => path === requestRoutes[0])) {
     return res.status(404).send({
       headers: {
         status: 'failed',
-        code: `${resCodes[22].code}`,
-        error_message: 'route is not supported',
+        code: resCodes[22].code,
+        error_message: resCodes[22].des,
         warning: '',
+        'x-took': '0ms'
       }
     });
   }
