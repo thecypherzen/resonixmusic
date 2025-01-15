@@ -27,8 +27,9 @@ components:
       default: 20
     results_full_count:
       description: Total results in database
+      type: boolean
     order_by:
-      description: >
+      description: |
         Sets the field by which to order results. Can also specify
         if ascending or descending by adding _asc or _desc
         respectively to the order value. The default is ascending
