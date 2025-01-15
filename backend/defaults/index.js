@@ -56,7 +56,7 @@ const RESPONSE_CODES = {
   21: {},
   22: {
     code: 22,
-    des: 'Route is not supported',
+    des: 'Route or path not supported',
     type: 'Invalid Route',
   }
 };
@@ -125,11 +125,13 @@ const STATUS_CODES = {
 }
 
 const PARAMS = {
-  full_count: 'fullcount',
+  audio_format: 'audioformat',
   date_between: 'datebetween',
+  full_count: 'fullcount',
   image_size: 'imagesize',
-  audio_format: 'imagesize',
   order_by: 'order',
+  page: 'offset',
+  page_size: 'limit',
 };
 
 const APIS = { jamendo: 'jamendo' },
