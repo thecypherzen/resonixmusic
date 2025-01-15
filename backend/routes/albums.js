@@ -8,6 +8,7 @@ import {
 import {
   MAX_PAGE_SIZE,
   MIN_PAGE_SIZE,
+  RESPONSE_CODES as resCodes
 } from '../defaults/index.js';
 
 const router = Router();
@@ -140,9 +141,9 @@ router.get(
   [
     query('page_size')
       .trim()
+      .default(`${MIN_PAGE_SIZE}`)
       .notEmpty()
       .withMessage('Value cannot be empty')
-      .default(`${MIN_PAGE_SIZE}`)
       .isInt({min: MIN_PAGE_SIZE, max: MAX_PAGE_SIZE})
       .withMessage(`Expects an integer from ${MIN_PAGE_SIZE}`
                   + ` to ${MAX_PAGE_SIZE}`)
@@ -216,11 +217,13 @@ router.get(
       .withMessage('Value cannot be empty')
       .escape(),
     query('date_between')
+      .optional()
       .matches(
         /^([0-9]{4})-([0-9]{2})-([0-9]{2})_([0-9]{4})-([0-9]{2})-([0-9]{2})$/)
       .withMessage('Expects format: yyyy-mm-dd_yyy-mm-dd')
       .escape(),
     query('image_size')
+      .optional()
       .isInt()
       .withMessage('Expects an integer')
       .isIn([
@@ -230,6 +233,7 @@ router.get(
       .withMessage('Invalid image_size. See docs on /docs route.')
       .escape(),
     query('audio_format')
+      .optional()
       .matches('mp32')
       .withMessage('Only mp32 is supported'),
   ],
@@ -238,4 +242,15 @@ router.get(
 router.get('/download', [], downloadAlbums);
 router.get('/tracks', [], getAlbumsTracks);
 
+router.use((req, res) => {
+  return res.status(404).send({
+    headers: {
+      status: 'failed',
+      code: resCodes[22].code,
+      error_message: resCodes[22].des,
+      warning: '',
+      'x-took': '0ms'
+    }
+  })
+})
 export default router;
