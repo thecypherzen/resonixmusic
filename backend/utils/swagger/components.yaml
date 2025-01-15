@@ -6,7 +6,7 @@ components:
         The audio format you wish to use on the fileurl returned
         field. That is the format of the returned file. Currently
         only mp32 is supported.
-      pattern: ^[A-Za-z0-9]+$
+        pattern: ^[A-Za-z0-9]+$
     format:
       description: The way to format the response data.
       type: string
@@ -26,7 +26,9 @@ components:
       minimum: 1
       default: 20
     results_full_count:
-      description: Total results in database
+      description: |
+        Total results in database if no page_size or page parameter
+        passed in.
       type: boolean
     order_by:
       description: |
