@@ -6,4 +6,3 @@ test.js
 *.json
 *package-lock.json
 *package.json
-env/
