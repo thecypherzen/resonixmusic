@@ -5,6 +5,7 @@ import {
 
 import {
   requestClient,
+  RequestClientError,
 } from '../../utils/index.js';
 
 import {
@@ -16,24 +17,24 @@ import {
 async function getAlbums(req, res) {
   // get albums
   const validation = validationResult(req);
-  const iHeaders = {
-    warnings: '',
-  };
 
   // verify no validation error
   if (!validation.isEmpty()) {
+    const resBody = { headers: {}, results: [] };
     const errors = validation.array();
-    console.log('validation errors\n', errors);
-    return res.status(400).send({
-      headers: {
-        ...iHeaders,
-        status: 'failed',
-        code: errors.client_id
-          ? resCodes[4].code : resCodes[3].code,
-        error_message: errors,
-      },
-      results: [],
+    const errCode = errors.client_id ? 4 : 3;
+    const validationErr = new RequestClientError(
+      `${resCodes[errCode].type}: ${resCodes[errCode].des}`,
+      {
+        code: resCodes[errCode].code,
+        errno: -1,
+        stack: errors,
+      }
+    );
+    requestClient.setDataHeaders(resBody, {
+      error: validationErr,
     });
+    return res.status(400).send(resBody);
   }
 
   const config = {

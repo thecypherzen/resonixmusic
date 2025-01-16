@@ -33,6 +33,15 @@ class RequestClientError extends Error {
     });
     return `${this[Symbol.toStringTag]} ${details}`;
   }
+  toJSON() {
+    return {
+      'name': this.#name,
+      'message': this.message,
+      'code': this.code,
+      'errno': this.errno,
+      'stack': this.stack
+    }
+  }
 }
 
 
@@ -112,7 +121,7 @@ class RequestClient {
     const errToThrow = new RequestClientError(
       msg,
       {
-        errno: errorObj.errno,
+        errno: errorObj.errno || -1,
         code: errorObj.code ?? null,
         stack: errorObj.stack ?? null,
       }
@@ -131,16 +140,20 @@ class RequestClient {
       ...options,
     };
     if (error) {
-      newHdrs.status = 'failed';
-      newHdrs.code = newHdrs.code || error.code;
-      newHdrs.error_message = error.message;
-      if (error.timeTaken){
-        delete error.timeTaken;
+      try {
+        newHdrs.status = 'failed';
+        newHdrs.code = newHdrs.code || error.code;
+        newHdrs.error_message = error.message;
+        if (error.timeTaken){
+          delete error.timeTaken;
+        }
+        newHdrs.error = JSON.stringify(error);
+      } catch (err) {
+        throw err;
       }
-      newHdrs.error = JSON.stringify(error.toString());
     }
     obj.headers = newHdrs;
-    return true;
+    return null;
   }
 
   // set query parameters in configuration

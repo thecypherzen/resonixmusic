@@ -25,8 +25,8 @@ const RESPONSE_CODES = {
   },
   3: {
     code: 3,
-    des: 'One of the received parameters has a value not respecting requirements such as type, range, format, etc',
-    type: 'Type',
+    des: 'One or more parameters have an invalid value',
+    type: 'Malformed Parameters',
   },
   4: {
     code: 4,
@@ -58,7 +58,7 @@ const RESPONSE_CODES = {
     code: 22,
     des: 'Route or path not supported',
     type: 'Invalid Route',
-  }
+  },
 };
 
 const COLOURS = {
