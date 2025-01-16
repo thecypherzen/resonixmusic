@@ -1,9 +1,6 @@
 import { filterBy, sortBy } from './filters.js';
 import getPageFromArray from './getPageFrom.js';
-import {
-  globalErrorHandler,
-  validateQueryParams,
-} from './errorHandlers.js';
+import errorHandlers from './errorHandlers.js';
 import {
   requestClient,
   RequestClientError,
@@ -14,10 +11,9 @@ import getHostUrl from './getHostUrl.js';
 export {
   cacheClient,
   cacheClientReady,
+  errorHandlers,
   filterBy,
   getPageFromArray,
-  globalErrorHandler,
-  validateQueryParams,
   requestClient,
   RequestClientError,
   sortBy,

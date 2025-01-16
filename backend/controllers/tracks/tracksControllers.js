@@ -7,7 +7,6 @@ import {
   cacheClientReady,
   filterBy,
   getPageFromArray,
-  globalErrorHandler,
   requestClient,
   sortBy,
 } from '../../utils/index.js';

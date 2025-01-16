@@ -4,6 +4,7 @@ import {
 } from 'express-validator';
 
 import {
+  errorHandlers as handlers,
   requestClient,
   RequestClientError,
 } from '../../utils/index.js';
@@ -20,21 +21,7 @@ async function getAlbums(req, res) {
 
   // verify no validation error
   if (!validation.isEmpty()) {
-    const resBody = { headers: {}, results: [] };
-    const errors = validation.array();
-    const errCode = errors.client_id ? 4 : 3;
-    const validationErr = new RequestClientError(
-      `${resCodes[errCode].type}: ${resCodes[errCode].des}`,
-      {
-        code: resCodes[errCode].code,
-        errno: -1,
-        stack: errors,
-      }
-    );
-    requestClient.setDataHeaders(resBody, {
-      error: validationErr,
-    });
-    return res.status(400).send(resBody);
+    return handlers.validationError(validation.array(), res);
   }
 
   const config = {

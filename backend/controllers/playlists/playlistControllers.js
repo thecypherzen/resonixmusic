@@ -1,5 +1,4 @@
 import {
-  globalErrorHandler,
   requestClient,
 } from '../../utils/index.js';
 
