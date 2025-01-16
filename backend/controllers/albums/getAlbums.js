@@ -53,7 +53,7 @@ async function getAlbums(req, res) {
     });
   } finally {
     requestClient.log({ req });
-    res.send(resData);
+    return res.send(resData);
   }
 }
 
