@@ -10,16 +10,18 @@ import {
 import {
   CACHE_EXP_SECS,
   RESPONSE_CODES as resCodes,
+  REQPARAMS as defaultParams,
 } from '../../defaults/index.js';
 
 
 async function getAlbums(req, res) {
-  // fetch as many albums as possible
+  // get albums
   const validation = validationResult(req);
   const iHeaders = {
     warnings: '',
   };
 
+  // verify no validation error
   if (!validation.isEmpty()) {
     const errors = validation.array();
     console.log('validation errors\n', errors);
@@ -37,12 +39,13 @@ async function getAlbums(req, res) {
 
   const config = {
     url: `/albums`,
-    params: {},
+    params: { ...defaultParams },
   };
+
   const queryParams = matchedData(req, { locations: ['query'] });
   // set query parameters and make request
   requestClient.setQueryParams(queryParams, config);
-
+  return res.send(config);
   let resData = null;
   try {
     const response = await requestClient.make(config);

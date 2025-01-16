@@ -69,6 +69,7 @@ const COLOURS = {
   normal: '\x1b[0m',
 };
 
+
 const STATUS_CODES = {
   ETIMEDOUT: {
     code: 408,
@@ -134,6 +135,11 @@ const PARAMS = {
   page_size: 'limit',
 };
 
+const REQPARAMS = {
+  format: 'jsonpretty',
+  image_size: 500,
+};
+
 const APIS = { jamendo: 'jamendo' },
       AUDIO_CHUNK_SIZE = Math.ceil(2 ** 20),
       CACHE_EXP_SECS = 24 * 7 * 3600,
@@ -162,6 +168,7 @@ export {
   MIN_RETRIES,
   PARAMS,
   RESPONSE_CODES,
+  REQPARAMS,
   RXBE_PORT,
   STATUS_CODES,
   TIMEOUT,
