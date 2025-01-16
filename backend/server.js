@@ -14,32 +14,6 @@ import {
 
 const app = express();
 
-// Ensure only supported routes are treated
-app.use('/', (req, res, next) => {
-  const acceptedRoutes = [
-    'albums', 'artists', 'docs', 'docs.json',
-    'feeds', 'playlists', 'radios', 'reviews',
-    'tracks', 'users',
-  ];
-  const requestRoutes = req.url.split('/')
-                           .filter((val) => val)[0]
-                           .split('?')
-                           .filter((val) => val);
-  if (!requestRoutes.length
-      || !acceptedRoutes.some((path) => path === requestRoutes[0])) {
-    return res.status(404).send({
-      headers: {
-        status: 'failed',
-        code: resCodes[22].code,
-        error_message: resCodes[22].des,
-        warning: '',
-        'x-took': '0ms'
-      }
-    });
-  }
-  return next();
-});
-
 // Middlewares
 // - CORS
 app.use(cors({
@@ -75,6 +49,17 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
 
+app.use((req, res) => {
+  return res.status(404).send({
+    headers: {
+      status: 'failed',
+      code: resCodes[22].code,
+      error_message: resCodes[22].des,
+        warning: '',
+      'x-took': '0ms'
+    }
+  });
+});
 
 // Global listener
 app.listen(RXBE_PORT, '0.0.0.0', () => {
