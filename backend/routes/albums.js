@@ -67,8 +67,9 @@ router.use(json());
  *       - in: query
  *         name: full_count
  *         description: |
- *           Total results in database if no page_size or page
- *           parameters passed in.
+ *           Sets the 'results_fullcount' value in the results data
+ *           'headers' to the total number results(albums) in the
+ *           database. Useful for pagination purposes.
  *         schema:
  *           $ref: '#/components/schemas/results_full_count'
  *       - in: query
@@ -83,7 +84,9 @@ router.use(json());
  *           type: string
  *       - in: query
  *         name: artist_id
- *         description: ID of the artist who created the album
+ *         description: |
+ *           A list of one or more artist IDs who created
+ *           the album
  *         schema:
  *           $ref: '#/components/schemas/ArtistIds'
  *         example: '104336'
@@ -160,8 +163,8 @@ router.get(
       .optional()
       .trim()
       .notEmpty()
-      .isIn(['xml', 'json', 'jsonpretty'])
-      .withMessage('Expects: xml, json or jsonpretty')
+      .isIn(['json', 'jsonpretty'])
+      .withMessage('Expects json or jsonpretty')
       .escape(),
     query(['artist_id', 'id', 'order_by'])
       .optional()
