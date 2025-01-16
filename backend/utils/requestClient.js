@@ -4,6 +4,7 @@ import {
   COLOURS,
   JAMENDO,
   MAX_RETRIES,
+  PARAMS as paramsIndex,
   STATUS_CODES as statusCodes,
   TIMEOUT,
 } from '../defaults/index.js';
@@ -40,7 +41,6 @@ class RequestClient {
     this.client = axios.create({
       TIMEOUT,
       params: {
-        format: 'jsonpretty',
         client_id: JAMENDO.id,
       },
     });
@@ -146,13 +146,13 @@ class RequestClient {
   // set query parameters in configuration
   setQueryParams (params, config) {
     for (let [param, value] of Object.entries(params)){
-      if (param === 'page_size') {
-        param = 'limit';
-      } else if (param === 'page') {
-        const pg = parseInt(value);
-        const sz = parseInt(params['page_size']);
-        value = `${(pg - 1) * sz}`;
-        param = 'offset';
+      if (paramsIndex[param]) {
+        if (param === 'page') {
+          const pg = parseInt(value);
+          const sz = parseInt(params['page_size']);
+          value = `${(pg - 1) * sz}`;
+        }
+        param = paramsIndex[param];
       }
       config.params[param] = value;
     }
