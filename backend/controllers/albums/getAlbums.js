@@ -45,7 +45,7 @@ async function getAlbums(req, res) {
   const queryParams = matchedData(req, { locations: ['query'] });
   // set query parameters and make request
   requestClient.setQueryParams(queryParams, config);
-  return res.send(config);
+  // return res.send(config);
   let resData = null;
   try {
     const response = await requestClient.make(config);

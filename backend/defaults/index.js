@@ -137,7 +137,7 @@ const PARAMS = {
 
 const REQPARAMS = {
   format: 'jsonpretty',
-  image_size: 500,
+  imagesize: 500,
 };
 
 const APIS = { jamendo: 'jamendo' },
