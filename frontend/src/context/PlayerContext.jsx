@@ -15,12 +15,29 @@ export const PlayerProvider = ({ children }) => {
 
   // Handle track selection and queue management
   const handleTrackSelect = (track, tracks = []) => {
-    setCurrentTrack(track);
-    // Add remaining tracks to queue
-    const trackIndex = tracks.findIndex(t => t.id === track.id);
-    setQueue(tracks.slice(trackIndex + 1));
-    setIsPlaying(true);
-  };
+  if (!track?.url) {
+    console.error('Track URL is missing:', track);
+    return;
+  }
+
+  setCurrentTrack({
+    ...track,
+    url: track.stream_url || track.url // Handle both Jamendo and your existing format
+  });
+  
+  const trackIndex = tracks.findIndex(t => t.id === track.id);
+  setQueue(tracks.slice(trackIndex + 1));
+
+  const audio = audioRef.current;
+  audio.src = track.stream_url || track.url;
+  audio.load();
+  audio.play()
+    .then(() => setIsPlaying(true))
+    .catch(error => {
+      console.error('Playback failed:', error);
+      setIsPlaying(false);
+    });
+};
 
   // Audio event listeners
   useEffect(() => {
