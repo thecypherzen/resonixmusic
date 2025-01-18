@@ -19,7 +19,7 @@ router.use(json());
  * /albums:
  *   get:
  *     tags:
- *       - Albums
+ *       - Get Albums
  *     summary: Gets a set of albums or a single album.
  *     description: |
  *       Albums can be fetched based on their ids or as they are in
@@ -257,6 +257,9 @@ router.get(
  *       album is downloadable or not. If `zip_allowed` is false
  *       a 404 status is returned. `/file` can also be used instead
  *       of `/download`.
+ *     tags:
+ *       - Download Album File
+ *     operandId: downloadAlbumFile
  *     parameters:
  *       - in: query
  *         name: audio_format
@@ -307,7 +310,7 @@ router.get(
  * /albums/tracks:
  *   get:
  *     tags:
- *       - Album tracks
+ *       - Get Album Tracks
  *     summary: Get tracks in an album
  *     description: |
  *       Get the tracks in an album, specified by the
