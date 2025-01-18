@@ -1,12 +1,23 @@
 components:
   schemas:
-    audio_format:
+    audio_format_32:
       type: string
       description: |
         The audio format you wish to use on the fileurl returned
         field. That is the format of the returned file. Currently
         only mp3 is supported.
-        pattern: ^mp3+$
+        pattern: ^mp32$
+    track_audio_formats:
+      description: |
+        The audio format you wish to get in the 'audio' returned field:
+        `mp31` (96kbs), `mp32` (VBR, good quality), `ogg` and `flac`
+        are the available formats. `mp32` is the default `audio_format`.
+      type: string
+      enum:
+        - mp31
+        - mp31
+        - ogg
+        - flac
     format:
       description: The way to format the response data.
       type: string

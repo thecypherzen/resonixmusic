@@ -117,7 +117,7 @@ router.use(json());
  *           returned field - that is the format of the returned file.
  *           Currently, only mp32 is supported.
  *         schema:
- *           $ref: '#/components/schemas/audio_format'
+ *           $ref: '#/components/schemas/album_audio_format'
  *     responses:
  *       200:
  *         description: results were found based on passed parameters
@@ -262,7 +262,8 @@ router.get(
  *           The audio format you wish to use on the `fileurl`
  *           returned field. Currently, only mp3 is supported.
  *         schema:
- *           $ref: '#/components/schemas/audio_format'
+ *           type: string
+ *           pattern: ^mp3$
  *       - in: query
  *         name: id
  *         description: The ID of the album you want to download
@@ -299,7 +300,113 @@ router.get(
 );
 
 // tracks route
-router.get('/tracks', [], getAlbumsTracks);
+router.get(
+  '/tracks',
+  [
+    query('page_size')
+      .trim()
+      .default(`${MIN_PAGE_SIZE}`)
+      .notEmpty()
+      .withMessage('Value cannot be empty')
+      .isInt({min: MIN_PAGE_SIZE, max: MAX_PAGE_SIZE})
+      .withMessage(`Expects an integer from ${MIN_PAGE_SIZE}`
+                  + ` to ${MAX_PAGE_SIZE}`)
+      .escape(),
+    query('page')
+      .default('1')
+      .trim()
+      .notEmpty()
+      .withMessage('Value cannot be empty')
+      .isInt({ min: 1 })
+      .withMessage('Expects an integer > 0')
+      .escape(),
+    query('format')
+      .optional()
+      .trim()
+      .notEmpty()
+      .isIn(['json', 'jsonpretty'])
+      .withMessage('Expects json or jsonpretty')
+      .escape(),
+    query(['artist_id', 'id', 'order_by'])
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('Value cannot be empty')
+      .isArray()
+      .withMessage('Expects an array')
+      .escape(),
+    query('order_by.*')
+      .trim()
+      .notEmpty()
+      .withMessage('Values of order_by cannot be empty')
+      .isIn([
+        'name', 'name_asc', 'name_desc',
+        'id', 'id_asc', 'id_desc',
+        'releasedate', 'releasedate_asc', 'releasedate_desc',
+        'artist_id', 'artist_id_asc', 'artist_id_desc',
+        'artist_name', 'artist_name_asc', 'artist_name_desc',
+        'popularity_total', 'popularity_total_asc',
+        'popularity_total_desc', 'popularity_month',
+        'popularity_month_asc', 'popularity_month_desc',
+        'popularity_week', 'popularity_week_asc',
+        'popularity_week_desc',
+        'track_id', 'track_id_asc', 'track_id_desc',
+        'track_name', 'track_name_asc', 'track_name_desc',
+        'track_position', 'track_position_asc',
+        'track_position_desc',
+      ])
+      .withMessage('Invalid value of order_by. Check docs and fix.')
+      .escape(),
+    query('full_count')
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('Value cannot be empty')
+      .isBoolean()
+      .withMessage('Expects boolean: true or false')
+      .escape(),
+    query('id.*')
+      .trim()
+      .notEmpty()
+      .withMessage('Values of id cannot be empty')
+      .escape(),
+    query('artist_id.*')
+      .trim()
+      .notEmpty()
+      .withMessage('Values of artist_id cannot be empty')
+      .escape(),
+    query([
+      'artist_name', 'audio_format', 'name',
+      'date_between', 'image_size', 'track_name',
+    ])
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('Value cannot be empty')
+      .escape(),
+    query('date_between')
+      .optional()
+      .matches(
+        /^([0-9]{4})-([0-9]{2})-([0-9]{2})_([0-9]{4})-([0-9]{2})-([0-9]{2})$/)
+      .withMessage('Expects format: yyyy-mm-dd_yyy-mm-dd')
+      .escape(),
+    query('image_size')
+      .optional()
+      .isInt()
+      .withMessage('Expects an integer')
+      .isIn([
+        20, 35, 50, 55, 60, 65, 70, 75, 85,
+        100, 130, 150, 200, 300, 400, 500, 600
+      ])
+      .withMessage('Invalid image_size. See docs on /docs route.')
+      .escape(),
+    query('audio_format')
+      .optional()
+      .isIn(['mp31', 'mp32', 'ogg', 'flac'])
+      .withMessage('Expects mp31, mp32, ogg or flac.'),
+  ],
+  getAlbumsTracks
+);
 
 router.use((req, res) => {
   return res.status(404).send({
