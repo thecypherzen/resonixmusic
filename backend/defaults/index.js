@@ -153,6 +153,8 @@ const APIS = { jamendo: 'jamendo' },
       MIN_PAGE_SIZE = 20,
       MAX_PAGE_SIZE = 200,
       RXBE_PORT = process.env.RXBE_PORT || 5000,
+      RXCACHE_PORT = process.env.RXCACHE_PORT || 5050,
+      RX_ROOT_DIR = '/var/tmp/resonix',
       TIMEOUT = 500,
       MIN_RETRIES = 5,
       MAX_RETRIES = 10;
@@ -170,6 +172,8 @@ export {
   RESPONSE_CODES,
   REQPARAMS,
   RXBE_PORT,
+  RXCACHE_PORT,
+  RX_ROOT_DIR,
   STATUS_CODES,
   TIMEOUT,
 };
