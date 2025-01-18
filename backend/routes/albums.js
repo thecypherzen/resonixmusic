@@ -237,14 +237,57 @@ router.get(
       .escape(),
     query('audio_format')
       .optional()
-      .matches('mp32')
-      .withMessage('Only mp32 is supported'),
+      .matches('mp3')
+      .withMessage('Only mp3 is supported'),
   ],
   getAlbums
 );
 
 // download(file) route
- router.get(
+/**
+ * @openapi
+ * /albums/download:
+ *   get:
+ *     summary: |
+ *       Gets all tracks in an album in a single zip file.
+ *     description: |
+ *       Each album has a `zip_allowed` field that determines if the
+ *       album is downloadable or not. If `zip_allowed` is false
+ *       a 404 status is returned. `/file` can also be used instead
+ *       of `/download`.
+ *     parameters:
+ *       - in: query
+ *         name: audio_format
+ *         description: |
+ *           The audio format you wish to use on the `fileurl`
+ *           returned field. Currently, only mp3 is supported.
+ *         schema:
+ *           $ref: '#/components/schemas/audio_format'
+ *       - in: query
+ *         name: id
+ *         description: The ID of the album you want to download
+ *         schema:
+ *           $ref: "#/components/schemas/album_id"
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: |
+ *           Album exists and zip file was received successfully
+ *         content:
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: |
+ *           No album is found with id sent in request.
+ *           The response headers are set and returned without a body.
+ *       500:
+ *         description: |
+ *           An error occured while trying to get the file.
+ *           No data is returned here either.
+ */
+router.get(
   ['/download', '/file'],
   [
     query('audio_format')

@@ -27,7 +27,7 @@ const swaggerDocs = function (app) {
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
   //Swagger UI JSON
-  app.use('/docs.json', (req, res) => {
+  app.use('/docs/json', (req, res) => {
     res.set('Content-Type', 'application/json');
     res.send(swaggerSpec);
   });
