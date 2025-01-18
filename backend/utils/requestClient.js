@@ -25,12 +25,12 @@ class RequestClientError extends Error {
 
   [Symbol.toStringTag] = this.#name;
   toString () {
-    const details = JSON.stringify({
+    const details = {
       message: this.message || 'An error occured',
       code: this.code || 'UNKNOWN',
       errno: this.errno,
       stack: this.stack,
-    });
+    };
     return `${this[Symbol.toStringTag]} ${details}`;
   }
   toJSON() {
@@ -109,7 +109,7 @@ class RequestClient {
         return response;
       } catch (error) {
         errorObj = error;
-        if (error?.response?.status === 404) {
+        if (error?.response?.status) {
           break;
         }
         this.log({
@@ -119,7 +119,7 @@ class RequestClient {
       }
     }
     timeEnd = Date.now();
-    const msg = errorObj?.response?.status === 404
+    const msg = errorObj?.response?.status
           ? errorObj.message
           : (statusCodes[errorObj.code]?.message
              ?? 'An error occured');
@@ -152,7 +152,7 @@ class RequestClient {
         if (error.timeTaken){
           delete error.timeTaken;
         }
-        newHdrs.error = JSON.stringify(error);
+        newHdrs.error = error;
       } catch (err) {
         throw err;
       }

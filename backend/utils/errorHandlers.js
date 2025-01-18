@@ -10,7 +10,7 @@ import {
 const validationError = (errorsArray, res) => {
   const resBody = { headers: {}, results: [] };
   const errCode = errorsArray.client_id ? 4 : 3;
-  const errorObj = new RequestClientError(
+ const errorObj = new RequestClientError(
     `${resCodes[errCode].type}: ${resCodes[errCode.des]}`,
     {
       code: resCodes[errCode].code,

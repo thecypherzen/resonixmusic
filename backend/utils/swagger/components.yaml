@@ -1,6 +1,6 @@
 components:
   schemas:
-    audio_format_32:
+    album_audio_format:
       type: string
       description: |
         The audio format you wish to use on the fileurl returned
@@ -109,7 +109,8 @@ components:
       format: uri
     album_id:
       description: An album ID
-      type: string
+      type: integer
+      minimum: 1
       example: '104336'
     artist_id:
       description: An artist ID
@@ -121,7 +122,7 @@ components:
       example: '104336'
     track_id:
       description: A track ID
-      type: string
+      type: integer
       example: '104336'
     review_id:
       description: A review ID
