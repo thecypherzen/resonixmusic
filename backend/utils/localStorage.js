@@ -77,9 +77,7 @@ class LocalStorage {
 
   async getFileSize(fileName) {
     const filePath = path.join(this.root, fileName);
-    console.log('checking size of...', filePath);
     let size;
-
     const checker = () => {
       return new Promise((resolve, reject) => {
         stat(filePath, (err, stats) => {

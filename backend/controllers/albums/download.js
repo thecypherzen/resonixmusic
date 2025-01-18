@@ -41,9 +41,8 @@ async function download (req, res) {
     // set response headers
     requestClient.setResHeaders(res, {
         'x-took': `${Date.now() - start}ms`,
-        'content-type': 'application/zip',
+        'content-type': 'application/octet-stream',
         'content-length': `${fSize}`,
-        'accept-ranges': 'bytes',
     });
     // stream data to client
     const dataReadStream = await storage.getReadStream(fileName);
@@ -75,9 +74,11 @@ async function download (req, res) {
     requestClient.setQueryParams(queryParams, config);
     try {
       const response = await requestClient.make(config);
+      delete response.headers['accept-ranges'];
       // set response headers
       requestClient.setResHeaders(res, {
         ...response.headers,
+        'content-type': 'application/octet-stream',
         'x-took': response.timeTaken,
       });
       // stream response to data and localstorage
@@ -109,10 +110,14 @@ async function download (req, res) {
         requestClient.log({ req });
       });
     } catch (error) {
-      requestClient.setResStatus(error.code, res);
       requestClient.setResHeaders(res, {
         'x-took': error.timeTaken,
       });
+      if (error.errno > 0) {
+        requestClient.log({ message: error.message, type: 'error'});
+        return res.status(error.errno).send();
+      }
+      requestClient.setResStatus(error.code, res);
       return res.send();
     }
     return null;

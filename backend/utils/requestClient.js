@@ -90,7 +90,7 @@ class RequestClient {
       return new Promise((resolve, reject) => {
         setTimeout(async () => {
           try {
-            const response = await this.client(config);
+            const response = await this.client(config, delay);
             resolve(response);
           } catch (error) {
             reject(error);
@@ -109,6 +109,9 @@ class RequestClient {
         return response;
       } catch (error) {
         errorObj = error;
+        if (error?.response?.status === 404) {
+          break;
+        }
         this.log({
           message: `Request failed...retrying...[${count}]`,
           type: 'error'
@@ -116,14 +119,16 @@ class RequestClient {
       }
     }
     timeEnd = Date.now();
-    const msg = statusCodes[errorObj.code]?.message
-          ?? 'An error occured';
+    const msg = errorObj?.response?.status === 404
+          ? errorObj.message
+          : (statusCodes[errorObj.code]?.message
+             ?? 'An error occured');
     const errToThrow = new RequestClientError(
       msg,
       {
-        errno: errorObj.errno || -1,
-        code: errorObj.code ?? null,
-        stack: errorObj.stack ?? null,
+        errno: errorObj?.response?.status || errorObj.errno,
+        code: errorObj?.code ?? null,
+        stack: errorObj?.stack ?? null,
       }
     );
     this.setTimeTaken(timeStart, timeEnd, errToThrow);
