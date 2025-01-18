@@ -156,6 +156,12 @@ class RequestClient {
     return null;
   }
 
+  setResHeaders(resObj, headers) {
+    for (const[key, value] of Object.entries(headers)) {
+      resObj.set(key, value);
+    }
+  }
+
   // set query parameters in configuration
   setQueryParams (params, config) {
     for (let [param, value] of Object.entries(params)){
