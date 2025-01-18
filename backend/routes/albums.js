@@ -13,7 +13,7 @@ import {
 
 const router = Router();
 router.use(json());
-
+// albums route
 /**
  * @openapi
  * /albums:
@@ -242,7 +242,20 @@ router.get(
   ],
   getAlbums
 );
-router.get('/download', [], downloadAlbums);
+
+// download(file) route
+ router.get(
+  ['/download', '/file'],
+  [
+    query('audio_format')
+      .escape(),
+    query('id')
+      .escape(),
+  ],
+  downloadAlbums
+);
+
+// tracks route
 router.get('/tracks', [], getAlbumsTracks);
 
 router.use((req, res) => {
