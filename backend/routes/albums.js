@@ -306,7 +306,7 @@ router.get(
 
 /**
  * @openapi
- * /info:
+ * /albums/info:
  *   get:
  *     tags:
  *       - Get Album Info
@@ -457,7 +457,7 @@ router.get(
  *         description: some error occured while processing request
  */
 router.get(
-  ['/'],
+  ['/info'],
   [
     query('page_size')
       .trim()
