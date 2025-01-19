@@ -147,6 +147,7 @@ const REQPARAMS = {
 const TRACKSPARAMS= {
   boost: 'listens_week',
   include: ['lyrics', 'musicinfo', 'stats'],
+  audioformat: 'mp32',
 };
 
 const APIS = { jamendo: 'jamendo' },
