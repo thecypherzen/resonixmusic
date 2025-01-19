@@ -3,6 +3,7 @@ import { param, query } from 'express-validator';
 import {
   downloadAlbums,
   getAlbums,
+  getAlbumsInfo,
   getAlbumsTracks,
 } from '../controllers/index.js';
 import {
@@ -559,7 +560,7 @@ router.get(
       .matches('mp3')
       .withMessage('Only mp3 is supported'),
   ],
-  getAlbums
+  getAlbumsInfo
 );
 
 
