@@ -81,7 +81,10 @@ class RequestClient {
   init() {
     this.client.defaults.baseURL = this.#host;
     if (this.isReady) {
-      console.log(`[INIT SUCCESS]: HostUrl set to ${this.host}`);
+      this.log({
+        message: `[INIT SUCCESS]: HostUrl set to ${this.host}`,
+        type: 'success',
+      });
     }
   }
 
