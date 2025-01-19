@@ -1,5 +1,6 @@
 // defines some reusable configurations
 import axios from 'axios';
+import qs from 'qs';
 import {
   COLOURS,
   JAMENDO,
@@ -51,6 +52,17 @@ class RequestClient {
       TIMEOUT,
       params: {
         client_id: JAMENDO.id,
+      },
+      paramsSerializer: (params) => {
+        return Object
+          .entries(params)
+          .map(([key, value]) => {
+            if (Array.isArray(value)) {
+              return `${key}=${value.join('+')}`;
+            }
+            return `${key}=${value}`;
+          })
+          .join('&');
       },
     });
     this.client.defaults.baseURL = null;
