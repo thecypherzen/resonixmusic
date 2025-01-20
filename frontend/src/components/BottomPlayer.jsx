@@ -49,7 +49,7 @@ const BottomPlayer = () => {
       <div className="flex mx-2 gap-10">
         {/* Track info */}
         <div className="flex flex-row items-center m-4 w-[25rem] gap-4">
-          <img src={currentTrack.artwork} alt='Thumbnail' className="w-[4rem] h-[4rem] rounded-full" />
+          <img src={currentTrack.artwork || currentTrack.thumbnail} alt='Thumbnail' className="w-[4rem] h-[4rem] rounded-xl" />
           <div className="flex flex-col text-[0.875rem] font-semibold w-full">
             <p className='text-lg'>{truncateTitle(currentTrack.title, 12)}</p>
             <p className='text-neutral-500'>{currentTrack.artist}</p>
