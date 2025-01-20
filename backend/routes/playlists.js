@@ -67,6 +67,16 @@ router.use(
       .isInt({ min: 1 })
       .withMessage('Expects an integer > 0')
       .escape(),
+    query('order_by')
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('Value cannot be empty')
+      .isIn([
+        'creationdate', 'creationdate_asc', 'creationdate_desc',
+        'id', 'id_asc', 'id_desc', 'name', 'name_asc', 'name_desc',
+      ])
+      .escape(),
     query('page')
       .default('1')
       .trim()
