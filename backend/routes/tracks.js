@@ -346,6 +346,7 @@ router.use(
     query(['featured', 'full_count'])
       .optional()
       .trim()
+      .toBoolean()
       .isBoolean({ strict: true })
       .withMessage('Expects true/faluse'),
     query('format')
