@@ -199,6 +199,14 @@ router.use(json());
  *           schema:
  *             type: string
  *         - in: query
+ *           name: name_search
+ *           description: |
+ *             Search for tracks that contain all or part of the
+ *             passed value in their name. That is a match against
+ *             name=*value*
+ *           schema:
+ *             type: string
+ *         - in: query
  *           name: order_by
  *           description: |
  *             Sort results by a given field. Can also specify if
@@ -296,7 +304,7 @@ router.use(
       .withMessage('Expects 2-letter values like `fr`, `en`, etc.'),
     query([
       'album_name', 'artist_name',
-      'name', 'search', 'x_artist'
+      'name','name_search', 'search', 'x_artist'
     ])
       .optional()
       .trim()

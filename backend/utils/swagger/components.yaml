@@ -44,6 +44,8 @@ components:
         - json
         - jsonpretty
       default: jsonpretty
+    name_search:
+      type: string
     page:
       description: The page number to return
       type: integer
