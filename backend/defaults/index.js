@@ -134,6 +134,7 @@ const PARAMS = {
   fuzzy_tags: 'fuzzytags',
   group_by: 'groupby',
   image_size: 'imagesize',
+  name_search: 'namesearch',
   order_by: 'order',
   page: 'offset',
   page_size: 'limit',
