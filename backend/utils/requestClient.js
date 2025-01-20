@@ -25,12 +25,12 @@ class RequestClientError extends Error {
 
   [Symbol.toStringTag] = this.#name;
   toString () {
-    const details = JSON.stringify({
+    const details = {
       message: this.message || 'An error occured',
       code: this.code || 'UNKNOWN',
       errno: this.errno,
       stack: this.stack,
-    });
+    };
     return `${this[Symbol.toStringTag]} ${details}`;
   }
   toJSON() {
@@ -90,7 +90,7 @@ class RequestClient {
       return new Promise((resolve, reject) => {
         setTimeout(async () => {
           try {
-            const response = await this.client(config);
+            const response = await this.client(config, delay);
             resolve(response);
           } catch (error) {
             reject(error);
@@ -109,6 +109,9 @@ class RequestClient {
         return response;
       } catch (error) {
         errorObj = error;
+        if (error?.response?.status) {
+          break;
+        }
         this.log({
           message: `Request failed...retrying...[${count}]`,
           type: 'error'
@@ -116,14 +119,16 @@ class RequestClient {
       }
     }
     timeEnd = Date.now();
-    const msg = statusCodes[errorObj.code]?.message
-          ?? 'An error occured';
+    const msg = errorObj?.response?.status
+          ? errorObj.message
+          : (statusCodes[errorObj.code]?.message
+             ?? 'An error occured');
     const errToThrow = new RequestClientError(
       msg,
       {
-        errno: errorObj.errno || -1,
-        code: errorObj.code ?? null,
-        stack: errorObj.stack ?? null,
+        errno: errorObj?.response?.status || errorObj.errno,
+        code: errorObj?.code ?? null,
+        stack: errorObj?.stack ?? null,
       }
     );
     this.setTimeTaken(timeStart, timeEnd, errToThrow);
@@ -147,13 +152,19 @@ class RequestClient {
         if (error.timeTaken){
           delete error.timeTaken;
         }
-        newHdrs.error = JSON.stringify(error);
+        newHdrs.error = error;
       } catch (err) {
         throw err;
       }
     }
     obj.headers = newHdrs;
     return null;
+  }
+
+  setResHeaders(resObj, headers) {
+    for (const[key, value] of Object.entries(headers)) {
+      resObj.set(key, value);
+    }
   }
 
   // set query parameters in configuration

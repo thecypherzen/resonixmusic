@@ -1,12 +1,23 @@
 components:
   schemas:
-    audio_format:
+    album_audio_format:
       type: string
       description: |
         The audio format you wish to use on the fileurl returned
         field. That is the format of the returned file. Currently
-        only mp32 is supported.
-        pattern: ^[A-Za-z0-9]+$
+        only mp3 is supported.
+        pattern: ^mp32$
+    track_audio_formats:
+      description: |
+        The audio format you wish to get in the 'audio' returned field:
+        `mp31` (96kbs), `mp32` (VBR, good quality), `ogg` and `flac`
+        are the available formats. `mp32` is the default `audio_format`.
+      type: string
+      enum:
+        - mp31
+        - mp31
+        - ogg
+        - flac
     format:
       description: The way to format the response data.
       type: string
@@ -98,7 +109,8 @@ components:
       format: uri
     album_id:
       description: An album ID
-      type: string
+      type: integer
+      minimum: 1
       example: '104336'
     artist_id:
       description: An artist ID
@@ -110,7 +122,7 @@ components:
       example: '104336'
     track_id:
       description: A track ID
-      type: string
+      type: integer
       example: '104336'
     review_id:
       description: A review ID

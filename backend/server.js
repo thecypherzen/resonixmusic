@@ -17,7 +17,7 @@ const app = express();
 // Middlewares
 // - CORS
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -28,6 +28,7 @@ app.use(express.json());
 app.set('query parser', 'extended');
 
 // Routers
+swaggerDocs(app); // middlewares for swagger docs
 app.use('/albums', albumsRouter);
 app.use('/playlists', playlistRouter);
 app.use('/tracks', tracksRouter);
@@ -65,7 +66,7 @@ app.use((req, res) => {
 // Global listener
 app.listen(RXBE_PORT, '0.0.0.0', () => {
   console.log(`Resonix Server listening on port ${RXBE_PORT}`);
-  swaggerDocs(app);
+
 });
 
 // Events
