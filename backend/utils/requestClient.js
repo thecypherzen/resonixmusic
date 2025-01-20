@@ -45,7 +45,6 @@ class RequestClientError extends Error {
   }
 }
 
-
 class RequestClient {
   constructor() {
     this.client = axios.create({
@@ -54,13 +53,14 @@ class RequestClient {
         client_id: JAMENDO.id,
       },
       paramsSerializer: (params) => {
+        const encode = encodeURIComponent;
         return Object
           .entries(params)
           .map(([key, value]) => {
             if (Array.isArray(value)) {
-              return `${key}=${value.join('+')}`;
+              return `${encode(key)}=${encode(value.join('+'))}`;
             }
-            return `${key}=${value}`;
+            return `${encode(key)}=${encode(value)}`;
           })
           .join('&');
       },
