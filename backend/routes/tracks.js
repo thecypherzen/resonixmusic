@@ -381,12 +381,25 @@ router.use(
       .optional()
       .trim()
       .isIn([
-        'relevance', 'buzzrate', 'downloads_week',
-        'downloads_month', 'downloads_total', 'listens_week',
-        'listens_month', 'listens_total', 'popularity_week',
-        'popularity_month', 'popularity_total', 'name',
-        'album_name', 'artist_name', 'releasedate', 'duration',
-        'id'
+        'relevance', 'relevance_asc', 'relevance_desc',
+        'buzzrate', 'buzzrate_asc', 'buzzrate_desc',
+        'downloads_week', 'downloads_week_asc', 'downloads_week_desc',
+        'downloads_month', 'downloads_month_asc',
+        'downloads_month_desc', 'downloads_total',
+        'downloads_total_asc','downloads_total_desc',
+        'listens_week', 'listens_week_asc', 'listens_week_desc',
+        'listens_month', 'listens_month_asc', 'listens_month_desc',
+        'listens_total', 'listens_total_asc', 'listens_total_desc',
+        'popularity_week', 'popularity_week_asc',
+        'popularity_week_desc', 'popularity_month',
+        'popularity_month_asc', 'popularity_month_desc',
+        'popularity_total', 'popularity_total_asc',
+        'popularity_total_desc', 'name', 'name_asc', 'name_desc',
+        'album_name', 'album_name_asc', 'album_name_desc',
+        'artist_name', 'artist_name_asc', 'artist_name_desc',
+        'releasedate', 'releasedate_asc', 'releasedate_desc',
+        'duration', 'duration_asc', 'duration_desc',
+        'id', 'id_asc', 'id_desc'
       ])
       .withMessage('Invalid  order_by. See docs at /docs'),
     query('page')
