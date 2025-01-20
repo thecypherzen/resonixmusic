@@ -1,5 +1,9 @@
 components:
   schemas:
+    acoustic_electric:
+      type: string
+    album_name:
+      type: string
     album_audio_format:
       type: string
       description: |
@@ -7,7 +11,9 @@ components:
         field. That is the format of the returned file. Currently
         only mp3 is supported.
         pattern: ^mp32$
-    track_audio_formats:
+    artist_name:
+      type: string
+    track_audio_format:
       description: |
         The audio format you wish to get in the 'audio' returned field:
         `mp31` (96kbs), `mp32` (VBR, good quality), `ogg` and `flac`
@@ -18,6 +24,19 @@ components:
         - mp31
         - ogg
         - flac
+    boost:
+      type: string
+      enum:
+        - buzzrate
+        - downloads_week
+        - downloads_month
+        - downloads_total
+        - listens_week
+        - listens_month
+        - listens_total
+        - popularity_week
+        - popularity_month
+        - popularity_total
     format:
       description: The way to format the response data.
       type: string
@@ -75,6 +94,15 @@ components:
         an underscore (_). Both dates must be in 'yyyy-mm-dd' format.
       type: string
       example: 2024-01-03_2024-12-24
+    duration_between:
+      type: string
+    featured:
+      type: boolean
+    gender:
+      type: string
+      enum:
+        - male
+        - female
     image_size:
       description: |
         The size of the cover of the returned resource. A size of n
@@ -99,6 +127,13 @@ components:
         - 500
         - 600
       default: 500
+    include:
+      type: string
+      enum:
+        - licenses
+    lang:
+      type: string
+      pattern: '^[a-z]{2}$'
     DateType:
       summary: A date string formatted as 'YYYY-MM-DD'
       type: string
@@ -128,6 +163,53 @@ components:
       description: A review ID
       type: string
       example: '104336'
+    tags:
+      type: array
+      items:
+        type: string
+    track_speed:
+      type: string
+      enum:
+        - high
+        - low
+        - medium
+        - veryhigh
+        - verylow
+    tracks_group_by:
+      type: string
+      enum:
+        - artist_id
+        - album_id
+    tracks_order_by:
+      type: string
+      enum:
+        - album_name
+        - artist_name
+        - buzzrate
+        - downloads_month
+        - downloads_total
+        - downloads_week
+        - duration
+        - id
+        - listens_month
+        - listens_total
+        - listens_week
+        - name
+        - popularity_month
+        - popularity_total
+        - popularity_week
+        - releasedate
+        - relevance
+    track_type:
+      type: string
+      enum:
+        - albumtrack
+        - single
+    vocal_instrumental:
+      type: string
+      enum:
+        - vocal
+        - instrumental
     AlbumIds:
       summary: A list of album IDs.
       description: |
@@ -165,6 +247,16 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/track_id'
+      minItems: 1
+    TrackSpeeds:
+      type: array
+      items:
+        $ref: '#/components/schemas/track_speed'
+      minItems: 1
+    TrackTypes:
+      type: array
+      items:
+        $ref: '#/components/schemas/track_type'
       minItems: 1
     UserIds:
       description: |
