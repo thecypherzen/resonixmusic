@@ -1,73 +1,89 @@
-import { Router } from 'express';
+import { Router, json } from 'express';
 import { param, query } from 'express-validator';
-
 import {
-  getPlaylistById,
-  getPlaylistTracks,
-  getTrendingPlaylists,
-  searchPlaylists,
+  getPlaylists,
 } from '../controllers/index.js';
+import {
+  MAX_PAGE_SIZE,
+  MIN_PAGE_SIZE,
+  RESPONSE_CODES as resCodes
+} from '../defaults/index.js';
 
 const router = Router();
+router.use(json());
 
-router.get(
-  '/search',
+router.use(
+  '/',
   [
-    query('query')
-      .notEmpty()
-      .withMessage('query cannot be empty')
-      .isString()
-      .withMessage('query must be a string')
-      .escape()
-      .withMessage('unrecognized values passed'),
-
-    query(['genre', 'mood'])
+    query([
+      'access_token', 'name', 'name_search', 'user_name'
+    ])
       .optional()
       .trim()
+      .notEmpty()
+      .withMessage('Value cannot be empty')
+      .escape(),
+    query('audio_format')
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('Value cannot be empty')
+      .matches('mp32')
+      .withMessage('Expects mp32')
+      .escape(),
+    query('date_between')
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('Value cannot be empty')
+      .matches(
+        /^([0-9]{4})-([0-9]{2})-([0-9]{2})_([0-9]{4})-([0-9]{2})-([0-9]{2})$/
+      )
+      .escape(),
+    query('format')
+      .optional()
+      .trim()
+      .isIn(['json', 'jsonpretty'])
+      .withMessage('Expects json or jsonpretty')
+      .escape(),
+    query('full_count')
+      .optional()
+      .trim()
+      .isBoolean({ strict: true })
+      .withMessage('Expects true/false')
+      .escape(),
+    query(['id', 'user_id'])
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage('Value cannot be empty')
       .isArray()
-      .withMessage('must be an array of strings')
-      .notEmpty()
-      .withMessage('cannot be empty')
+      .withMessage('Expects an array')
       .escape(),
-    query('genre.*')
+    query(['id.*', 'user_id.*'])
+      .notEmpty()
+      .withMessage('Value cannot be empty')
+      .isInt({ min: 1 })
+      .withMessage('Expects an integer > 0')
+      .escape(),
+    query('page')
+      .default('1')
       .trim()
       .notEmpty()
-      .withMessage('genre values cannot be empty or falsy')
-      .matches(/^[a-zA-Z -_&/]+$/)
-      .withMessage('must be letter with _, /, space or -')
+      .withMessage('Value cannot be empty')
+      .isInt({ min: 1 })
+      .withMessage('Expects an integer > 0')
       .escape(),
-    query('mood.*')
-      .trim()
+    query('page_size')
+      .default(`${MIN_PAGE_SIZE}`)
       .notEmpty()
-      .withMessage('mood values cannot be empty or falsy')
-      .matches(/^[a-zA-Z -_&/]+$/)
-      .withMessage('must be letter with _, /, space or - ')
-      .escape(),
-    query('sort_by')
-      .trim()
-      .default('relevant')
-      .isString()
-      .withMessage('sort_by must be a string')
-      .isIn(['relevant', 'popular', 'recent'])
-      .withMessage('can only be `relevant`, `popular` or `recent`')
+      .withMessage('Value cannot be empty')
+      .isInt({ min: MIN_PAGE_SIZE, max: MAX_PAGE_SIZE })
+      .withMessage(`Expects an integer from ${MIN_PAGE_SIZE}`
+                  + ` to ${MAX_PAGE_SIZE}`)
       .escape(),
   ],
-  searchPlaylists
-);
-
-router.get(
-  '/trending',
-  getTrendingPlaylists
-);
-
-router.get(
-  '/:id',
-  getPlaylistById
-);
-
-router.get(
-  '/:id/tracks',
-  getPlaylistTracks
-);
+  getPlaylists
+)
 
 export default router;
