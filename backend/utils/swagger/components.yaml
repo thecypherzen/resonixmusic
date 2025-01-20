@@ -175,6 +175,21 @@ components:
       items:
         $ref: "#/components/schemas/user_id"
       minItems: 1
+    Tags:
+      description: A list (array) of tags.
+      type: array
+      items:
+        type: string
+      minItems: 1
+    MusicInfo:
+      type: object
+      properties:
+        tags:
+          $ref: "#/components/schemas/Tags"
+        description:
+            type: object
+            additionalProperties:
+              type: string
     Album:
       description: An album object
       type: object
