@@ -13,8 +13,8 @@ import {
 } from '../../defaults/index.js';
 
 async function getTracks(req, res) {
-  console.log('geting tracks...');
   const validation = validationResult(req);
+  let lang = null;
   if (!validation.isEmpty()) {
     return handlers.validationError(validation.array(), res);
   }
@@ -27,10 +27,36 @@ async function getTracks(req, res) {
   };
 
   const queryParams = matchedData(req, { locations: ['query'] });
-  console.log('QUERY PARAMS:', queryParams);
+  if (queryParams[lang]) {
+    lang = queryParams[lang];
+    delete queryParams[lang];
+  }
   requestClient.setQueryParams(queryParams, config);
-  const response = requestClient.make(config);
-  return res.send({controller: 'getTracks'});
+  try {
+    const response = await requestClient.make(config);
+    requestClient.setDataHeaders(response.data, {
+      options: { 'x-took': response.timeTaken },
+    });
+    requestClient.log({ req });
+    if (lang) {
+      response.data.results = response.data.filter((track) => {
+        return track?.musicinfo?.lang === lang;
+      });
+    }
+    return res.send(response.data);
+  } catch (error) {
+    const resData = {};
+    requestClient.setDataHeaders(resData, {
+      error, options: {'x-took': error.timeTaken },
+    });
+    if (error.errno > 0) {
+      requestClient.log({ message: error.message, type: 'error' });
+      return res.status(error.errno).send(resData);
+    }
+    requesClient.setResStatus(error.code, res);
+    requestClient.log({ req });
+    return res.send(resData);
+  }
 }
 
 export default getTracks;
