@@ -4,6 +4,7 @@ import { FaPlay, FaPause, FaHeart, FaEllipsisH, FaClock, FaDownload } from 'reac
 import { MdErrorOutline } from "react-icons/md";
 import { usePlayer } from '../context/PlayerContext';
 import api from '../services/api';
+import { saveAs } from 'file-saver';
 
 const CURRENT_DATE = '2025-01-17 21:19:53';
 const CURRENT_USER = 'gabrielisaacs';
@@ -59,6 +60,53 @@ const AlbumDetails = ({ id }) => {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  const handleDownloadTrack = async (track) => {
+    if (!track.download_url) {
+      console.error('No download URL available');
+      return;
+    }
+
+    try {
+      const response = await fetch(track.download_url);
+      const blob = await response.blob();
+      saveAs(blob, `${track.title}.mp3`);
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+  };
+
+  const handleDownloadAlbum = async () => {
+    if (!tracks.length) return;
+
+    // Create a zip file of all tracks
+    const JSZip = (await import('jszip')).default;
+    const zip = new JSZip();
+
+    try {
+      // Add all tracks to zip
+      const downloadPromises = tracks.map(async (track) => {
+        if (!track.download_url) return;
+
+        const response = await fetch(track.download_url);
+        const blob = await response.blob();
+        zip.file(`${track.title}.mp3`, blob);
+      });
+
+      await Promise.all(downloadPromises);
+
+      // Generate and download zip
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, `${album.title}.zip`);
+    } catch (error) {
+      console.error('Album download failed:', error);
+    }
+  };
+
+  const truncateTitle = (title, maxLength) => {
+    if (!title) return '';
+    return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
+  };
+
   if (loading) return <LoadingState />;
   if (error) return <ErrorMessage message={error} />;
   if (!album) return <div>Album not found</div>;
@@ -71,14 +119,14 @@ const AlbumDetails = ({ id }) => {
           <img
             src={album.thumbnail}
             alt={album.title}
-            className="w-[12rem] h-[12rem] shadow-2xl rounded-lg"
+            className="w-[10.75rem] h-[10.75rem] shadow-2xl rounded-lg"
           />
           <div className="flex flex-col gap-3">
-            <span className="text-sm font-bold">Album</span>
-            <h1 className="text-[6rem] font-bold leading-tight">{album.title}</h1>
-            <div className="flex items-center gap-2 text-sm">
+            <span className="text-md font-bold">Album</span>
+            <h1 className="text-[5rem] font-bold leading-tight">{truncateTitle(album.title, 15)}</h1>
+            <div className="flex items-center gap-2 text-md">
               <img
-                src={album.artist_image || '/default-artist.png'}
+                src={album.artist_image || '/artist_thumb.jpeg'}
                 alt={album.artist}
                 className="w-6 h-6 rounded-full"
               />
@@ -95,15 +143,18 @@ const AlbumDetails = ({ id }) => {
         <div className="flex items-center gap-8 p-6">
           <button
             onClick={handlePlayAll}
-            className="w-42 h-12 flex items-center justify-center bg-[#08B2F0] rounded-full hover:scale-105 transition-all duration-300 text-black text-sm px-6 gap-2"
+            className="w-42 h-12 flex items-center justify-center bg-transparent hover:bg-neutral-800 border border-neutral-600 rounded-full hover:scale-105 transition-all duration-300 text-white text-sm px-10 gap-2"
           >
             <FaPlay />
             Play all
           </button>
           <button className="bg-transparent text-white">
-            <FaHeart size={24} />
+            <FaHeart size={24} className='hover:fill-red-500' />
           </button>
-          <button className="bg-transparent text-white">
+          <button
+            onClick={handleDownloadAlbum}
+            className="bg-transparent text-white hover:text-[#08B2F0] transition-colors"
+          >
             <FaDownload size={24} />
           </button>
           <button className="bg-transparent text-white">
@@ -119,6 +170,7 @@ const AlbumDetails = ({ id }) => {
                 <th className="px-4 py-2 text-left w-12">#</th>
                 <th className="px-4 py-2 text-left">Title</th>
                 <th className="px-4 py-2 text-left">Plays</th>
+                <th className="px-4 py-2 text-center">Download</th>
                 <th className="px-4 py-2 text-right">
                   <FaClock className="ml-auto mr-2.5" />
                 </th>
@@ -157,6 +209,17 @@ const AlbumDetails = ({ id }) => {
                   </td>
                   <td className="px-4 py-3 text-neutral-400">
                     {track.likes}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownloadTrack(track);
+                      }}
+                      className="bg-transparent text-neutral-400 hover:text-[#08B2F0] transition-colors"
+                    >
+                      <FaDownload size={16} />
+                    </button>
                   </td>
                   <td className="px-4 py-3 text-right text-neutral-400">
                     {formatDuration(track.duration)}
