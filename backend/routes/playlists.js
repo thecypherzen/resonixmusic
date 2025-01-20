@@ -49,6 +49,7 @@ router.use(
     query('full_count')
       .optional()
       .trim()
+      .toBoolean()
       .isBoolean({ strict: true })
       .withMessage('Expects true/false')
       .escape(),
