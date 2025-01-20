@@ -3,11 +3,31 @@ import { FaPlay, FaClock } from 'react-icons/fa';
 import { usePlayer } from '../context/PlayerContext';
 
 const SongList = () => {
-  const { queue, currentTrack, setCurrentTrack, setQueue } = usePlayer();
+  const { queue, currentTrack, handleTrackSelect } = usePlayer();
 
   const handlePlayTrack = (track, index) => {
-    setCurrentTrack(track);
-    setQueue(queue.slice(index + 1));
+    const trackToPlay = {
+      id: track.id,
+      title: track.title,
+      artist: track.artist,
+      artwork: track.artwork || track.thumbnail,
+      url: track.url || track.audio,
+      stream_url: track.url || track.audio,
+      duration: track.duration
+    };
+
+    // remaining tracks
+    const remainingTracks = queue.slice(index + 1).map(t => ({
+      id: t.id,
+      title: t.title,
+      artist: t.artist,
+      artwork: t.artwork || t.thumbnail,
+      url: t.url || t.audio,
+      stream_url: t.url || t.audio,
+      duration: t.duration
+    }));
+
+    handleTrackSelect(trackToPlay, remainingTracks);
   };
 
   const formatDuration = (seconds) => {
