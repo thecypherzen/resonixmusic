@@ -198,7 +198,8 @@ router.get(
       .trim()
       .notEmpty()
       .withMessage('Value cannot be empty')
-      .isBoolean()
+      .toBoolean()
+      .isBoolean({ strict: true })
       .withMessage('Expects boolean: true or false')
       .escape(),
     query('id.*')
@@ -766,7 +767,8 @@ router.get(
       .trim()
       .notEmpty()
       .withMessage('Value cannot be empty')
-      .isBoolean()
+      .toBoolean()
+      .isBoolean({ strict: true })
       .withMessage('Expects boolean: true or false')
       .escape(),
     query('id')
