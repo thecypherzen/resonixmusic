@@ -53,7 +53,7 @@ async function getTracks(req, res) {
       requestClient.log({ message: error.message, type: 'error' });
       return res.status(error.errno).send(resData);
     }
-    requesClient.setResStatus(error.code, res);
+    requestClient.setResStatus(error.code, res);
     requestClient.log({ req });
     return res.send(resData);
   }
