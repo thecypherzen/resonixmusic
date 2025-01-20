@@ -8,6 +8,7 @@ import MusicPlayer from './pages/MusicPlayer';
 import ErrorBoundary from './components/ErrorBoundary';
 import { PlayerProvider } from './context/PlayerContext';
 import SongDetailsPage from './pages/SongDetailsPage';
+import AlbumDetailsPage from './pages/AlbumDetailsPage';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/music" element={<MusicPlayer />} />
             <Route path="/song/:id" element={<SongDetailsPage />} />
+            <Route path="/album/:id" element={<AlbumDetailsPage />} />
           </Routes>
         </ErrorBoundary>
       </PlayerProvider>

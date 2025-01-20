@@ -54,12 +54,8 @@ const BottomPlayer = () => {
     <div className='h-[7rem] fixed bottom-0 left-0 z-50 w-full bg-white-400 bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30 items-center justify-center'>
       <div className="flex mx-2 gap-10">
         {/* Track info */}
-        <div className="flex flex-row items-center m-4 w-[25rem] h-[4rem] gap-4">
-          <img
-            src={currentTrack.artwork || '/default-artwork.png'}
-            alt='Thumbnail'
-            className="w-[4rem] h-[4rem] rounded-xl object-cover"
-          />
+        <div className="flex flex-row items-center m-4 w-[25rem] gap-4">
+          <img src={currentTrack.artwork || currentTrack.thumbnail} alt='Thumbnail' className="w-[4rem] h-[4rem] rounded-xl" />
           <div className="flex flex-col text-[0.875rem] font-semibold w-full">
             <p className='text-lg'>{truncateTitle(currentTrack.title, 12)}</p>
             <p className='text-neutral-500'>{currentTrack.artist}</p>

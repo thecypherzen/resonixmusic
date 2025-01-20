@@ -1,88 +1,35 @@
 import express from 'express';
 import cors from 'cors';
-import 'dotenv/config';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
+import swaggerDocs from './utils/swagger/config.js';
 import {
+  albumsRouter,
   playlistRouter,
   tracksRouter,
   userRouter
 } from './routes/index.js';
+import {
+  RESPONSE_CODES as resCodes,
+  RXBE_PORT,
+} from './defaults/index.js';
 
 const app = express();
-const RXSERVER = process.env.RXSERVER || 5005;
 
-app.use(helmet());
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
-});
-app.use(limiter);
-
-const allowedOrigins = [
-  'https://resonix.vercel.app',
-  'https://www.resonix.vercel.app',
-  'http://localhost:3000',
-  'http://localhost:5173'
-];
-
+// Middlewares
+// - CORS
 app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
-
-// Body parser middleware
+// - json body-parser
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// - query-parser setting
 app.set('query parser', 'extended');
 
-// Route validation middleware
-app.use('/', (req, res, next) => {
-  const acceptedRoutes = ['playlists', 'tracks', 'users', 'health'];
-  const requestRoutes = req.url.split('/').filter(val => val);
-  
-  // Allow health check endpoint
-  if (req.url === '/health') return next();
-  
-  if (requestRoutes.length < 1) {
-    return res.status(404).json({ 
-      error: 'Route not found',
-      status: 404 
-    });
-  }
-  
-  if (!acceptedRoutes.includes(requestRoutes[0])) {
-    return res.status(403).json({ 
-      error: 'Route is not supported',
-      status: 403 
-    });
-  }
-  
-  next();
-});
-
-// Health check endpoint (place before other routes)
-app.get('/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
-});
-
-// API routes
+// Routers
+swaggerDocs(app); // middlewares for swagger docs
+app.use('/albums', albumsRouter);
 app.use('/playlists', playlistRouter);
 app.use('/tracks', tracksRouter);
 app.use('/users', userRouter);
@@ -95,37 +42,42 @@ app.use((req, res) => {
   });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Error:', {
-    message: err.message,
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
-    timestamp: new Date().toISOString(),
-    path: req.path,
-    method: req.method
-  });
+// Native routes
+/**
+ * @openapi
+ * /health:
+ *   get:
+ *     tags:
+ *       - Healthcheck
+ *     summary: Verify status of server
+ *     description: Checks if the api is alive an active. If alive, a json respons is sent back else, nothing.
+ *     responses:
+ *       200:
+ *         description: Resonix API is up and running.
+ */
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
+});
 
-  res.status(err.status || 500).json({
-    error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error',
-    status: err.status || 500
+app.use((req, res) => {
+  return res.status(404).send({
+    headers: {
+      status: 'failed',
+      code: resCodes[22].code,
+      error_message: resCodes[22].des,
+        warning: '',
+      'x-took': '0ms'
+    }
   });
 });
 
-// Start server
-const server = app.listen(RXSERVER, () => {
-  console.log(`Resonix Server running in ${process.env.NODE_ENV} mode on port ${RXSERVER}`);
+// Global listener
+app.listen(RXBE_PORT, '0.0.0.0', () => {
+  console.log(`Resonix Server listening on port ${RXBE_PORT}`);
+
 });
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received. Closing HTTP server...');
-  server.close(() => {
-    console.log('HTTP server closed');
-    process.exit(0);
-  });
-});
-
-// Unhandled rejection handler
+// Events
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Rejection:', {
     message: err.message,

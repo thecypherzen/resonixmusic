@@ -1,22 +1,29 @@
 import { filterBy, sortBy } from './filters.js';
 import getPageFromArray from './getPageFrom.js';
+import errorHandlers from './errorHandlers.js';
+import storage from './localStorage.js';
 import {
-  globalErrorHandler,
-  validateQueryParams,
-} from './errorHandlers.js';
-import { audius, requestClient } from './config.js';
-import { cacheClient, cacheClientReady } from './cacheClient.js';
+  requestClient,
+  RequestClientError,
+} from './requestClient.js';
+import {
+  cacheClient,
+  CacheClientError,
+  cacheClientReady
+} from './cacheClient.js';
+
 import getHostUrl from './getHostUrl.js';
 
 export {
-  audius,
   cacheClient,
+  CacheClientError,
   cacheClientReady,
+  errorHandlers,
   filterBy,
   getPageFromArray,
-  globalErrorHandler,
-  validateQueryParams,
   requestClient,
+  RequestClientError,
   sortBy,
+  storage,
   getHostUrl,
 };

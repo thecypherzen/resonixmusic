@@ -7,6 +7,8 @@ module.exports = {
     extends: [
       'airbnb-base',
       'plugin:jest/all',
+      'eslint:recommended',
+      'plugin:jsdoc/recommended'
     ],
     globals: {
       Atomics: 'readonly',
@@ -16,7 +18,7 @@ module.exports = {
       ecmaVersion: 2018,
       sourceType: 'module',
     },
-    plugins: ['jest'],
+    plugins: ['jest', 'jsdoc'],
     rules: {
       'max-classes-per-file': 'off',
       'no-underscore-dangle': 'off',
@@ -27,6 +29,16 @@ module.exports = {
         'LabeledStatement',
         'WithStatement',
       ],
+      'jsdoc/check-tag-names': [
+        'error', {
+          'definedTags': [
+            'openapi', 'info', 'servers',
+            'components', 'paths'
+          ]
+        }
+      ],
+      'jsdoc/require-description': 'off',
+      'jsdoc/require-jsdoc': 'off',
     },
     overrides:[
       {

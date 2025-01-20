@@ -14,36 +14,31 @@ export const PlayerProvider = ({ children }) => {
   const audioRef = useRef(new Audio());
 
   const handleTrackSelect = (track, tracks = []) => {
-    console.log('Received track:', track); // Debug log
-
     if (!track?.url) {
       console.error('Track URL is missing:', track);
       return;
     }
 
-    try {
-      // Validate URL
-      new URL(track.url);
+    setCurrentTrack({
+      ...track,
+      url: track.stream_url || track.url // Handle both Jamendo and your existing format
+    });
 
-      setCurrentTrack(track);
-      const trackIndex = tracks.findIndex(t => t.id === track.id);
-      setQueue(tracks.slice(trackIndex + 1));
+    const trackIndex = tracks.findIndex(t => t.id === track.id);
+    setQueue(tracks.slice(trackIndex + 1));
 
-      // Reset audio and start playing
-      audioRef.current.src = track.url;
-      audioRef.current.load();
-      audioRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch(error => {
-          console.error('Playback failed:', error);
-          setIsPlaying(false);
-        });
-    } catch (error) {
-      console.error('Invalid track URL:', track.url);
-      setIsPlaying(false);
-    }
+    const audio = audioRef.current;
+    audio.src = track.stream_url || track.url;
+    audio.load();
+    audio.play()
+      .then(() => setIsPlaying(true))
+      .catch(error => {
+        console.error('Playback failed:', error);
+        setIsPlaying(false);
+      });
   };
 
+  // Audio event listeners
   useEffect(() => {
     const audio = audioRef.current;
 

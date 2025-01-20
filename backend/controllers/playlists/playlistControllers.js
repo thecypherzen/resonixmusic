@@ -1,4 +1,6 @@
-import { globalErrorHandler, requestClient } from '../utils/index.js';
+import {
+  requestClient,
+} from '../../utils/index.js';
 
 export const getPlaylistById = async (req, res) => {
   const config = {
@@ -36,9 +38,16 @@ export const getTrendingPlaylists = async (req, res) => {
 
   try {
     const result = await requestClient.client(config);
-    return res.send({ data: result?.data?.data ?? [] });
+    // Ensure we're sending a consistent response structure
+    return res.send({ 
+      results: result?.data?.results || [],
+      headers: result?.data?.headers || {}
+    });
   } catch (err) {
-    return globalErrorHandler(err, res);
+    return res.status(500).send({ 
+      error: err.message,
+      results: []
+    });
   }
 };
 

@@ -1,0 +1,266 @@
+components:
+  schemas:
+    album_audio_format:
+      type: string
+      description: |
+        The audio format you wish to use on the fileurl returned
+        field. That is the format of the returned file. Currently
+        only mp3 is supported.
+        pattern: ^mp32$
+    track_audio_formats:
+      description: |
+        The audio format you wish to get in the 'audio' returned field:
+        `mp31` (96kbs), `mp32` (VBR, good quality), `ogg` and `flac`
+        are the available formats. `mp32` is the default `audio_format`.
+      type: string
+      enum:
+        - mp31
+        - mp31
+        - ogg
+        - flac
+    format:
+      description: The way to format the response data.
+      type: string
+      enum:
+        - json
+        - jsonpretty
+      default: jsonpretty
+    page:
+      description: The page number to return
+      type: integer
+      minimum: 1
+      default: 1
+    page_size:
+      description: The number of items in a single result list
+      type: integer
+      minimum: 1
+      default: 20
+    results_full_count:
+      description: |
+        Total results in database if no page_size or page parameter
+        passed in.
+      type: boolean
+    order_by:
+      description: |
+        Sets the field by which to order results. Can also specify
+        if ascending or descending by adding _asc or _desc
+        respectively to the order value. The default is ascending
+        order. When choosing an order field, it should be a field in
+        the object.
+      type: array
+      items:
+        type: string
+        enum:
+          - name
+          - id
+          - releasedate
+          - artist_id
+          - artist_name
+          - popularity_total
+          - popularity_month
+          - popularity_week
+      examples:
+        example1:
+          summary: using default asc order
+          value: order=popularity_month
+        example2:
+          summary: explicitly specifying ascending order
+          value: order=popularity_month_asc
+        example3:
+          summary: explicitly specifying descending order
+          value: order=popularity_month_desc
+    date_between:
+      description: |
+        filter results based on a date_from and date_to separated by
+        an underscore (_). Both dates must be in 'yyyy-mm-dd' format.
+      type: string
+      example: 2024-01-03_2024-12-24
+    image_size:
+      description: |
+        The size of the cover of the returned resource. A size of n
+        returns the 'nxn-sized' cover image.
+        type: integer
+      enum:
+        - 25
+        - 35
+        - 50
+        - 55
+        - 60
+        - 65
+        - 70
+        - 75
+        - 85
+        - 100
+        - 130
+        - 150
+        - 200
+        - 300
+        - 400
+        - 500
+        - 600
+      default: 500
+    DateType:
+      summary: A date string formatted as 'YYYY-MM-DD'
+      type: string
+      format: date
+      example: '2024-12-13'
+    UrlType:
+      type: string
+      format: uri
+    album_id:
+      description: An album ID
+      type: integer
+      minimum: 1
+      example: '104336'
+    artist_id:
+      description: An artist ID
+      type: string
+      example: '104336'
+    user_id:
+      description: A user ID
+      type: string
+      example: '104336'
+    track_id:
+      description: A track ID
+      type: integer
+      example: '104336'
+    review_id:
+      description: A review ID
+      type: string
+      example: '104336'
+    AlbumIds:
+      summary: A list of album IDs.
+      description: |
+        A list of album ids. If provided, Only albums with matching
+        ids will be included in results data. If no provided id
+        matches an album, results field of returned data will be
+        empty.
+      type: array
+      items:
+        $ref: "#/components/schemas/album_id"
+      minItems: 1
+    ArtistIds:
+      description: |
+        A list of artist IDs. Only artists with matching ids will be
+        included in results. If no provided id matches an artist, the
+        results field of returned data will be empty.
+      type: array
+      items:
+        $ref: "#/components/schemas/artist_id"
+      minItems: 1
+    ReviewIds:
+      description: |
+        A list of review IDs. Only reviews with matching ids will be
+        included in results. If no provided id matches a review, the
+        results field of returned data will be empty.
+      type: array
+      items:
+        $ref: "#/components/schemas/review_id"
+      minItems: 1
+    TrackIds:
+      description: |
+        A list of track IDs. Only tracks with matching ids will be
+        included in results. If no provided id matches a track, the
+        results field of returned data will be empty.
+      type: array
+      items:
+        $ref: '#/components/schemas/track_id'
+      minItems: 1
+    UserIds:
+      description: |
+        A list of user IDs. Only user with matching ids will be
+        included in results. If no id matches a review, the results
+        field of the returned data will be empty.
+      type: array
+      items:
+        $ref: "#/components/schemas/user_id"
+      minItems: 1
+    Tags:
+      description: A list (array) of tags.
+      type: array
+      items:
+        type: string
+      minItems: 1
+    MusicInfo:
+      type: object
+      properties:
+        tags:
+          $ref: "#/components/schemas/Tags"
+        description:
+            type: object
+            additionalProperties:
+              type: string
+    Album:
+      description: An album object
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/album_id'
+        name:
+          type: string
+          description: The album's name
+        release_date:
+          description: Album release date in format 'YYYY-MM-DD'
+          $ref: "#/components/schemas/DateType"
+        artist_id:
+          description: Id of artist who created the album
+          type: string
+        artist_name:
+          description: Name of artist who created the album
+          type: string
+        image:
+          description: Album's cover image
+          $ref: "#/components/schemas/UrlType"
+        zip:
+          description: Url to download album as a zip file
+          $ref: "#/components/schemas/UrlType"
+        shorturl:
+          description: Url to get the album's preview
+          $ref: "#/components/schemas/UrlType"
+        shareurl:
+          description: The Url to use in sharing album
+          $ref: "#/components/schemas/UrlType"
+        zip_allowed:
+          description: Indicates if the album is downloadable or not.
+          type: boolean
+    DataHeader:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - succeeded
+            - failed
+        code:
+          type: integer
+          minimum: 0
+        error_message:
+          type: string
+          default: ""
+        next:
+          type: string
+        results_count:
+          type: integer
+        warnings:
+          type: string
+          default: ""
+        x-took:
+          type: string
+      required:
+        - status
+        - code
+        - error_message
+        - warnings
+        - x-took
+    DataResults:
+      type: array
+      items:
+        oneOf:
+          - $ref: "#/components/schemas/Album"
+    ResponseData:
+      type: object
+      properties:
+        headers:
+          $ref: "#/components/schemas/DataHeader"
+        results:
+          $ref: "#/components/schemas/DataResults"
