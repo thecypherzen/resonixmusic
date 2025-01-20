@@ -157,12 +157,12 @@ export const getAlbumDetails = async (albumId) => {
         tracks: tracks.map(track => ({
           id: track.id,
           title: track.name,
-          artist: albumData.artist_name, // Use album's artist name since tracks don't have it
-          thumbnail: albumData.image, // Use album's image for tracks
+          artist: albumData.artist_name,
+          thumbnail: track.image || track.thumbnail || albumData.image,
           url: track.audio,
           duration: parseInt(track.duration),
           position: parseInt(track.position),
-          likes: `${Math.floor(Math.random() * 100)}k`, // Tracks don't have listen count, using random
+          likes: `${Math.floor(Math.random() * 100)}k`,
           download_url: track.audiodownload,
           download_allowed: track.audiodownload_allowed
         }))

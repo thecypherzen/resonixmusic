@@ -89,7 +89,7 @@ const ErrorMessage = ({ message }) => (
 
 
 const PlayerHome = () => {
-  const { setCurrentTrack, setQueue } = usePlayer();
+  const { setCurrentTrack, setQueue, handleTrackSelect } = usePlayer();
   const navigate = useNavigate();
 
   // State for data
@@ -181,12 +181,13 @@ const PlayerHome = () => {
       artist: song.artist || song.artist_name,
       artwork: song.thumbnail || song.image || DEFAULT_THUMBNAIL,
       url: song.url || song.audio,
-      duration: song.duration
+      duration: song.duration,
+      stream_url: song.url || song.audio
     };
 
-    console.log('Track to play:', trackToPlay); // Debug log
+    console.log('Track to play:', trackToPlay);
 
-    // Create remaining tracks array with proper URLs
+    // Create remaining tracks array
     const remainingTracks = trendingSongs
       .slice(index + 1)
       .map(track => ({
@@ -195,7 +196,8 @@ const PlayerHome = () => {
         artist: track.artist || track.artist_name,
         artwork: track.thumbnail || track.image || DEFAULT_THUMBNAIL,
         url: track.url || track.audio,
-        duration: track.duration
+        duration: track.duration,
+        stream_url: track.url || track.audio
       }));
 
     handleTrackSelect(trackToPlay, remainingTracks);
@@ -207,13 +209,25 @@ const PlayerHome = () => {
       const firstTrack = trendingSongs[0];
       const trackToPlay = {
         id: firstTrack.id,
-        title: firstTrack.title,
-        artist: firstTrack.artist,
-        artwork: firstTrack.thumbnail,
-        url: firstTrack.url,
-        duration: firstTrack.duration
+        title: firstTrack.title || firstTrack.name,
+        artist: firstTrack.artist || firstTrack.artist_name,
+        artwork: firstTrack.thumbnail || firstTrack.image || DEFAULT_THUMBNAIL,
+        url: firstTrack.url || firstTrack.audio,
+        duration: firstTrack.duration,
+        stream_url: firstTrack.url || firstTrack.audio
       };
-      handleTrackSelect(trackToPlay, trendingSongs);
+
+      const remainingTracks = trendingSongs.slice(1).map(track => ({
+        id: track.id,
+        title: track.title || track.name,
+        artist: track.artist || track.artist_name,
+        artwork: track.thumbnail || track.image || DEFAULT_THUMBNAIL,
+        url: track.url || track.audio,
+        duration: track.duration,
+        stream_url: track.url || track.audio
+      }));
+
+      handleTrackSelect(trackToPlay, remainingTracks);
     }
   };
 
@@ -346,9 +360,11 @@ const PlayerHome = () => {
       {trendingSongs.length > 0 && (
         <div className="flex flex-col mb-[10rem]">
           <div className='flex flex-row w-full mb-4 items-center'>
-            <p className='text-3xl font-extrabold'>Trending Songs</p>
+            <p className='text-3xl font-extrabold'>Trending Tracks</p>
             <div className='ml-auto flex gap-2 items-center transition-all duration-300'>
-              <button className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm">
+              <button
+                onClick={handlePlayAll}
+                className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm">
                 Play all
               </button>
               <button
