@@ -131,64 +131,58 @@ export const getAlbumDetails = async (albumId) => {
   try {
     console.log('Fetching album details for:', albumId);
     
-    const response = await api.get('/albums');
-    console.log('Albums response:', response);
+    // We only need one request since tracks are included in the album response
+    const response = await api.get('/albums/tracks', { 
+      params: { 
+        id: [albumId],
+        image_size: 400,
+        audio_format: 'mp32'
+      } 
+    });
 
-    if (response.data && response.data.results) {
-      const albumData = response.data.results.find(album => album.id === albumId);
-      
-      if (albumData) {
-        // Transform the found album data
-        const transformedAlbum = {
-          id: albumData.id,
-          title: albumData.name,
-          artist: albumData.artist_name,
-          thumbnail: albumData.image,
-          releaseDate: albumData.releasedate,
-          tracks: Array(8).fill(null).map((_, index) => ({
-            id: `${albumData.id}-track-${index + 1}`,
-            title: `${albumData.name} - Track ${index + 1}`,
-            artist: albumData.artist_name,
-            thumbnail: albumData.image,
-            url: null,
-            duration: 180 + (index * 30),
-            likes: `${Math.floor(Math.random() * 100)}k`
-          }))
-        };
+    console.log('Album and tracks response:', response);
 
-        return {
-          data: {
-            album: transformedAlbum,
-            tracks: transformedAlbum.tracks
-          }
-        };
-      }
+    if (response.data?.results?.[0]) {
+      const albumData = response.data.results[0];
+      const tracks = albumData.tracks || [];
+
+      // Transform the album data
+      const transformedAlbum = {
+        id: albumData.id,
+        title: albumData.name,
+        artist: albumData.artist_name,
+        thumbnail: albumData.image,
+        releaseDate: albumData.releasedate,
+        // Transform tracks
+        tracks: tracks.map(track => ({
+          id: track.id,
+          title: track.name,
+          artist: albumData.artist_name, // Use album's artist name since tracks don't have it
+          thumbnail: albumData.image, // Use album's image for tracks
+          url: track.audio,
+          duration: parseInt(track.duration),
+          position: parseInt(track.position),
+          likes: `${Math.floor(Math.random() * 100)}k`, // Tracks don't have listen count, using random
+          download_url: track.audiodownload,
+          download_allowed: track.audiodownload_allowed
+        }))
+      };
+
+      // Sort tracks by position
+      transformedAlbum.tracks.sort((a, b) => a.position - b.position);
+
+      return {
+        data: {
+          album: transformedAlbum,
+          tracks: transformedAlbum.tracks
+        }
+      };
     }
 
-    // If album not found, return fallback data
-    console.warn('Album not found, using fallback data');
-    return {
-      data: {
-        album: {
-          id: albumId,
-          title: `Album ${albumId}`,
-          artist: 'Unknown Artist',
-          thumbnail: `https://picsum.photos/400/400?random=${albumId}`,
-          releaseDate: CURRENT_DATE,
-          tracks: Array(8).fill(null).map((_, index) => ({
-            id: `${albumId}-track-${index + 1}`,
-            title: `Track ${index + 1}`,
-            artist: 'Unknown Artist',
-            thumbnail: `https://picsum.photos/400/400?random=${index}`,
-            duration: 180 + (index * 30),
-            likes: `${Math.floor(Math.random() * 100)}k`
-          }))
-        }
-      }
-    };
+    throw new Error('Album not found');
   } catch (error) {
     console.error('Error fetching album details:', error);
-    // Return fallback data on error
+    // Return fallback data
     return {
       data: {
         album: {
@@ -203,7 +197,10 @@ export const getAlbumDetails = async (albumId) => {
             artist: 'Unknown Artist',
             thumbnail: `https://picsum.photos/400/400?random=${index}`,
             duration: 180 + (index * 30),
-            likes: `${Math.floor(Math.random() * 100)}k`
+            position: index + 1,
+            likes: `${Math.floor(Math.random() * 100)}k`,
+            download_url: null,
+            download_allowed: false
           }))
         }
       }
