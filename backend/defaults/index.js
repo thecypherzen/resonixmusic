@@ -126,10 +126,15 @@ const STATUS_CODES = {
 }
 
 const PARAMS = {
+  acoustic_electric: 'acousticelectric',
   audio_format: 'audioformat',
   date_between: 'datebetween',
+  duration_between: 'durationbetween',
   full_count: 'fullcount',
+  fuzzy_tags: 'fuzzytags',
+  group_by: 'groupby',
   image_size: 'imagesize',
+  name_search: 'namesearch',
   order_by: 'order',
   page: 'offset',
   page_size: 'limit',
@@ -138,6 +143,12 @@ const PARAMS = {
 const REQPARAMS = {
   format: 'jsonpretty',
   imagesize: 500,
+};
+
+const TRACKSPARAMS= {
+  boost: 'listens_week',
+  include: ['lyrics', 'musicinfo', 'stats'],
+  audioformat: 'mp32',
 };
 
 const APIS = { jamendo: 'jamendo' },
@@ -176,4 +187,5 @@ export {
   RX_ROOT_DIR,
   STATUS_CODES,
   TIMEOUT,
+  TRACKSPARAMS,
 };

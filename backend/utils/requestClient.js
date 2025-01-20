@@ -1,5 +1,6 @@
 // defines some reusable configurations
 import axios from 'axios';
+import qs from 'qs';
 import {
   COLOURS,
   JAMENDO,
@@ -44,13 +45,24 @@ class RequestClientError extends Error {
   }
 }
 
-
 class RequestClient {
   constructor() {
     this.client = axios.create({
       TIMEOUT,
       params: {
         client_id: JAMENDO.id,
+      },
+      paramsSerializer: (params) => {
+        const encode = encodeURIComponent;
+        return Object
+          .entries(params)
+          .map(([key, value]) => {
+            if (Array.isArray(value)) {
+              return `${encode(key)}=${encode(value.join('+'))}`;
+            }
+            return `${encode(key)}=${encode(value)}`;
+          })
+          .join('&');
       },
     });
     this.client.defaults.baseURL = null;
@@ -69,7 +81,10 @@ class RequestClient {
   init() {
     this.client.defaults.baseURL = this.#host;
     if (this.isReady) {
-      console.log(`[INIT SUCCESS]: HostUrl set to ${this.host}`);
+      this.log({
+        message: `[INIT SUCCESS]: HostUrl set to ${this.host}`,
+        type: 'success',
+      });
     }
   }
 
