@@ -27,7 +27,9 @@ router.use(json());
  *         in a zip format (that is downloading it). The zip may
  *         contain less tracks than what the playlist actually
  *         contains, as an internal limit of about 100 is set on
- *         our sourcing server (Jamendo).
+ *         our sourcing server (Jamendo). By default, playlists are
+ *         ordered by `creationdate` in descending order. That means
+ *         most recent playlists come first in returned data.
  *       operationId: getPlaylists
  *       parameters:
  *         - in: query
@@ -93,7 +95,9 @@ router.use(json());
  *             if order should be ascending or descending by
  *             adding `_asc` or `_desc` resppectively. The default
  *             order is ascending. Supported values are
- *             `creationdate`, `id`, and `name`.
+ *             `creationdate`, `id`, and `name`. Playlists are
+ *             by default ordered by `creationdate_desc`, that is
+ *             latest playlists would appear first.
  *           schema:
  *             type: string
  *             enum:
@@ -182,6 +186,7 @@ router.use(
       .escape(),
     query('order_by')
       .optional()
+      .default('creationdate_desc')
       .trim()
       .notEmpty()
       .withMessage('Value cannot be empty')
