@@ -363,14 +363,15 @@ const PlayerHome = () => {
         </div>
       )}
 
-      {/* Recent Tracks Section */}
+      {/* 
+      // Recent Tracks Section 
       {recentTracks.length > 0 && (
         <div className="flex flex-col mb-[10rem]">
           <div className='flex flex-row w-full mb-4 items-center'>
             <p className='text-3xl font-extrabold'>Recent Tracks</p>
             <div className='ml-auto flex gap-2 items-center transition-all duration-300'>
               <button
-                onClick={() => handlePlayAll(recentTracks)} // Add a new handler for recent tracks
+                onClick={() => handlePlayAll(recentTracks)} 
                 className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm">
                 Play all
               </button>
@@ -406,6 +407,7 @@ const PlayerHome = () => {
           </div>
         </div>
       )}
+ */}
 
       {/* Trending Songs Section */}
       {trendingSongs.length > 0 && (
