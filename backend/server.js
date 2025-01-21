@@ -3,6 +3,7 @@ import cors from 'cors';
 import swaggerDocs from './utils/swagger/config.js';
 import {
   albumsRouter,
+  artistsRouter,
   playlistRouter,
   tracksRouter,
   userRouter
@@ -29,6 +30,7 @@ app.set('query parser', 'extended');
 // Routers
 swaggerDocs(app); // middlewares for swagger docs
 app.use('/albums', albumsRouter);
+app.use('/artists', artistsRouter);
 app.use('/playlists', playlistRouter);
 app.use('/tracks', tracksRouter);
 app.use('/users', userRouter);

@@ -133,6 +133,7 @@ const PARAMS = {
   full_count: 'fullcount',
   fuzzy_tags: 'fuzzytags',
   group_by: 'groupby',
+  has_image: 'hasimage',
   image_size: 'imagesize',
   name_search: 'namesearch',
   order_by: 'order',
