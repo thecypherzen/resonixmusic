@@ -1,8 +1,7 @@
 import getPlaylists from './getAll.js';
-
-const nothing = null;
+import getPlaylistTracks from './getTracks.js';
 
 export {
   getPlaylists,
-  nothing,
+  getPlaylistTracks,
 };

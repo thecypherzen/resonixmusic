@@ -26,6 +26,7 @@ async function getAll(req, res) {
       ...defaultParams,
     },
   };
+  delete config.params['imagesize'];
   const queryParams = matchedData(req, { locations: ['query'] });
   requestClient.setQueryParams(queryParams, config);
   try {
