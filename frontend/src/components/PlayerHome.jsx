@@ -6,7 +6,7 @@ import api from '../services/api';
 import { MdErrorOutline } from "react-icons/md";
 
 // Constants
-const CURRENT_DATE = '2025-01-17 07:16:24';
+const CURRENT_DATE = Date.now();
 const CURRENT_USER = 'gabrielisaacs';
 const DEFAULT_THUMBNAIL = '/thumbnail.png';
 
@@ -89,7 +89,7 @@ const ErrorMessage = ({ message }) => (
 
 
 const PlayerHome = () => {
-  const { setCurrentTrack, setQueue, handleTrackSelect } = usePlayer();
+  const { handleTrackSelect } = usePlayer();
   const navigate = useNavigate();
 
   // State for data
@@ -98,6 +98,7 @@ const PlayerHome = () => {
   const [trendingSongs, setTrendingSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [recentTracks, setRecentTracks] = useState([]);
 
   // State for pagination
   const [visibleArtists, setVisibleArtists] = useState(0);
@@ -127,21 +128,27 @@ const PlayerHome = () => {
         setLoading(true);
 
         // Fetch all data in parallel
-        const [artistsResponse, playlistsResponse, tracksResponse] = await Promise.all([
-          api.getTopArtists({ limit: 15 }),
-          api.getPlaylists({ limit: 15, time: 'week' }),
-          api.getTrendingTracks({ limit: 30 })
+        const [artistsResponse, playlistsResponse, tracksResponse, recentTracksResponse] = await Promise.all([
+          api.getTopArtists({ limit: 20 }),
+          api.getPlaylists({ limit: 20, time: 'week' }),
+          api.getTrendingTracks({ limit: 30 }),
+          api.getRecentTracks({
+            limit: 30,
+            order_by: ['releasedate_desc']
+          })
         ]);
 
         // Transform and set data
         setArtists(artistsResponse.data.map(transformJamendoArtist));
         setAlbums(playlistsResponse.data.map(transformJamendoAlbum));
         setTrendingSongs(tracksResponse.data.map(transformJamendoTrack));
+        setRecentTracks(recentTracksResponse.data.map(transformJamendoTrack));
 
         console.log('Data fetch complete:', {
           artists: artistsResponse.data.length,
           playlists: playlistsResponse.data.length,
-          tracks: tracksResponse.data.length
+          tracks: tracksResponse.data.length,
+          recentTracks: recentTracksResponse.data.length
         });
 
         console.log('Playlists/Albums raw data:', playlistsResponse.data);
@@ -349,6 +356,50 @@ const PlayerHome = () => {
                 <div className="flex flex-col text-left">
                   <p className='font-bold text-lg'>{truncateTitle(album.title, 12)}</p>
                   <p className='font-bold text-sm text-neutral-400'>{truncateTitle(album.artist, 18)}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recent Tracks Section */}
+      {recentTracks.length > 0 && (
+        <div className="flex flex-col mb-[10rem]">
+          <div className='flex flex-row w-full mb-4 items-center'>
+            <p className='text-3xl font-extrabold'>Recent Tracks</p>
+            <div className='ml-auto flex gap-2 items-center transition-all duration-300'>
+              <button
+                onClick={() => handlePlayAll(recentTracks)} // Add a new handler for recent tracks
+                className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm">
+                Play all
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-2 transition-all duration-300">
+            {recentTracks.map((song, index) => (
+              <button
+                key={song.id}
+                onClick={() => handlePlaySong(song, index, recentTracks)} // Update handler to use recent tracks
+                className="flex flex-row bg-transparent hover:bg-white hover:bg-opacity-[2%] p-2 rounded-xl gap-3 group text-left transition-all"
+              >
+                <div className="flex relative">
+                  <img
+                    src={song.thumbnail || DEFAULT_THUMBNAIL}
+                    className='h-[3rem] w-[3rem] rounded-lg object-cover'
+                    alt={song.title}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <FaPlay className='fill-white drop-shadow-lg' />
+                  </div>
+                </div>
+                <div className="flex flex-col flex-1">
+                  <p className='text-base truncate'>{truncateTitle(song.title, 20)}</p>
+                  <div className="flex flex-row items-center gap-2">
+                    <p className='text-sm opacity-45 truncate'>{song.artist}</p>
+                    <span className='h-2 w-2 bg-white opacity-45 rounded-full flex-shrink-0'></span>
+                    <p className='text-sm opacity-45 truncate'>{song.likes}</p>
+                  </div>
                 </div>
               </button>
             ))}

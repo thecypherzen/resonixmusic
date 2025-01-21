@@ -208,6 +208,29 @@ export const getAlbumDetails = async (albumId) => {
   }
 };
 
+export const getRecentTracks = async (params = {}) => {
+  try {
+    console.log('Fetching recent tracks...');
+    const response = await api.get('/tracks', { 
+      params: {
+        order_by: ['releasedate_desc'],
+        limit: params.limit || 30,
+        ...params
+      }
+    });
+    console.log('Recent tracks response:', response);
+    
+    if (response.data && response.data.results) {
+      return { data: response.data.results.map(transformTrackData) };
+    }
+    console.warn('Using fallback data for recent tracks');
+    return { data: DUMMY_DATA.tracks.map(transformTrackData) };
+  } catch (error) {
+    console.warn('Error fetching recent tracks, using fallback data:', error);
+    return { data: DUMMY_DATA.tracks.map(transformTrackData) };
+  }
+};
+
 // Enhanced debug interceptors
 api.interceptors.request.use(
   config => {
@@ -253,5 +276,6 @@ export default {
   getPlaylists,
   getTrendingTracks,
   getTopArtists,
-  getAlbumDetails
+  getAlbumDetails,
+  getRecentTracks
 };
