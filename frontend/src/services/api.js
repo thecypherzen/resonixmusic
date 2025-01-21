@@ -33,6 +33,17 @@ const DUMMY_DATA = {
     image: `https://picsum.photos/400/400?random=${index + 200}`,
     tracks_count: Math.floor(Math.random() * 20) + 5,
     releasedate: CURRENT_DATE
+  })),
+
+  playlists: Array(15).fill(null).map((_, index) => ({
+    id: `playlist-${index + 1}`,
+    name: `Playlist ${index + 1}`,
+    creationdate: CURRENT_DATE,
+    user_id: `user-${index + 1}`,
+    user_name: `User ${index + 1}`,
+    image: `https://picsum.photos/400/400?random=${index + 200}`,
+    shorturl: `https://jamen.do/l/p${index + 1}`,
+    shareurl: `https://www.jamendo.com/list/p${index + 1}`
   }))
 };
 
@@ -76,6 +87,17 @@ const transformAlbumData = (album) => ({
   trackCount: album.tracks_count || 0
 });
 
+const transformPlaylistData = (playlist) => ({
+  id: playlist.id,
+  title: playlist.name,
+  artist: playlist.user_name,
+  creationDate: playlist.creationdate,
+  userId: playlist.user_id,
+  shortUrl: playlist.shorturl,
+  shareUrl: playlist.shareurl,
+  thumbnailId: playlist.id
+});
+
 export const getTrendingTracks = async (params = {}) => {
   try {
     console.log('Fetching trending tracks...');
@@ -93,34 +115,62 @@ export const getTrendingTracks = async (params = {}) => {
   }
 };
 
-export const getPlaylists = async (params = {}) => {
+export const getAlbums = async (params = {}) => {
   try {
     console.log('Fetching albums...');
-    const response = await api.get('/albums', { params });
-    console.log('Albums response:', response);
+    const response = await api.get('/albums', { 
+      params: {
+        ...params,
+        format: 'json',
+        imagesize: 500
+      }
+    });
     
-    if (response.data && response.data.results) {
+    if (response.data?.results) {
       return { data: response.data.results.map(transformAlbumData) };
     }
-    console.warn('Using fallback data for albums');
-    return { data: DUMMY_DATA.albums.map(transformAlbumData) };
+    throw new Error('No data received from server');
   } catch (error) {
     console.warn('Error fetching albums, using fallback data:', error);
     return { data: DUMMY_DATA.albums.map(transformAlbumData) };
   }
 };
 
+export const getAlbumDetails = async (albumId) => {
+  try {
+    console.log('Fetching playlists...');
+    const response = await api.get('/playlists', { 
+      params: {
+        ...params,
+        format: 'json',
+        imagesize: 500
+      }
+    });
+    
+    if (response.data?.results) {
+      return { data: response.data.results.map(transformPlaylistData) };
+    }
+    throw new Error('No data received from server');
+  } catch (error) {
+    console.warn('Error fetching playlists, using fallback data:', error);
+    return { data: DUMMY_DATA.playlists.map(transformPlaylistData) };
+  }
+};
+
 export const getTopArtists = async (params = {}) => {
   try {
     console.log('Fetching top artists...');
-    const response = await api.get('/users/top', { params });
-    console.log('Top artists response:', response);
+    const response = await api.get('/users/top', { 
+      params: {
+        ...params,
+        format: 'json'
+      }
+    });
     
-    if (response.data && response.data.results) {
+    if (response.data?.results) {
       return { data: response.data.results.map(transformArtistData) };
     }
-    console.warn('Using fallback data for artists');
-    return { data: DUMMY_DATA.artists.map(transformArtistData) };
+    throw new Error('No data received from server');
   } catch (error) {
     console.warn('Error fetching artists, using fallback data:', error);
     return { data: DUMMY_DATA.artists.map(transformArtistData) };
@@ -131,7 +181,6 @@ export const getAlbumDetails = async (albumId) => {
   try {
     console.log('Fetching album details for:', albumId);
     
-    // We only need one request since tracks are included in the album response
     const response = await api.get('/albums/tracks', { 
       params: { 
         id: [albumId],
@@ -213,7 +262,7 @@ export const getRecentTracks = async (params = {}) => {
     console.log('Fetching recent tracks...');
     const response = await api.get('/tracks', { 
       params: {
-        order_by: ['releasedate_desc'],
+        orderby: ['releasedate_desc'],
         limit: params.limit || 30,
         ...params
       }
@@ -231,9 +280,69 @@ export const getRecentTracks = async (params = {}) => {
   }
 };
 
+export const getPlaylistDetails = async (playlistId) => {
+  try {
+    console.log('Fetching playlist details for:', playlistId);
+    
+    const response = await api.get(`/playlists/id[]=${playlistId}/tracks`, { 
+      params: { 
+        format: 'json',
+        imagesize: 400
+      } 
+    });
+
+    if (response.data?.results?.[0]) {
+      const playlistData = response.data.results[0];
+      const tracks = playlistData.tracks || [];
+
+      const transformedPlaylist = {
+        id: playlistData.id,
+        title: playlistData.name,
+        artist: playlistData.user_name,
+        creationDate: playlistData.creationdate,
+        userId: playlistData.user_id,
+        shortUrl: playlistData.shorturl,
+        shareUrl: playlistData.shareurl,
+        tracks: tracks.map(track => ({
+          id: track.id,
+          title: track.name,
+          artist: track.artist_name,
+          thumbnail: track.image,
+          url: track.audio,
+          duration: parseInt(track.duration),
+          position: parseInt(track.position) || 0,
+          likes: `${Math.floor((track.listened || 0) / 1000)}k Plays`
+        }))
+      };
+
+      return {
+        data: {
+          playlist: transformedPlaylist,
+          tracks: transformedPlaylist.tracks
+        }
+      };
+    }
+
+    throw new Error('Playlist not found');
+  } catch (error) {
+    console.error('Error fetching playlist details:', error);
+    throw error;
+  }
+};
+
 // Enhanced debug interceptors
 api.interceptors.request.use(
   config => {
+    config.params = {
+      format: 'json',
+      ...config.params
+    };
+
+    // Add imagesize if the endpoint is albums or playlists
+    if (config.url.includes('/albums') || config.url.includes('/playlists')) {
+      config.params.imagesize = config.params.imagesize || 500;
+    }
+    
     console.log('[API Request]', {
       method: config.method.toUpperCase(),
       url: config.url,
@@ -277,5 +386,7 @@ export default {
   getTrendingTracks,
   getTopArtists,
   getAlbumDetails,
-  getRecentTracks
+  getPlaylistDetails,
+  getRecentTracks,
+  getAlbums
 };

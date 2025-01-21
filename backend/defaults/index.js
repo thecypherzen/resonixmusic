@@ -138,6 +138,7 @@ const PARAMS = {
   order_by: 'order',
   page: 'offset',
   page_size: 'limit',
+  position_between: 'positionbetween',
 };
 
 const REQPARAMS = {

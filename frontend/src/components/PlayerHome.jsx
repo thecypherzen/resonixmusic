@@ -4,6 +4,7 @@ import { FaPlay, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { usePlayer } from '../context/PlayerContext';
 import api from '../services/api';
 import { MdErrorOutline } from "react-icons/md";
+import PlaylistCard from './PlaylistCard';
 
 // Constants
 const CURRENT_DATE = Date.now();
@@ -34,6 +35,17 @@ const transformJamendoAlbum = (album) => ({
   artist: album.user_name || album.artist,
   thumbnail: album.image || album.thumbnail || DEFAULT_THUMBNAIL,
   trackCount: album.tracks_count || 0
+});
+
+const transformJamendoPlaylist = (playlist) => ({
+  id: playlist.id,
+  title: playlist.name,
+  artist: playlist.user_name,
+  thumbnail: `https://usercontent.jamendo.com?type=playlist&id=${playlist.id}&width=600`,
+  creationDate: playlist.creationdate,
+  shareUrl: playlist.shareurl,
+  shortUrl: playlist.shorturl,
+  userId: playlist.user_id
 });
 
 // Loading state component
@@ -96,6 +108,7 @@ const PlayerHome = () => {
   const [artists, setArtists] = useState([]);
   const [albums, setAlbums] = useState([]);
   const [trendingSongs, setTrendingSongs] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [recentTracks, setRecentTracks] = useState([]);
@@ -104,6 +117,7 @@ const PlayerHome = () => {
   const [visibleArtists, setVisibleArtists] = useState(0);
   const [visibleAlbums, setVisibleAlbums] = useState(0);
   const [visibleTrending, setVisibleTrending] = useState(0);
+  const [visiblePlaylists, setVisiblePlaylists] = useState(0);
 
   // Constants
   const cardsPerSet = 5;
@@ -114,11 +128,12 @@ const PlayerHome = () => {
     console.log('State Update:', {
       artistsCount: artists.length,
       albumsCount: albums.length,
+      playlistsCount: playlists.length,
       trendingSongsCount: trendingSongs.length,
       timestamp: CURRENT_DATE,
       user: CURRENT_USER
     });
-  }, [artists, albums, trendingSongs]);
+  }, [artists, albums, playlists, trendingSongs]);
 
   // Data fetching
   useEffect(() => {
@@ -128,31 +143,31 @@ const PlayerHome = () => {
         setLoading(true);
 
         // Fetch all data in parallel
-        const [artistsResponse, playlistsResponse, tracksResponse, recentTracksResponse] = await Promise.all([
+        const [artistsResponse, albumsResponse, playlistsResponse, tracksResponse, recentTracksResponse] = await Promise.all([
           api.getTopArtists({ limit: 20 }),
-          api.getPlaylists({ limit: 20, time: 'week' }),
+          api.getAlbums({ limit: 20 }),
+          api.getPlaylists({ limit: 20 }),
           api.getTrendingTracks({ limit: 30 }),
           api.getRecentTracks({
             limit: 30,
-            order_by: ['releasedate_desc']
+            orderby: ['releasedate_desc']
           })
         ]);
 
         // Transform and set data
         setArtists(artistsResponse.data.map(transformJamendoArtist));
-        setAlbums(playlistsResponse.data.map(transformJamendoAlbum));
+        setAlbums(albumsResponse.data.map(transformJamendoAlbum));
+        setPlaylists(playlistsResponse.data.map(transformJamendoPlaylist));
         setTrendingSongs(tracksResponse.data.map(transformJamendoTrack));
         setRecentTracks(recentTracksResponse.data.map(transformJamendoTrack));
 
         console.log('Data fetch complete:', {
-          artists: artistsResponse.data.length,
-          playlists: playlistsResponse.data.length,
-          tracks: tracksResponse.data.length,
-          recentTracks: recentTracksResponse.data.length
+          artists: artistsResponse.data?.length || 0,
+          albums: albumsResponse.data?.length || 0,
+          playlists: playlistsResponse.data?.length || 0,
+          tracks: tracksResponse.data?.length || 0,
+          recentTracks: recentTracksResponse.data?.length || 0
         });
-
-        console.log('Playlists/Albums raw data:', playlistsResponse.data);
-        console.log('Transformed albums:', playlistsResponse.data.map(transformJamendoAlbum));
 
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -248,6 +263,12 @@ const PlayerHome = () => {
     navigate(`/album/${album.id}`);
   };
 
+  const handlePlaylistClick = (playlist) => {
+    console.log('Navigating to playlist:', playlist);
+    const playlistId = playlist.id.replace('playlist-', '');
+    navigate(`/playlist/${playlistId}`);
+  };
+
   const truncateTitle = (title, maxLength) => {
     if (!title) return '';
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
@@ -258,7 +279,7 @@ const PlayerHome = () => {
   if (error) return <ErrorMessage message={error} />;
 
   // No data state
-  if (!artists.length && !albums.length && !trendingSongs.length) {
+  if (!artists.length && !albums.length && !playlists.length && !trendingSongs.length) {
     console.log('No data available');
     return (
       <div className="flex justify-center items-center h-screen">
@@ -411,7 +432,7 @@ const PlayerHome = () => {
 
       {/* Trending Songs Section */}
       {trendingSongs.length > 0 && (
-        <div className="flex flex-col mb-[10rem]">
+        <div className="flex flex-col mb-10">
           <div className='flex flex-row w-full mb-4 items-center'>
             <p className='text-3xl font-extrabold'>Trending Tracks</p>
             <div className='ml-auto flex gap-2 items-center transition-all duration-300'>
@@ -462,6 +483,47 @@ const PlayerHome = () => {
                     </div>
                   </div>
                 </button>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {/* Playlists section */}
+      {playlists.length > 0 && (
+        <div className="flex flex-col mb-[10rem]">
+          <div className='flex flex-row w-full mb-4 items-center'>
+            <p className='text-3xl font-extrabold'>Featured playlists</p>
+            <div className='ml-auto flex gap-2 items-center'>
+              <button
+                onClick={() => navigate('/playlists')}
+                className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm"
+              >
+                More
+              </button>
+              <button
+                onClick={() => handlePrevious(setVisiblePlaylists, visiblePlaylists)}
+                className="bg-transparent hover:bg-[#212121] p-2 rounded-full border border-neutral-800"
+              >
+                <FaChevronLeft />
+              </button>
+              <button
+                onClick={() => handleNext(setVisiblePlaylists, visiblePlaylists, playlists.length)}
+                className="bg-transparent hover:bg-[#212121] p-2 rounded-full border border-neutral-800"
+              >
+                <FaChevronRight />
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-row bg-transparent h-[16rem] w-full gap-4 mt-4">
+            {playlists
+              .slice(visiblePlaylists, visiblePlaylists + cardsPerSet)
+              .map((playlist) => (
+                <PlaylistCard
+                  key={playlist.id}
+                  playlist={playlist}
+                  onClick={handlePlaylistClick}
+                  truncateTitle={truncateTitle}
+                />
               ))}
           </div>
         </div>
