@@ -19,8 +19,9 @@ async function getArtists(req, res) {
   if (!validation.isEmpty()) {
     return handlers.validationError(validation.array(), res);
   }
+  delete defaultParams['imagesize'];
   const config = {
-    url: '/tracks',
+    url: '/artists',
     params: {
       ...defaultParams,
     },
@@ -28,6 +29,7 @@ async function getArtists(req, res) {
 
   const queryParams = matchedData(req, { locations: ['query'] });
   requestClient.setQueryParams(queryParams, config);
+  console.log(config, queryParams);
   try {
      const response = await requestClient.make(config);
     requestClient.setDataHeaders(response.data, {
@@ -54,3 +56,5 @@ async function getArtists(req, res) {
     return res.send(resData);
   }
 }
+
+export default getArtists;
