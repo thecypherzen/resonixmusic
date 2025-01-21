@@ -136,27 +136,6 @@ export const getAlbums = async (params = {}) => {
   }
 };
 
-export const getAlbumDetails = async (albumId) => {
-  try {
-    console.log('Fetching playlists...');
-    const response = await api.get('/playlists', { 
-      params: {
-        ...params,
-        format: 'json',
-        imagesize: 500
-      }
-    });
-    
-    if (response.data?.results) {
-      return { data: response.data.results.map(transformPlaylistData) };
-    }
-    throw new Error('No data received from server');
-  } catch (error) {
-    console.warn('Error fetching playlists, using fallback data:', error);
-    return { data: DUMMY_DATA.playlists.map(transformPlaylistData) };
-  }
-};
-
 export const getTopArtists = async (params = {}) => {
   try {
     console.log('Fetching top artists...');
@@ -254,6 +233,27 @@ export const getAlbumDetails = async (albumId) => {
         }
       }
     };
+  }
+};
+
+export const getPlaylists = async (params = {}) => {
+  try {
+    console.log('Fetching playlists...');
+    const response = await api.get('/playlists', { 
+      params: {
+        ...params,
+        format: 'json',
+        imagesize: 500
+      }
+    });
+    
+    if (response.data?.results) {
+      return { data: response.data.results.map(transformPlaylistData) };
+    }
+    throw new Error('No data received from server');
+  } catch (error) {
+    console.warn('Error fetching playlists, using fallback data:', error);
+    return { data: DUMMY_DATA.playlists.map(transformPlaylistData) };
   }
 };
 
