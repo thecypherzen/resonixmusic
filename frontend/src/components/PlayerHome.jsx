@@ -48,7 +48,19 @@ const transformJamendoPlaylist = (playlist) => ({
   userId: playlist.user_id
 });
 
-// Loading state component
+// section loading
+const SectionLoadingMessage = () => (
+  <div className="animate-pulse flex flex-col">
+    <div className="h-10 w-[20rem] bg-neutral-800 rounded-2xl"></div>
+    <div className="grid grid-cols-5 gap-4 mt-[1rem]">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+      ))}
+    </div>
+  </div>
+);
+
+// page loading state component
 const LoadingMessage = () => (
   <div className="flex mx-16 h-screen max-w-[60rem]">
     <div className="flex flex-col mt-[1.75rem]">
@@ -99,7 +111,6 @@ const ErrorMessage = ({ message }) => (
   </div>
 );
 
-
 const PlayerHome = () => {
   const { handleTrackSelect } = usePlayer();
   const navigate = useNavigate();
@@ -123,6 +134,15 @@ const PlayerHome = () => {
   const cardsPerSet = 5;
   const trendingCardsPerPage = 12;
 
+  const isPageLoading = () => {
+    return loadingArtists && loadingAlbums && loadingTrending && loadingPlaylists;
+  };
+
+  const [loadingArtists, setLoadingArtists] = useState(true);
+  const [loadingAlbums, setLoadingAlbums] = useState(true);
+  const [loadingTrending, setLoadingTrending] = useState(true);
+  const [loadingPlaylists, setLoadingPlaylists] = useState(true);
+
   // Debug logging for state changes
   useEffect(() => {
     console.log('State Update:', {
@@ -135,50 +155,74 @@ const PlayerHome = () => {
     });
   }, [artists, albums, playlists, trendingSongs]);
 
-  // Data fetching
+  // Fetch Artists
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchArtists = async () => {
       try {
-        console.log('Fetching data at:', CURRENT_DATE);
-        setLoading(true);
-
-        // Fetch all data in parallel
-        const [artistsResponse, albumsResponse, playlistsResponse, tracksResponse, recentTracksResponse] = await Promise.all([
-          api.getTopArtists({ limit: 20 }),
-          api.getAlbums({ limit: 20 }),
-          api.getPlaylists({ limit: 20 }),
-          api.getTrendingTracks({ limit: 30 }),
-          api.getRecentTracks({
-            limit: 30,
-            orderby: ['releasedate_desc']
-          })
-        ]);
-
-        // Transform and set data
-        setArtists(artistsResponse.data.map(transformJamendoArtist));
-        setAlbums(albumsResponse.data.map(transformJamendoAlbum));
-        setPlaylists(playlistsResponse.data.map(transformJamendoPlaylist));
-        setTrendingSongs(tracksResponse.data.map(transformJamendoTrack));
-        setRecentTracks(recentTracksResponse.data.map(transformJamendoTrack));
-
-        console.log('Data fetch complete:', {
-          artists: artistsResponse.data?.length || 0,
-          albums: albumsResponse.data?.length || 0,
-          playlists: playlistsResponse.data?.length || 0,
-          tracks: tracksResponse.data?.length || 0,
-          recentTracks: recentTracksResponse.data?.length || 0
-        });
-
+        setLoadingArtists(true);
+        const response = await api.getTopArtists({ limit: 20 });
+        setArtists(response.data.map(transformJamendoArtist));
       } catch (err) {
-        console.error('Error fetching data:', err);
-        setError(err.message);
+        console.error('Error fetching artists:', err);
       } finally {
-        setLoading(false);
+        setLoadingArtists(false);
       }
     };
 
-    fetchData();
+    fetchArtists();
   }, []);
+
+  // Fetch Albums
+  useEffect(() => {
+    const fetchAlbums = async () => {
+      try {
+        setLoadingAlbums(true);
+        const response = await api.getAlbums({ limit: 20 });
+        setAlbums(response.data.map(transformJamendoAlbum));
+      } catch (err) {
+        console.error('Error fetching albums:', err);
+      } finally {
+        setLoadingAlbums(false);
+      }
+    };
+
+    fetchAlbums();
+  }, []);
+
+  // Fetch Trending Tracks
+  useEffect(() => {
+    const fetchTrendingTracks = async () => {
+      try {
+        setLoadingTrending(true);
+        const response = await api.getTrendingTracks({ limit: 30 });
+        setTrendingSongs(response.data.map(transformJamendoTrack));
+      } catch (err) {
+        console.error('Error fetching trending tracks:', err);
+      } finally {
+        setLoadingTrending(false);
+      }
+    };
+
+    fetchTrendingTracks();
+  }, []);
+
+  // Fetch Playlists
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      try {
+        setLoadingPlaylists(true);
+        const response = await api.getPlaylists({ limit: 20 });
+        setPlaylists(response.data.map(transformJamendoPlaylist));
+      } catch (err) {
+        console.error('Error fetching playlists:', err);
+      } finally {
+        setLoadingPlaylists(false);
+      }
+    };
+
+    fetchPlaylists();
+  }, []);
+
 
   // Navigation handlers
   const handleNext = (setVisible, visible, totalItems) => {
@@ -274,9 +318,13 @@ const PlayerHome = () => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
   };
 
-  // Loading state
-  if (loading) return <LoadingMessage />;
-  if (error) return <ErrorMessage message={error} />;
+  if (isPageLoading()) {
+    return <LoadingMessage />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} />;
+  }
 
   // No data state
   if (!artists.length && !albums.length && !playlists.length && !trendingSongs.length) {
@@ -292,7 +340,9 @@ const PlayerHome = () => {
   return (
     <div className='max-w-[60rem] min-h-screen flex flex-col mt-6 mx-16 gap-10 transition-all duration-300'>
       {/* Popular Artists Section */}
-      {artists.length > 0 && (
+      {loadingArtists ? (
+        <SectionLoadingMessage />
+      ) : artists.length > 0 && (
         <div className="flex flex-col mb-10 w-full">
           <div className='flex flex-row w-full mb-4 items-center'>
             <p className='text-3xl font-extrabold'>Popular Artists</p>
@@ -340,7 +390,9 @@ const PlayerHome = () => {
       )}
 
       {/* Albums section */}
-      {albums.length > 0 && (
+      {loadingAlbums ? (
+        <LoadingMessage />
+      ) : albums.length > 0 && (
         <div className="flex flex-col mb-10">
           <div className='flex flex-row w-full mb-4 items-center'>
             <p className='text-3xl font-extrabold'>Albums for you</p>
@@ -384,54 +436,10 @@ const PlayerHome = () => {
         </div>
       )}
 
-      {/* 
-      // Recent Tracks Section 
-      {recentTracks.length > 0 && (
-        <div className="flex flex-col mb-[10rem]">
-          <div className='flex flex-row w-full mb-4 items-center'>
-            <p className='text-3xl font-extrabold'>Recent Tracks</p>
-            <div className='ml-auto flex gap-2 items-center transition-all duration-300'>
-              <button
-                onClick={() => handlePlayAll(recentTracks)} 
-                className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm">
-                Play all
-              </button>
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-2 transition-all duration-300">
-            {recentTracks.map((song, index) => (
-              <button
-                key={song.id}
-                onClick={() => handlePlaySong(song, index, recentTracks)} // Update handler to use recent tracks
-                className="flex flex-row bg-transparent hover:bg-white hover:bg-opacity-[2%] p-2 rounded-xl gap-3 group text-left transition-all"
-              >
-                <div className="flex relative">
-                  <img
-                    src={song.thumbnail || DEFAULT_THUMBNAIL}
-                    className='h-[3rem] w-[3rem] rounded-lg object-cover'
-                    alt={song.title}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <FaPlay className='fill-white drop-shadow-lg' />
-                  </div>
-                </div>
-                <div className="flex flex-col flex-1">
-                  <p className='text-base truncate'>{truncateTitle(song.title, 20)}</p>
-                  <div className="flex flex-row items-center gap-2">
-                    <p className='text-sm opacity-45 truncate'>{song.artist}</p>
-                    <span className='h-2 w-2 bg-white opacity-45 rounded-full flex-shrink-0'></span>
-                    <p className='text-sm opacity-45 truncate'>{song.likes}</p>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
- */}
-
       {/* Trending Songs Section */}
-      {trendingSongs.length > 0 && (
+      {loadingTrending ? (
+        <SectionLoadingMessage />
+      ) : trendingSongs.length > 0 && (
         <div className="flex flex-col mb-10">
           <div className='flex flex-row w-full mb-4 items-center'>
             <p className='text-3xl font-extrabold'>Trending Tracks</p>
@@ -489,7 +497,9 @@ const PlayerHome = () => {
       )}
 
       {/* Playlists section */}
-      {playlists.length > 0 && (
+      {loadingPlaylists ? (
+        <SectionLoadingMessage />
+      ) : playlists.length > 0 && (
         <div className="flex flex-col mb-[10rem]">
           <div className='flex flex-row w-full mb-4 items-center'>
             <p className='text-3xl font-extrabold'>Featured playlists</p>
