@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
   matchedData,
   validationResult,
@@ -50,6 +51,10 @@ async function getTracks(req, res) {
     requestClient.log({ req });
     return res.send(resData);
   }
+=======
+async function getTracks(req, res) {
+  return res.send({ controller: 'getUsersTracks' });
+>>>>>>> 51c812b (build(controllers): add users controllers skeleton)
 }
 
 export default getTracks;

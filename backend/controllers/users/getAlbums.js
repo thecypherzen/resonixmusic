@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
   matchedData,
   validationResult,
@@ -49,6 +50,10 @@ async function getAlbums(req, res) {
     requestClient.log({ req });
     return res.send(resData);
   }
+=======
+async function getAlbums(req, res) {
+  return res.send({ endpoint: 'getUsersAlbums' });
+>>>>>>> 51c812b (build(controllers): add users controllers skeleton)
 }
 
 export default getAlbums;
