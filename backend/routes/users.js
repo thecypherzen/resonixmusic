@@ -27,6 +27,13 @@ const router = Router();
 router.use(json());
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+router.get('/top', getTopArtists);
+=======
+=======
+>>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
 /**
  * @openapi
  *   /users/albums:
@@ -92,7 +99,11 @@ router.use(json());
  *             Sort results by `createdate`. Can also specify
  *             if order should be ascending or descending by
  *             adding `_asc` or `_desc` resppectively. The default
+<<<<<<< HEAD
  *             order is `updatedate_desc`.
+=======
+ *             order is ascending.
+>>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
  *           schema:
  *             type: string
  *             enum:
@@ -109,6 +120,10 @@ router.use(json());
  *           schema:
  *             $ref: '#/components/schemas/page_size'
  */
+<<<<<<< HEAD
+=======
+>>>>>>> a881f24 (feat: implement getUsersAlbums controller and router)
+>>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
 router.get(
   '/albums',
   [
@@ -166,7 +181,11 @@ router.get(
       .withMessage('Invalid image_size. Expects 30, 50 or 100'),
     query('order_by')
       .optional()
+<<<<<<< HEAD
       .default('updatedate_desc')
+=======
+      .default('id_asc')
+>>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
       .trim()
       .notEmpty()
       .withMessage('Value cannot be empty')
@@ -664,7 +683,11 @@ router.get(
  *             adding `_asc` or `_desc` resppectively. The default
  *             order is ascending. Supported values are
  *             `updatedate`. By default, they are sorted
+<<<<<<< HEAD
  *             by `updatedate_desc`.
+=======
+ *             by relevance.
+>>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
  *           schema:
  *             type: string
  *             enum:

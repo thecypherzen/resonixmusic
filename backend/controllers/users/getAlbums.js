@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
 import {
   matchedData,
   validationResult,
@@ -31,6 +34,10 @@ async function getAlbums(req, res) {
 
   const queryParams = matchedData(req, { locations: ['query'] });
   requestClient.setQueryParams(queryParams, config);
+<<<<<<< HEAD
+=======
+  // return res.send(config);
+>>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
   let resData = null;
   try {
     const response = await requestClient.make(config);
@@ -43,6 +50,10 @@ async function getAlbums(req, res) {
     resData = {};
     // set headers in resData
     requestClient.setResStatus(error.code, res);
+<<<<<<< HEAD
+=======
+    // req.res = res; [TEMPORAL - uncomment after check]
+>>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
     requestClient.setDataHeaders(resData, {
       error, options: {'x-took': error.timeTaken },
        });
@@ -50,10 +61,13 @@ async function getAlbums(req, res) {
     requestClient.log({ req });
     return res.send(resData);
   }
+<<<<<<< HEAD
 =======
 async function getAlbums(req, res) {
   return res.send({ endpoint: 'getUsersAlbums' });
 >>>>>>> 51c812b (build(controllers): add users controllers skeleton)
+=======
+>>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
 }
 
 export default getAlbums;
