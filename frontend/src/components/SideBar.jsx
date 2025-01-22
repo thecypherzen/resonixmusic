@@ -124,8 +124,8 @@ const SideBar = () => {
           {/* Navigation Links */}
           <div className="flex flex-col gap-6 mb-10 mt-2 ml-2">
             <Link
-              to='/music'
-              className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${location.pathname === '/music' ? 'text-[#08B2F0]' : ''
+              to='/'
+              className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${location.pathname === '/' ? 'text-[#08B2F0]' : ''
                 }`}
             >
               <House />

@@ -8,6 +8,8 @@ import MusicPlayer from './pages/MusicPlayer';
 import ErrorBoundary from './components/ErrorBoundary';
 import { PlayerProvider } from './context/PlayerContext';
 import SongDetailsPage from './pages/SongDetailsPage';
+import PlaylistDetails from './components/PlaylistDetails';
+import AlbumDetailsPage from './pages/AlbumDetailsPage';
 
 function App() {
   return (
@@ -15,12 +17,15 @@ function App() {
       <PlayerProvider>
         <ErrorBoundary>
           <Routes>
-            <Route path="/" element={<WelcomeScreen />} />
+            <Route path="/" element={<MusicPlayer />} />
+            <Route path="/welcome" element={<WelcomeScreen />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/music" element={<MusicPlayer />} />
             <Route path="/song/:id" element={<SongDetailsPage />} />
+            <Route path="/playlist/:id" element={<PlaylistDetails />} />
+            <Route path="/album/:id" element={<AlbumDetailsPage />} />
           </Routes>
         </ErrorBoundary>
       </PlayerProvider>
