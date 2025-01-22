@@ -6,7 +6,7 @@ import {
   artistsRouter,
   playlistRouter,
   tracksRouter,
-  userRouter
+  usersRouter
 } from './routes/index.js';
 import {
   RESPONSE_CODES as resCodes,
@@ -33,7 +33,7 @@ app.use('/albums', albumsRouter);
 app.use('/artists', artistsRouter);
 app.use('/playlists', playlistRouter);
 app.use('/tracks', tracksRouter);
-app.use('/users', userRouter);
+app.use('/users', usersRouter);
 
 // Native routes
 /**
