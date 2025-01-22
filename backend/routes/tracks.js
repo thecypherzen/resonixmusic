@@ -275,7 +275,7 @@ router.use(json());
  *           schema:
  *             type: string
  */
-router.use(
+router.get(
   '/',
   [
     query([
@@ -443,5 +443,17 @@ router.use(
   ],
   getTracks
 );
+
+router.use((req, res) => {
+  return res.status(404).send({
+    headers: {
+      status: 'failed',
+      code: resCodes[22].code,
+      error_message: resCodes[22].des,
+      warning: '',
+      'x-took': '0ms'
+    }
+  })
+});
 
 export default router;
