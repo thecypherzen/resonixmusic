@@ -9,6 +9,7 @@ import {
 import {
   MAX_PAGE_SIZE,
   MIN_PAGE_SIZE,
+  RESPONSE_CODES as resCodes,
 } from '../defaults/index.js';
 
 const router = Router();
@@ -135,7 +136,7 @@ router.use(json());
  *         schema:
  *            $ref: '#/components/schemas/page'
  */
-router.use(
+router.get(
   '/albums',
   [
     query(['album_datebetween', 'date_between'])
@@ -337,7 +338,7 @@ router.use(
  *           is specified through the `order_by` tag, results are
  *           in order of relevance.
  */
-router.use(
+router.get(
   '/info',
   [
     query('date_between')
@@ -554,7 +555,7 @@ router.use(
  *         name: track_type
  *         description:
  */
-router.use(
+router.get(
   '/tracks',
   [
     query(['album_datebetween', 'date_between'])
@@ -748,7 +749,7 @@ router.use(
  *         schema:
  *            $ref: '#/components/schemas/page'
  */
-router.use(
+router.get(
   '/',
   [
     query('date_between')
@@ -824,5 +825,17 @@ router.use(
   ],
   getArtists
 );
+
+router.use((req, res) => {
+  return res.status(404).send({
+    headers: {
+      status: 'failed',
+      code: resCodes[22].code,
+      error_message: resCodes[22].des,
+      warning: '',
+      'x-took': '0ms'
+    }
+  })
+});
 
 export default router;
