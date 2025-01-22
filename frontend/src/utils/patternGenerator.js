@@ -8,10 +8,20 @@ const COLORS = [
   ['#7209B7', '#4361EE'], // Deep Purple & Blue
   ['#4D908E', '#F94144'], // Sea Green & Red
   ['#277DA1', '#F9C74F'], // Ocean Blue & Yellow
-  ['#43AA8B', '#F8961E']  // Green & Orange
+  ['#43AA8B', '#F8961E'],  // Green & Orange
+  ['#EF476F', '#FFD166'], // Coral Pink & Mustard Yellow
+  ['#06D6A0', '#118AB2'], // Aqua Green & Deep Cyan
+  ['#073B4C', '#FFD166'], // Midnight Blue & Soft Yellow
+  ['#FF8C42', '#2E4057'], // Bright Orange & Slate Blue
+  ['#D7263D', '#3B8EA5'], // Crimson & Light Blue
+  ['#A4036F', '#F2A71B'], // Magenta & Golden Yellow
+  ['#8338EC', '#FB5607'], // Violet & Tangerine
+  ['#2A9D8F', '#E76F51'], // Jade Green & Burnt Orange
+  ['#3D5A80', '#EE6C4D'], // Steel Blue & Warm Coral
+  ['#F4A261', '#264653']  // Peach & Deep Teal
 ];
 
-const generatePattern = (id) => {
+export const generatePattern = (id) => {
   // Create canvas element
   const canvas = document.createElement('canvas');
   canvas.width = 400;
@@ -19,7 +29,7 @@ const generatePattern = (id) => {
   const ctx = canvas.getContext('2d');
 
   // Get deterministic colors based on id
-  const numericId = parseInt(id.replace(/\D/g, '')) || 0;
+  const numericId = parseInt(String(id).replace(/\D/g, '')) || 0;
   const colorIndex = numericId % COLORS.length;
   const [bgColor, patternColor] = COLORS[colorIndex];
 
@@ -28,7 +38,7 @@ const generatePattern = (id) => {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Generate pattern based on ID
-  const patternType = numericId % 4; // 4 different pattern types
+  const patternType = numericId % 4;
   const size = 20;
 
   ctx.fillStyle = patternColor;
@@ -70,13 +80,6 @@ const generatePattern = (id) => {
       break;
   }
 
-  // Add a subtle gradient overlay
-  const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-  gradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
-  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.1)');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
   return canvas.toDataURL('image/png');
 };
 
@@ -97,4 +100,28 @@ export const getCachedPlaylistThumbnail = (playlistId) => {
     patternCache.set(playlistId, getPlaylistThumbnail(playlistId));
   }
   return patternCache.get(playlistId);
+};
+
+export const getArtistThumbnail = (artistId) => {
+  try {
+    // Use a different set of colors or pattern types for artists
+    const numericId = parseInt(artistId.replace(/\D/g, '')) || 0;
+    return generatePattern(artistId, {
+      patternType: (numericId % 6), // More pattern types for artists
+      colors: COLORS[(numericId + 3) % COLORS.length] // Offset color selection
+    });
+  } catch (error) {
+    console.error('Error generating artist thumbnail:', error);
+    return null;
+  }
+};
+
+// Add artist-specific caching
+const artistPatternCache = new Map();
+
+export const getCachedArtistThumbnail = (artistId) => {
+  if (!artistPatternCache.has(artistId)) {
+    artistPatternCache.set(artistId, getArtistThumbnail(artistId));
+  }
+  return artistPatternCache.get(artistId);
 };

@@ -71,11 +71,11 @@ const transformTrackData = (track) => ({
 const transformArtistData = (artist) => ({
   id: artist.id,
   name: artist.name,
-  thumbnail: artist.image,
-  followerCount: parseInt(artist.joindate) || 0,
-  profile_picture: {
-    "150x150": artist.image
-  }
+  image: artist.image,
+  joindate: artist.joindate || '2025-01-22 23:01:16',
+  website: artist.website || '',
+  shorturl: artist.shorturl || '',
+  shareurl: artist.shareurl || ''
 });
 
 const transformAlbumData = (album) => ({
@@ -139,15 +139,18 @@ export const getAlbums = async (params = {}) => {
 export const getTopArtists = async (params = {}) => {
   try {
     console.log('Fetching top artists...');
-    const response = await api.get('/users/top', { 
+    const response = await api.get('/artists', { 
       params: {
         ...params,
-        format: 'json'
+        limit: params.limit || 20,
+        order: 'popularity_week_desc'
       }
     });
     
     if (response.data?.results) {
-      return { data: response.data.results.map(transformArtistData) };
+      return { 
+        data: response.data.results.map(artist => transformArtistData(artist))
+      };
     }
     throw new Error('No data received from server');
   } catch (error) {
@@ -242,8 +245,7 @@ export const getPlaylists = async (params = {}) => {
     const response = await api.get('/playlists', { 
       params: {
         ...params,
-        format: 'json',
-        imagesize: 500
+        format: 'json'
       }
     });
     

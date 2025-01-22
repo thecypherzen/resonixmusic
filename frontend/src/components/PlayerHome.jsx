@@ -5,9 +5,10 @@ import { usePlayer } from '../context/PlayerContext';
 import api from '../services/api';
 import { MdErrorOutline } from "react-icons/md";
 import PlaylistCard from './PlaylistCard';
+import ArtistCard from './ArtistCard';
 
 // Constants
-const CURRENT_DATE = Date.now();
+const CURRENT_DATE = '2025-01-22 19:25:24';
 const CURRENT_USER = 'gabrielisaacs';
 const DEFAULT_THUMBNAIL = '/thumbnail.png';
 
@@ -25,7 +26,7 @@ const transformJamendoTrack = (track) => ({
 const transformJamendoArtist = (artist) => ({
   id: artist.id,
   name: artist.name,
-  thumbnail: artist.image || artist.thumbnail || DEFAULT_THUMBNAIL,
+  thumbnail: artist.image || "/artist_thumb.jpeg",
   followerCount: artist.sharecount || 0
 });
 
@@ -212,7 +213,10 @@ const PlayerHome = () => {
       try {
         setLoadingPlaylists(true);
         const response = await api.getPlaylists({ limit: 20 });
-        setPlaylists(response.data.map(transformJamendoPlaylist));
+        console.log('Raw playlist response:', response.data);
+        const transformedPlaylists = response.data.map(transformJamendoPlaylist);
+        console.log('Transformed playlists:', transformedPlaylists);
+        setPlaylists(transformedPlaylists);
       } catch (err) {
         console.error('Error fetching playlists:', err);
       } finally {
@@ -365,26 +369,19 @@ const PlayerHome = () => {
             </div>
           </div>
           <div className="flex flex-row bg-transparent h-[16rem] w-full gap-4">
-            {artists.slice(visibleArtists, visibleArtists + cardsPerSet).map((artist) => (
-              <button
-                key={artist.id}
-                onClick={() => handleArtistClick(artist)}
-                className='flex flex-col bg-transparent hover:bg-gradient-to-b from-transparent via-neutral-950 to-neutral-900 hover:bg-opacity-5 rounded-2xl w-[11.5rem] h-[15rem] px-4 py-2 gap-4 hover:border-none transition-all relative group mt-4'
-              >
-                <div className="opacity-0 group-hover:opacity-100 flex bg-[#08B2F0] w-10 h-10 rounded-full shadow-lg absolute right-6 top-[7rem] hover:scale-110 transition-all duration-300">
-                  <FaPlay className='m-auto shadow-lg fill-black' />
-                </div>
-                <img
-                  src={artist.thumbnail || DEFAULT_THUMBNAIL}
-                  className="rounded-full h-[8.75rem] w-[8.75rem] shadow-lg mx-auto object-cover"
-                  alt={artist.name}
+            {artists.slice(visibleArtists, visibleArtists + cardsPerSet).map((artist) => {
+
+              console.log('Mapping artist:', artist);
+
+              return (
+                <ArtistCard
+                  key={artist.id}
+                  artist={artist}
+                  onClick={handleArtistClick}
+                  truncateTitle={truncateTitle}
                 />
-                <div className="flex flex-col text-left">
-                  <p className='font-bold text-lg'>{artist.name}</p>
-                  <p className='font-bold text-sm text-neutral-400'>Artist</p>
-                </div>
-              </button>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
