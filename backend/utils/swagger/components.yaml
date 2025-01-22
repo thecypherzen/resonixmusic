@@ -217,6 +217,15 @@ components:
         - 50
         - 100
       default: 100
+    user_relation:
+      type: array
+      items:
+        type: string
+        enum:
+          - favorite
+          - like
+          - review
+      minItems: 2
     vocal_instrumental:
       type: string
       enum:
