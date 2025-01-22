@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+import { Router } from 'express';
+import { getTopArtists } from '../controllers/users/userControllers.js';
+=======
+>>>>>>> 59827ac (build(routers): expose users router)
 import { Router, json } from 'express';
 import { query } from 'express-validator';
 import {
@@ -11,10 +18,15 @@ import {
   MIN_PAGE_SIZE,
   RESPONSE_CODES as resCodes
 } from '../defaults/index.js';
+<<<<<<< HEAD
+=======
+>>>>>>> 5a78239 (build(routers): expose users router)
+>>>>>>> 59827ac (build(routers): expose users router)
 
 const router = Router();
 router.use(json());
 
+<<<<<<< HEAD
 /**
  * @openapi
  *   /users/albums:
@@ -741,6 +753,28 @@ router.get(
                   + ` to ${MAX_PAGE_SIZE}`)
       .escape(),
   ],
+=======
+<<<<<<< HEAD
+router.get('/top', getTopArtists);
+=======
+router.get(
+  '/albums',
+  getUsersAlbums
+);
+
+router.get(
+  '/artists',
+  getUsersArtists
+);
+
+router.get(
+  '/tracks',
+  getUsersTracks
+);
+
+router.get(
+  '/',
+>>>>>>> 59827ac (build(routers): expose users router)
   getUsers
 );
 
@@ -755,5 +789,9 @@ router.use((req, res) => {
     }
   })
 });
+<<<<<<< HEAD
+=======
+>>>>>>> 5a78239 (build(routers): expose users router)
+>>>>>>> 59827ac (build(routers): expose users router)
 
 export default router;
