@@ -30,7 +30,6 @@ async function getAlbums(req, res) {
 
   const queryParams = matchedData(req, { locations: ['query'] });
   requestClient.setQueryParams(queryParams, config);
-  // return res.send(config);
   let resData = null;
   try {
     const response = await requestClient.make(config);
@@ -43,7 +42,6 @@ async function getAlbums(req, res) {
     resData = {};
     // set headers in resData
     requestClient.setResStatus(error.code, res);
-    // req.res = res; [TEMPORAL - uncomment after check]
     requestClient.setDataHeaders(resData, {
       error, options: {'x-took': error.timeTaken },
        });

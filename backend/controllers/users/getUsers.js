@@ -29,10 +29,8 @@ async function getUsers(req, res) {
   };
 
   const queryParams = matchedData(req, { locations: ['query'] });
-  console.log(queryParams);
   // set query parameters and make request
   requestClient.setQueryParams(queryParams, config);
-  console.log('config\n',config);
   // return res.send(config);
   let resData = null;
   try {
@@ -46,7 +44,6 @@ async function getUsers(req, res) {
     resData = {};
     // set headers in resData
     requestClient.setResStatus(error.code, res);
-    // req.res = res; [TEMPORAL - uncomment after check]
     requestClient.setDataHeaders(resData, {
       error, options: {'x-took': error.timeTaken },
        });
