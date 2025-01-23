@@ -4,6 +4,7 @@ import swaggerDocs from './utils/swagger/config.js';
 import {
   albumsRouter,
   artistsRouter,
+  authRouter,
   playlistRouter,
   tracksRouter,
   usersRouter
@@ -31,6 +32,7 @@ app.set('query parser', 'extended');
 swaggerDocs(app); // middlewares for swagger docs
 app.use('/albums', albumsRouter);
 app.use('/artists', artistsRouter);
+app.use('/auth', authRouter);
 app.use('/playlists', playlistRouter);
 app.use('/tracks', tracksRouter);
 app.use('/users', usersRouter);
