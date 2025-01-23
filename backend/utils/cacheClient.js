@@ -45,7 +45,7 @@ class CacheClient {
   }
 
   async set(key, value, ex = CACHE_EXP_SECS) {
-    const res = await this.client.set(key, value, 'EX', ex);
+    const res = await this.client.set(key, value, { EX: ex });
     return res;
   }
 
