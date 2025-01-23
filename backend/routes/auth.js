@@ -2,6 +2,7 @@ import { Router, json } from 'express';
 import { query } from 'express-validator';
 import {
   authAuthorize,
+  authGrant,
 } from '../controllers/index.js';
 
 const router = Router();
@@ -19,12 +20,15 @@ router.use('/refresh', (req, res) => {
   return res.send({ route: 'refresh auth token' });
 });
 
-router.use('/verify', (req, res) => {
-  console.log('\nredirected from authorize....');
-  console.log('body: ', req.body);
-  console.log('query params: ', req.query);
-  return res.send({ route: 'grant auth request' });
-});
+router.use(
+  '/verify',
+  [
+    query(['access_token', 'code', 'state'])
+      .isString()
+      .withMessage('Invalid parameter'),
+  ],
+  authGrant
+);
 
 
 export default router;
