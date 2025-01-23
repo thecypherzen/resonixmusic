@@ -156,13 +156,6 @@ const TRACKSPARAMS= {
 const APIS = { jamendo: 'jamendo' },
       AUDIO_CHUNK_SIZE = Math.ceil(2 ** 20),
       CACHE_EXP_SECS = 24 * 7 * 3600,
-      JAMENDO = {
-        id: process.env.JAM_CLIENT_ID,
-        secret: process.env.JAM_CLIENT_SECRET,
-        version: 'v3.0',
-        base: 'https://api.jamendo.com',
-        callbackUrl: null,
-      },
       MIN_PAGE_SIZE = 20,
       MAX_PAGE_SIZE = 200,
       RXBE_PORT = process.env.RXBE_PORT || 5000,
@@ -170,7 +163,14 @@ const APIS = { jamendo: 'jamendo' },
       RX_ROOT_DIR = '/var/tmp/resonix',
       TIMEOUT = 500,
       MIN_RETRIES = 5,
-      MAX_RETRIES = 10;
+      MAX_RETRIES = 10,
+      JAMENDO = {
+        id: process.env.JAM_CLIENT_ID,
+        secret: process.env.JAM_CLIENT_SECRET,
+        version: 'v3.0',
+        base: 'https://api.jamendo.com',
+        cbUrl: `http://localhost:${RXBE_PORT}/auth`,
+      };
 
 export {
   AUDIO_CHUNK_SIZE,
