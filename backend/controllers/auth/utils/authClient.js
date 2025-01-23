@@ -1,43 +1,67 @@
 import {
-
   JAMENDO as api
 } from '../../../defaults/index.js';
 import {
-  requestClient
-} from '../../utils/index.js';
+  RequestClient
+} from '../../../utils/index.js';
 
-class AuthClient {
+class AuthClient extends RequestClient {
+  constructor(){
+    super();
+  }
+
   #redirect_uri = api.cbUrl;
   #auth_url = `${this.#redirect_uri}/authorize`;
-  #grant_url = `${this.#redirec_uri}verify/`;
+  #grant_url = `${this.#redirect_uri}/verify`;
+  #name = 'AuthClient';
 
-  get redirectUrl() this.#redirect_uri;
-  get authUrl() this.#auth_url;
-  get grantUrl() this.#grant_url;
 
-  async function  authorizeAuth(req, res) {
+  get redirectUrl() {
+    return this.#redirect_uri;
+  }
+  get authUrl() {
+    return this.#auth_url;
+  }
+
+  get grantUrl() {
+    return this.#grant_url;
+  }
+
+  get name() {
+    return this.#name;
+  }
+
+  getUri(config) {
+    const requestUri = this.client.getUri(config);
+    return requestUri;
+  }
+
+
+  async authorizeAuth(req, res) {
     // make new authorization request
-    const config: {
+    const config = {
       url: '/oauth/authorize',
       params: {
-        redirect_uri: this.authUrl;
+        redirect_uri: this.grantUrl,
       }
     };
 
-    console.log('auth request config:\n', config);
-    const response  requestClient.make(config);
-    console.log(response);
+    const authUri = this.getUri(config);
+    this.log({
+      message: `redirecting to: ${authUri}`, type: 'success',
+    });
+    return res.redirect(authUri);
   }
 
-  async function grantAuth(req, res) {
+  async grantAuth(req, res) {
     // receive authrization code and make grant request
   }
 
-  async function refreshAuth(req, res) {
+  async refreshAuth(req, res) {
     // refresh auth
   }
 }
 
 const authClient = new AuthClient();
-
+authClient.init();
 export default authClient;

@@ -1,6 +1,10 @@
+import {
+  authClient
+} from './utils/index.js';
+
 async function authorize(req, res) {
-  console.log('new authorization request');
-  return res.send({ route: 'new authorization request' });
+  const response = await authClient.authorizeAuth(req, res);
+  return response;
 }
 
 export default authorize;
