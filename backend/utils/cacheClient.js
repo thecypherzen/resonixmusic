@@ -55,9 +55,9 @@ class CacheClient {
   }
 
   // hget hset hsetmany hdel
-  async hGet(hash, field, buffers = false, format = 'binary') {
+  async hGet(hash, field, buffers = false) {
     const data = await this.client.hGet(hash, field);
-    return buffers && data ? Buffer.from(data,) : data;
+    return buffers && data ? Buffer.from(data) : data;
   }
 
   async hSet(hash, field, value, ex = CACHE_EXP_SECS) {
@@ -70,13 +70,18 @@ class CacheClient {
     return retVal;
   }
 
-  async hSetMany(hash, obj) {
+  async hSetMany(hash, obj, ex = CACHE_EXP_SECS) {
     const promises = [];
     for (const [field, value] of Object.entries(obj)) {
       promises.push(this.client.hSet(hash, field, value));
     }
-    const results = await Promise.all(promises);
-    return results;
+    try {
+      const results = await Promise.all(promises);
+      await this.client.expire(hash, ex);
+      return true;
+    } catch (error) {
+      throw (error);
+    }
   }
 
   async hDel(hash, ...fields) {
