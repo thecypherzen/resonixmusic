@@ -15,9 +15,10 @@ async function grantAuth(req, res) {
         options: { 'x-took': response.timeTaken }
       })
       // save access_code in cookie
-      res.cookie('access_token', response.data.acccess_token, {
-        secure: true,
+      res.cookie('access_token', response.data.access_token, {
         maxAge: response.data.expires_in * 1000,
+        path: '/auth',
+        secure: true,
       });
       return res.send(resData);
     } catch (error) {

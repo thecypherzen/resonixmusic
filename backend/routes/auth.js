@@ -1,5 +1,6 @@
 import { Router, json } from 'express';
 import { query } from 'express-validator';
+import { cookieParser } from 'cookie-parser';
 import {
   authAuthorize,
   authGrant,
@@ -7,7 +8,7 @@ import {
 
 const router = Router();
 router.use(json());
-
+router.use(cookieParser());
 
 router.use('/authorize', authAuthorize);
 
