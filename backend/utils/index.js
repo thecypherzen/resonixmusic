@@ -3,6 +3,7 @@ import getPageFromArray from './getPageFrom.js';
 import errorHandlers from './errorHandlers.js';
 import storage from './localStorage.js';
 import {
+  RequestClient,
   requestClient,
   RequestClientError,
 } from './requestClient.js';
@@ -21,6 +22,7 @@ export {
   errorHandlers,
   filterBy,
   getPageFromArray,
+  RequestClient,
   requestClient,
   RequestClientError,
   sortBy,
