@@ -1,7 +1,8 @@
 import {
   requestClient,
   RequestClientError,
-} from '../utils/index.js';
+  AuthError,
+} from './index.js';
 
 import {
   RESPONSE_CODES as resCodes,
@@ -10,7 +11,7 @@ import {
 const validationError = (errorsArray, res) => {
   const resBody = { headers: {}, results: [] };
   const errCode = errorsArray.client_id ? 4 : 3;
- const errorObj = new RequestClientError(
+  const errorObj = new RequestClientError(
     `${resCodes[errCode].type}: ${resCodes[errCode.des]}`,
     {
       code: resCodes[errCode].code,
@@ -22,7 +23,14 @@ const validationError = (errorsArray, res) => {
   return res.status(400).send(resBody);
 };
 
+const generalError = (error, res) => {
+  const resBody = { headers: {}, results: [] };
+  requestClient.setDataHeaders(resBody, { error });
+  return res.status(error.errno > 0 ? error.errno : 500)
+            .send(resBody);
+}
 const handlers = {
+  generalError,
   validationError,
 };
 
