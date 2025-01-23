@@ -70,6 +70,17 @@ class AuthClient extends RequestClient {
     return cacheClient.del('state')
   }
 
+  async clearTokenData(token){
+
+  }
+
+  async clearTokenData(token){
+    const result = await cacheClient.del(
+      `token:${token}`, `refresh:${token}`
+    );
+    return result;
+  }
+
   getUri(config) {
     const requestUri = this.client.getUri(config);
     return requestUri;
