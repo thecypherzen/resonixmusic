@@ -1,7 +1,13 @@
+import crypto from 'crypto';
+import qs from 'qs';
+import { matchedData, validationResult } from 'express-validator';
+import AuthError from './authError.js';
 import {
   JAMENDO as api
 } from '../../../defaults/index.js';
 import {
+  cacheClient,
+  errorHandlers as handlers,
   RequestClient
 } from '../../../utils/index.js';
 
@@ -31,21 +37,39 @@ class AuthClient extends RequestClient {
     return this.#name;
   }
 
+  clearState() {
+    return cacheClient.del('state')
+  }
+
+  // generate a code to use for current request
+  newState() {
+    return crypto.createHash('sha256')
+                 .update(crypto.randomBytes(16))
+                 .digest('hex');
+  }
+
+  url_stringify(data) {
+    return qs.stringify(data);
+  }
+
   getUri(config) {
     const requestUri = this.client.getUri(config);
     return requestUri;
   }
 
-
+  // manage new authorization requests
   async authorizeAuth(req, res) {
     // make new authorization request
+    const state = this.newState();
+    await cacheClient.set('state', state);
+
     const config = {
       url: '/oauth/authorize',
       params: {
         redirect_uri: this.grantUrl,
+        state,
       }
     };
-
     const authUri = this.getUri(config);
     this.log({
       message: `redirecting to: ${authUri}`, type: 'success',
@@ -53,8 +77,70 @@ class AuthClient extends RequestClient {
     return res.redirect(authUri);
   }
 
+  // manage grant requests as authorizeAuth's calback
   async grantAuth(req, res) {
-    // receive authrization code and make grant request
+    const validation = validationResult(req);
+    if (!validation.array()) {
+      return handlers.validationError(validation.array(), res);
+    }
+    const params = matchedData(req, { locations: ['query'] });
+    try {
+      const savedState = await cacheClient.get('state');
+      const { state, code } = params;
+      if (state !== savedState.toString('utf-8')) {
+        throw new AuthError(
+          'Possible CSRF detected. Unknown state was returned',
+          { errno: 401 }
+        )
+      }
+      // clear state and make grant request
+      await this.clearState();
+      const config = {
+        method: 'POST',
+        url: '/oauth/grant',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        data: this.url_stringify({
+          code,
+          client_id: `${api.id}`,
+          client_secret: `${api.secret}`,
+          redirect_uri: this.grantUrl,
+        }),
+        params: {
+          grant_type: 'authorization_code',
+        }
+      };
+      try {
+        const response = await this.make(config);
+        console.log('auth_data', response.data);
+        // cache access_token, expiry, type, and refresh
+        res.data = response.data;
+        return response;
+      } catch (error) {
+        throw new AuthError(
+          error.message, {
+            errno: error.errno < 0 ? error.errno : 401,
+            code: error?.code || null,
+            stack: error.stack
+          }
+        );
+      }
+      return res;
+    } catch (error) {
+      const resData = {};
+      this.setDataHeaders(resData, {
+      error, options: {'x-took': error.timeTaken },
+      });
+      if (error?.errno > 0) {
+        this.log({ message: error.message, type: 'error' });
+      return res.status(error.errno).send(resData);
+    }
+      this.setResStatus(error.code, res);
+      this.log({ req });
+      res.data = resData;
+      return res;
+    }
   }
 
   async refreshAuth(req, res) {
