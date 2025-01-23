@@ -50,8 +50,17 @@ class CacheClient {
   }
 
   async del(...keys) {
-    const res = await this.client.del(...keys);
-    return res;
+    const promises = [];
+    for (let key of keys){
+      promises.push(this.client.del(key));
+    }
+    try {
+      const res = await Promise.all(promises);
+      return true;
+    } catch(error) {
+      console.error(error);
+      return false;
+    }
   }
 
   // hget hset hsetmany hdel
