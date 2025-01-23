@@ -52,6 +52,10 @@ const api = axios.create({
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
+  },
+  retry: 3,
+  retryDelay: (retryCount) => {
+    return retryCount * 2000;
   }
 });
 
@@ -363,23 +367,28 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  response => {
-    console.log('[API Response]', {
-      url: response.config.url,
-      status: response.status,
-      dataCount: response.data?.results?.length,
-      timestamp: new Date().toISOString()
+  response => response,
+  async error => {
+    const { config, response } = error;
+    
+    if (!config || !config.retry) {
+      return Promise.reject(error);
+    }
+
+    config.retryCount = config.retryCount || 0;
+
+    if (config.retryCount >= config.retry) {
+      return Promise.reject(error);
+    }
+
+    config.retryCount += 1;
+
+    const delayRetry = new Promise(resolve => {
+      setTimeout(resolve, config.retryDelay(config.retryCount));
     });
-    return response;
-  },
-  error => {
-    console.error('[API Response Error]', {
-      url: error.config?.url,
-      status: error.response?.status,
-      message: error.message,
-      timestamp: new Date().toISOString()
-    });
-    return Promise.reject(error);
+
+    await delayRetry;
+    return api(config);
   }
 );
 
