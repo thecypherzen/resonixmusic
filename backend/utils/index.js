@@ -7,11 +7,17 @@ import {
   requestClient,
   RequestClientError,
 } from './requestClient.js';
+
 import {
   cacheClient,
   CacheClientError,
   cacheClientReady
 } from './cacheClient.js';
+
+import {
+  authClient,
+  AuthError,
+} from '../controllers/auth/utils/index.js';
 
 import getHostUrl from './getHostUrl.js';
 
@@ -25,6 +31,8 @@ export {
   RequestClient,
   requestClient,
   RequestClientError,
+  authClient,
+  AuthError,
   sortBy,
   storage,
   getHostUrl,

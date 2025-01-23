@@ -1,7 +1,7 @@
 import authClient from './authClient.js';
-import authError from '.authError.js'
+import AuthError from './authError.js'
 
 export {
   authClient,
-  authError,
+  AuthError,
 }

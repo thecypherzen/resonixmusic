@@ -37,8 +37,42 @@ class AuthClient extends RequestClient {
     return this.#name;
   }
 
+  async cacheAuthData(data) {
+    const {
+      access_token,
+      expires_in,
+      refresh_token,
+      scope,
+      token_type,
+    } = data;
+    const promises = [
+      cacheClient.hSetMany(
+        `token:${access_token}`,
+        { scope, token_type,},
+        expires_in
+      ),
+      cacheClient.set(
+        `refresh:${access_token}`,
+        refresh_token,
+        expires_in + 3600
+      )
+    ];
+    try {
+      await Promise.all(promises);
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
   clearState() {
     return cacheClient.del('state')
+  }
+
+  getUri(config) {
+    const requestUri = this.client.getUri(config);
+    return requestUri;
   }
 
   // generate a code to use for current request
@@ -52,10 +86,6 @@ class AuthClient extends RequestClient {
     return qs.stringify(data);
   }
 
-  getUri(config) {
-    const requestUri = this.client.getUri(config);
-    return requestUri;
-  }
 
   // manage new authorization requests
   async authorizeAuth(req, res) {
@@ -113,16 +143,13 @@ class AuthClient extends RequestClient {
       };
       try {
         const response = await this.make(config);
-        console.log('auth_data', response.data);
-        // cache access_token, expiry, type, and refresh
-        res.data = response.data;
         return response;
       } catch (error) {
         throw new AuthError(
           error.message, {
             errno: error.errno < 0 ? error.errno : 401,
             code: error?.code || null,
-            stack: error.stack
+            stack: null
           }
         );
       }
