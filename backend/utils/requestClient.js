@@ -76,13 +76,15 @@ class RequestClient {
   get isReady(){
     return this.client.defaults.baseURL != null;
   }
-
+  get name() {
+    return this.#name;
+  }
   // Public methods
   init() {
     this.client.defaults.baseURL = this.#host;
     if (this.isReady) {
       this.log({
-        message: `[INIT SUCCESS]: HostUrl set to ${this.host}`,
+        message: `[${this.name}] HostUrl set to ${this.host}`,
         type: 'success',
       });
     }
@@ -98,7 +100,7 @@ class RequestClient {
     let timeStart,
         timeEnd;
     this.log({
-      message: `[OUTGOING] ${requestClient.host}${config.url}`
+      message: `[OUTGOING] ${this.host}${config.url}`
     });
     const makeRequest = async (config, delay) => {
       count += 1;
@@ -226,6 +228,7 @@ const requestClient = new RequestClient();
 requestClient.init();
 
 export {
+  RequestClient,
   RequestClientError,
   requestClient,
 };
