@@ -6,7 +6,6 @@ import {
 async function grantAuth(req, res) {
   const response = await authClient.grantAuth(req, res);
   if (response.data) {
-    console.log('received_data\n', response.data);
     try {
       await authClient.cacheAuthData(response.data);
       const resData = {
@@ -15,6 +14,11 @@ async function grantAuth(req, res) {
       authClient.setDataHeaders(resData, {
         options: { 'x-took': response.timeTaken }
       })
+      // save access_code in cookie
+      res.cookie('access_token', response.data.acccess_token, {
+        secure: true,
+        maxAge: response.data.expires_in * 1000,
+      });
       return res.send(resData);
     } catch (error) {
       console.error(error);
