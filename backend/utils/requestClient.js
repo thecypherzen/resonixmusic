@@ -36,7 +36,7 @@ class RequestClientError extends Error {
   }
   toJSON() {
     return {
-      'name': this.#name,
+      'name': this.name,
       'message': this.message,
       'code': this.code,
       'errno': this.errno,
