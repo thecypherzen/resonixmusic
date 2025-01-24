@@ -21,10 +21,20 @@ router.use('/login', async (req, res) => {
   if (loggedOut) {
     return res.redirect('authorize')
   }
+  const tokenExpired = await verifiers.tokenExpired(req);
+  if (tokenExpired) {
+    return authManager.refreshToken(req, res);
+  }
   return authManager.sendData(req, res);
 });
 
-router.use('/logout', (req, res) => null);
+router.use('/logout', async (req, res) => {
+  const loggedOut = await verifiers.isLoggedOut(req);
+  if (!loggedout) {
+    return authManager.logOutUser(req, res);
+  }
+  return res.redirect('https://resonix.vercel.app');
+});
 
 router.use('/refresh', (req, res) => {
   console.log('refreshing');
