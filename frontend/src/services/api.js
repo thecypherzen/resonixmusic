@@ -106,7 +106,7 @@ const transformPlaylistData = (playlist) => ({
 export const getTrendingTracks = async (params = {}) => {
   try {
     console.log('Fetching trending tracks...');
-    const response = await api.get('/tracks/trending', { params });
+    const response = await api.get('/tracks', { params });
     console.log('Trending tracks response:', response);
     
     if (response.data && response.data.results) {
