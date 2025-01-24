@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, House, Compass, ChartNoAxesCombined, ListMusic, Library, Music, Download, Plus, Trash2, X } from 'lucide-react';
+import { Menu, House, Library, Compass, Plus, X } from 'lucide-react';
 import { FaPlay } from 'react-icons/fa6';
 import { usePlayer } from '../context/PlayerContext';
+import AuthModal from './AuthModal';
+import authService from '../services/authService';
 
 // Create a new CreatePlaylistModal component
 const CreatePlaylistModal = ({ isOpen, onClose, onSubmit }) => {
@@ -72,11 +74,20 @@ const CreatePlaylistModal = ({ isOpen, onClose, onSubmit }) => {
 
 const SideBar = () => {
   const [playlists, setPlaylists] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const userLogin = 'gabrielisaacs';
   const initials = userLogin.substring(0, 2).toUpperCase();
   const location = useLocation();
   const { play } = usePlayer();
+
+  const handleCreatePlaylistClick = () => {
+    if (authService.isAuthenticated()) {
+      setIsCreateModalOpen(true);
+    } else {
+      setIsAuthModalOpen(true);
+    }
+  };
 
   const handleCreatePlaylist = (playlistData) => {
     const newPlaylist = {
@@ -88,12 +99,8 @@ const SideBar = () => {
       createdBy: userLogin
     };
     setPlaylists([...playlists, newPlaylist]);
-    setIsModalOpen(false);
+    setIsCreateModalOpen(false);
   };
-
-  // const handleDeletePlaylist = (indexToDelete) => {
-  //   setPlaylists(playlists.filter((_, index) => index !== indexToDelete));
-  // };
 
   const handlePlayAllSongs = (playlist) => {
     if (playlist.tracks.length > 0) {
@@ -156,7 +163,7 @@ const SideBar = () => {
             <p className="text-white opacity-40 text-xs font-400">MY PLAYLISTS</p>
             <div className="flex flex-col">
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={handleCreatePlaylistClick}
                 className="inline-flex items-center justify-center py-2 px-4 bg-transparent gap-1 hover:bg-[#212121] transition-all duration-200 rounded-full border border-neutral-700 w-full"
               >
                 <Plus size={16} />
@@ -191,11 +198,16 @@ const SideBar = () => {
         </div>
       </div>
 
-      {/* create playlist modal */}
+      {/* Modals */}
       <CreatePlaylistModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreatePlaylist}
+      />
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
       />
     </>
   );
