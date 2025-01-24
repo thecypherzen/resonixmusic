@@ -87,8 +87,8 @@ class AuthClient extends RequestClient {
       access_token: token,
       expires_in,
       refresh_token,
-      scope,
-      token_type,
+      scope: scope || null,
+      token_type: token_type || null,
     };
   }
 
