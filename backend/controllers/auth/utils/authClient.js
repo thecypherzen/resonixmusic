@@ -105,6 +105,30 @@ class AuthClient extends RequestClient {
                  .digest('hex');
   }
 
+  async setCookies(res, data, options = {}) {
+    const {
+      access_token,
+      expires_in,
+      refresh_token,
+      scope,
+      token_type
+    } = data;
+    try {
+      res.cookies('access_token', access_token, {
+        maxAge: expires_in * 1000,
+        refresh_token,
+        scope, token_type,
+        path: '/auth',
+        secure: true,
+        ...options,
+      });
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
   url_stringify(data) {
     return qs.stringify(data);
   }
