@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaPlay, FaPause, FaHeart, FaEllipsisH, FaClock, FaDownload } from 'react-icons/fa';
 import { MdErrorOutline } from "react-icons/md";
@@ -10,7 +10,10 @@ const CURRENT_DATE = '2025-01-17 21:19:53';
 const CURRENT_USER = 'gabrielisaacs';
 
 const AlbumDetails = ({ id }) => {
-  const { setCurrentTrack, setQueue, isPlaying, currentTrack } = usePlayer();
+  const player = usePlayer();
+  const { handleTrackSelect, currentTrack, isPlaying } = player;
+  const menuRef = useRef(null);
+  const [showMenu, setShowMenu] = useState(false);
   const [album, setAlbum] = useState(null);
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,15 +46,20 @@ const AlbumDetails = ({ id }) => {
   }, [id]);
 
   const handlePlayAll = () => {
-    if (tracks.length > 0) {
-      setCurrentTrack(tracks[0]);
-      setQueue(tracks.slice(1));
+    if (!tracks.length) return;
+    try {
+      handleTrackSelect(tracks[0], tracks);
+    } catch (error) {
+      console.error('Error playing track:', error);
     }
   };
 
   const handlePlayTrack = (track, index) => {
-    setCurrentTrack(track);
-    setQueue(tracks.slice(index + 1));
+    try {
+      handleTrackSelect(track, tracks);
+    } catch (error) {
+      console.error('Error playing track:', error);
+    }
   };
 
   const formatDuration = (seconds) => {
@@ -107,6 +115,22 @@ const AlbumDetails = ({ id }) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  const handleMenuToggle = (e) => {
+    e.stopPropagation();
+    setShowMenu(!showMenu);
+  };
+
   if (loading) return <LoadingState />;
   if (error) return <ErrorMessage message={error} />;
   if (!album) return <div>Album not found</div>;
@@ -144,9 +168,17 @@ const AlbumDetails = ({ id }) => {
           <button
             onClick={handlePlayAll}
             className="w-42 h-12 flex items-center justify-center bg-[#08B2F0] hover:bg-opacity-80 rounded-full transition-all duration-300 text-black text-sm px-10 gap-2"
+            disabled={!tracks.length}
           >
-            <FaPlay />
-            Play all
+            {isPlaying && currentTrack?.id === tracks[0]?.id ? (
+              <>
+                <FaPause /> Pause
+              </>
+            ) : (
+              <>
+                <FaPlay /> Play all
+              </>
+            )}
           </button>
           <button className="bg-transparent text-white">
             <FaHeart size={24} className='hover:fill-red-500' />
@@ -157,9 +189,30 @@ const AlbumDetails = ({ id }) => {
           >
             <FaDownload size={24} />
           </button>
-          <button className="bg-transparent text-white">
-            <FaEllipsisH size={24} />
-          </button>
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={handleMenuToggle}
+              className="bg-transparent hover:bg-white/10 p-2 rounded-full"
+            >
+              <FaEllipsisH size={24} />
+            </button>
+            {showMenu && (
+              <div className="absolute left-0 mt-2 w-48 bg-[#282828] rounded-lg shadow-xl border border-neutral-600 z-100">
+                {album.shareurl && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(album.shareurl, '_blank');
+                      setShowMenu(false);
+                    }}
+                    className="bg-transparent w-full text-left px-4 py-3 hover:bg-white/10 rounded-none"
+                  >
+                    Share
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Tracks List */}
@@ -180,22 +233,35 @@ const AlbumDetails = ({ id }) => {
               {tracks.map((track, index) => (
                 <tr
                   key={track.id}
-                  className="group hover:bg-neutral-800/50 rounded-lg transition-colors"
+                  className="group hover:bg-neutral-800/50 rounded-lg transition-colors cursor-pointer"
                   onClick={() => handlePlayTrack(track, index)}
                 >
                   <td className="px-4 py-3 text-neutral-400 w-12">
                     <div className="relative w-4">
-                      <span className="group-hover:hidden">{index + 1}</span>
-                      <FaPlay className="hidden group-hover:block absolute -top-2 text-white" />
+                      {isPlaying && currentTrack?.id === track.id ? (
+                        <FaPause className="text-[#08B2F0]" />
+                      ) : (
+                        <>
+                          <span className="group-hover:hidden">{index + 1}</span>
+                          <FaPlay className="hidden group-hover:block absolute -top-2 text-white" />
+                        </>
+                      )}
                     </div>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <img
-                        src={track.thumbnail}
-                        alt={track.title}
-                        className="w-10 h-10 rounded"
-                      />
+                      <div className="relative">
+                        <img
+                          src={track.thumbnail}
+                          alt={track.title}
+                          className={`w-10 h-10 rounded ${player.isLoading && currentTrack?.id === track.id ? 'opacity-50' : ''}`}
+                        />
+                        {player.isLoading && currentTrack?.id === track.id && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded">
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                          </div>
+                        )}
+                      </div>
                       <div className="flex flex-col">
                         <span className={`font-normal ${currentTrack?.id === track.id ? 'text-[#08B2F0]' : ''
                           }`}>
