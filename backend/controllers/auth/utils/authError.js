@@ -1,10 +1,7 @@
 class AuthError extends Error {
   #name = 'AuthError';
-  constructor(message, { errno = null, code = null, stack = null }) {
-    super(message);
-    this.code = code;
-    this.errno = errno;
-    this.stack = stack;
+  constructor(message, options = {}) {
+    super(message, options);
   }
 
   get name(){
