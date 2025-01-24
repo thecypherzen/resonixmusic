@@ -40,8 +40,17 @@ class CacheClient {
 
   // get set del
   async get(key, buffers = true, format = 'binary') {
-    const data = await this.client.get(key);
-    return buffers && data ? Buffer.from(data, 'binary') : data;
+    try {
+      const data = await this.client.get(key);
+      if (buffers && data) {
+        const resData = await Buffer.from(data, format);
+        return resData;
+      }
+      return data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 
   async set(key, value, ex = CACHE_EXP_SECS) {
