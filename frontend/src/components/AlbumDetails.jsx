@@ -143,7 +143,7 @@ const AlbumDetails = ({ id }) => {
         <div className="flex items-center gap-8 p-6">
           <button
             onClick={handlePlayAll}
-            className="w-42 h-12 flex items-center justify-center bg-transparent hover:bg-neutral-800 border border-neutral-600 rounded-full hover:scale-105 transition-all duration-300 text-white text-sm px-10 gap-2"
+            className="w-42 h-12 flex items-center justify-center bg-[#08B2F0] hover:bg-opacity-80 rounded-full transition-all duration-300 text-black text-sm px-10 gap-2"
           >
             <FaPlay />
             Play all
