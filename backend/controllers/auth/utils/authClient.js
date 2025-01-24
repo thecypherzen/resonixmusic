@@ -14,6 +14,7 @@ import {
 class AuthClient extends RequestClient {
   constructor(){
     super();
+    this.cache = cacheClient;
   }
 
   #redirect_uri = api.cbUrl;
@@ -46,12 +47,12 @@ class AuthClient extends RequestClient {
       token_type,
     } = data;
     const promises = [
-      cacheClient.hSetMany(
+      this.cache.hSetMany(
         `token:${access_token}`,
         { scope, token_type,},
         expires_in
       ),
-      cacheClient.set(
+      this.cache.set(
         `refresh:${access_token}`,
         refresh_token,
         expires_in + 3600
@@ -67,18 +68,29 @@ class AuthClient extends RequestClient {
   }
 
   clearState() {
-    return cacheClient.del('state')
+    return this.cache.del('state')
   }
 
   async clearTokenData(token){
-
-  }
-
-  async clearTokenData(token){
-    const result = await cacheClient.del(
+    const result = await this.cache.del(
       `token:${token}`, `refresh:${token}`
     );
     return result;
+  }
+
+  async getTokenData(token) {
+    const hash = `token:${token}`;
+    const key = `refresh:${token}`;
+    const { scope, token_type } = await this.cache.hGetAll(hash);
+    const expires_in = await this.cache.ttl(hash);
+    const refresh_token = await this.cache.get(key, false);
+    return {
+      access_token: token,
+      expires_in,
+      refresh_token,
+      scope,
+      token_type,
+    };
   }
 
   getUri(config) {
@@ -102,7 +114,7 @@ class AuthClient extends RequestClient {
   async authorizeAuth(req, res) {
     // make new authorization request
     const state = this.newState();
-    await cacheClient.set('state', state);
+    await this.cache.set('state', state);
 
     const config = {
       url: '/oauth/authorize',
@@ -126,7 +138,7 @@ class AuthClient extends RequestClient {
     }
     const params = matchedData(req, { locations: ['query'] });
     try {
-      const savedState = await cacheClient.get('state');
+      const savedState = await this.cache.get('state');
       const { state, code } = params;
       if (state !== savedState.toString('utf-8')) {
         throw new AuthError(
