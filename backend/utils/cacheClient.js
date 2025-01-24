@@ -69,6 +69,16 @@ class CacheClient {
     return buffers && data ? Buffer.from(data) : data;
   }
 
+  async hGetAll(hash) {
+    try {
+      const res = this.client.hGetAll(hash);
+      return res;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
   async hSet(hash, field, value, ex = CACHE_EXP_SECS) {
     const res = await this.client.hSet(hash, field, value);
     const retVal = { res, expire: 0 };
