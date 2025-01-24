@@ -19,10 +19,11 @@ async function sendData(req, res) {
   } catch (error) {
     error.code = error?.code ?? 500;
     error.timeTaken = `${Date.now() - time}ms`;
-    authClient.setDataHeaders(resData, { error: error })
+    authClient.setDataHeaders(resData, { error });
     return res.send(resData);
   }
 }
+
 
 const manager = {
   sendData,

@@ -4,6 +4,7 @@ import { query } from 'express-validator';
 import {
   authAuthorize,
   authGrant,
+  refreshAuth,
   verifiers,
 } from '../controllers/index.js';
 import {
@@ -23,7 +24,7 @@ router.use('/login', async (req, res) => {
   }
   const tokenExpired = await verifiers.tokenExpired(req);
   if (tokenExpired) {
-    return authManager.refreshToken(req, res);
+    return res.redirect('refresh');
   }
   return authManager.sendData(req, res);
 });
@@ -36,10 +37,7 @@ router.use('/logout', async (req, res) => {
   return res.redirect('https://resonix.vercel.app');
 });
 
-router.use('/refresh', (req, res) => {
-  console.log('refreshing');
-  return res.send({ route: 'refresh auth token' });
-});
+router.use('/refresh', refreshAuth);
 
 router.use(
   '/verify',

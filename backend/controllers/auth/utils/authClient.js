@@ -76,7 +76,10 @@ class AuthClient extends RequestClient {
     );
     return result;
   }
-
+  async clearRefreshToken(token){
+    const result = await this.cache.del(`refresh:${token}`);
+    return result;
+  }
   async getTokenData(token) {
     const hash = `token:${token}`;
     const key = `refresh:${token}`;
@@ -213,8 +216,32 @@ class AuthClient extends RequestClient {
     }
   }
 
-  async refreshAuth(req, res) {
-    // refresh auth
+  async refreshAuth(token) {
+    const config = {
+      method: 'POST',
+      url: '/oauth/grant',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      data: this.url_stringify({
+        client_id: `${api.id}`,
+        client_secret: `${api.secret}`,
+        refresh_token: token,
+      }),
+      params: {
+        grant_type: 'refresh_token',
+      }
+    };
+    try {
+      const response = await this.make(config);
+      return response;
+    } catch (error) {
+      const newError = new AuthError('');
+      for (const [key, value] of Object.entries(error)) {
+        newError[key] = value;
+      }
+      throw newError;
+    }
   }
 }
 

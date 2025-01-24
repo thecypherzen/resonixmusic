@@ -11,7 +11,6 @@ async function tokenExpired(req) {
     expires_in,
     refresh_token,
   } = await authClient.getTokenData(access_token);
-  console.log('tokenExpired:', expires_in);
   return refresh_token && (expires_in < 1);
 }
 
@@ -43,6 +42,7 @@ async function isLoggedOut(req) {
 const verifiers = {
   isLoggedIn,
   isLoggedOut,
+  tokenExpired,
 }
 
 export default verifiers;
