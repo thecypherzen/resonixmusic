@@ -116,6 +116,11 @@ class CacheClient {
     const res = await this.client.hDel(hash, ...fields);
     return res;
   }
+
+  async ttl(key) {
+    const secsLeft = await this.client.ttl(key);
+    return secsLeft;
+  }
 }
 
 class CacheClientError extends RequestClientError {
