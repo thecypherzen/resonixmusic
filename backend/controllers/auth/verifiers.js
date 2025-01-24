@@ -2,6 +2,19 @@ import {
   authClient
 } from '../../utils/index.js';
 
+async function tokenExpired(req) {
+  const { access_token } = req.cookies;
+  if (!access_token) {
+    return true;
+  }
+  const {
+    expires_in,
+    refresh_token,
+  } = await authClient.getTokenData(access_token);
+  console.log('tokenExpired:', expires_in);
+  return refresh_token && (expires_in < 1);
+}
+
 async function isLoggedIn(req) {
   // verify client is logged in
   const { access_token = null } = req.cookies;
@@ -10,10 +23,8 @@ async function isLoggedIn(req) {
   }
   const {
     expires_in,
-    refresh_token
   } = await authClient.getTokenData(access_token);
-  return expires_in > -2;
-
+  return expires_in > 0;
 }
 
 async function isLoggedOut(req) {
@@ -23,10 +34,9 @@ async function isLoggedOut(req) {
     return true;
   }
   const {
-    expires_in,
     refresh_token
   } = await authClient.getTokenData(access_token);
-  return expires_in === -2;
+  return !refresh_token;
 }
 
 
