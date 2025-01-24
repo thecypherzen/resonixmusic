@@ -113,7 +113,7 @@ class AuthClient extends RequestClient {
       token_type
     } = data;
     try {
-      res.cookies('access_token', access_token, {
+      await res.cookie('access_token', access_token, {
         maxAge: expires_in * 1000,
         refresh_token,
         scope, token_type,
@@ -160,13 +160,18 @@ class AuthClient extends RequestClient {
       return handlers.validationError(validation.array(), res);
     }
     const params = matchedData(req, { locations: ['query'] });
+    const startTime = Date.now();
     try {
       const savedState = await this.cache.get('state');
       const { state, code } = params;
       if (state !== savedState.toString('utf-8')) {
         throw new AuthError(
           'Possible CSRF detected. Unknown state was returned',
-          { errno: 401 }
+          {
+            errno: 401,
+            'x-took': `${Date.now() - startTime}ms`,
+            code: 'ESTATE_UNKNOWN',
+          }
         )
       }
       // clear state and make grant request
@@ -191,28 +196,20 @@ class AuthClient extends RequestClient {
         const response = await this.make(config);
         return response;
       } catch (error) {
-        throw new AuthError(
+        const newError = new AuthError(
           error.message, {
             errno: error.errno < 0 ? error.errno : 401,
             code: error?.code || null,
             stack: null
           }
         );
+        for (const [key, value] of Object.entries(error)) {
+          newError[key] = value;
+        }
+        throw newError;
       }
-      return res;
     } catch (error) {
-      const resData = {};
-      this.setDataHeaders(resData, {
-      error, options: {'x-took': error.timeTaken },
-      });
-      if (error?.errno > 0) {
-        this.log({ message: error.message, type: 'error' });
-      return res.status(error.errno).send(resData);
-    }
-      this.setResStatus(error.code, res);
-      this.log({ req });
-      res.data = resData;
-      return res;
+      throw error;
     }
   }
 

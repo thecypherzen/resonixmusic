@@ -13,11 +13,11 @@ import logger from './logMessage.js';
 
 class RequestClientError extends Error {
   #name = 'RequestClientError';
-  constructor(message, { errno = null, code = null, stack = null }) {
+  constructor(message, options = { }) {
     super(message);
-    this.code = code;
-    this.errno = errno;
-    this.stack = stack;
+    for (const[key, value] of Object.entries(options)) {
+      this[key] = value;
+    }
   }
 
   get name(){
@@ -126,7 +126,7 @@ class RequestClient {
         return response;
       } catch (error) {
         errorObj = error;
-        if (error?.response?.status) {
+        if (error?.response) {
           break;
         }
         this.log({
@@ -148,6 +148,12 @@ class RequestClient {
         stack: errorObj?.stack ?? null,
       }
     );
+    if (errorObj?.response?.data) {
+      const data = errorObj.response.data;
+      for (const [key, value] of Object.entries(data)){
+        errToThrow[key] = value;
+      }
+    }
     this.setTimeTaken(timeStart, timeEnd, errToThrow);
     throw errToThrow;
   }

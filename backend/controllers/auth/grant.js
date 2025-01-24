@@ -1,32 +1,41 @@
 import {
   authClient,
+  AuthError,
   errorHandlers as handlers,
 } from '../../utils/index.js';
 
 async function grantAuth(req, res) {
-  const response = await authClient.grantAuth(req, res);
-  if (response.data) {
+  const resData = { headers: {}, results: [] };
+  try {
+    const response = await authClient.grantAuth(req, res);
     try {
       await authClient.cacheAuthData(response.data);
-      const resData = {
-        headers: {}, results: [response.data],
-      };
+      resData.results.push(response.data);
       authClient.setDataHeaders(resData, {
         options: { 'x-took': response.timeTaken }
       })
       // save access_code in cookie
-      res.cookie('access_token', response.data.access_token, {
-        maxAge: response.data.expires_in * 1000,
-        path: '/auth',
-        secure: true,
-      });
+      await authClient.setCookies(res, response.data);
       return res.send(resData);
     } catch (error) {
       console.error(error);
       return handlers.generalError(error, res);
     }
+  } catch (error) {
+    authClient.setDataHeaders(resData, {
+      error, options: {
+        'x-took': error.timeTaken || '',
+        error_title: error?.error || '',
+        error_description: error?.error_description ?? '',
+        code: error?.code ?? error.errno,
+      }
+    });
+    authClient.log({
+      message: `${error.title} ${error.error_message}`,
+      type: 'error',
+    })
+    return res.status(error.errno).send(resData);
   }
-  return res.end();
 }
 
 export default grantAuth;
