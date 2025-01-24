@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, LockKeyhole, EyeOff, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
+import authService from '../services/authService';
+
+const CURRENT_DATE = '2025-01-24 20:08:46';
+const CURRENT_USER = 'gabrielisaacs';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
-
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -18,10 +24,19 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your form submission logic here
-    console.log('Form Data:', formData);
+    setError('');
+    setLoading(true);
+
+    try {
+      await authService.login(formData.email, formData.password);
+      navigate('/'); // Redirect to home page after successful login
+    } catch (err) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,8 +55,7 @@ const Login = () => {
           ease: "easeInOut"
         }}
         initial={{ x: -200, y: -200 }}
-      >
-      </motion.div>
+      />
 
       {/* Main content */}
       <div className="grid grid-cols-2 items-center">
@@ -56,6 +70,12 @@ const Login = () => {
           <p className="text-sm mt-5">
             If you don't have an account, <Link to="/signup" className="text-sky-500">Register here!</Link>
           </p>
+
+          {error && (
+            <div className="mt-4 p-3 bg-red-500/10 border border-red-500 rounded-lg text-red-500 text-sm">
+              {error}
+            </div>
+          )}
 
           <div className="mt-10 text-sm">
             <label htmlFor="email" className="mb-4 block">Email</label>
@@ -103,7 +123,23 @@ const Login = () => {
             <Link to="/forgot-password" className="text-right ml-auto cursor-pointer">Forgot Password?</Link>
           </div>
 
-          <button type="submit" className="w-full bg-sky-500 rounded-full text-sm my-8 py-2">Login</button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-sky-500 rounded-full text-sm my-8 py-2 relative disabled:opacity-70"
+          >
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Signing in...
+              </span>
+            ) : (
+              'Login'
+            )}
+          </button>
 
           <p className="text-center text-xs mb-6">or continue with</p>
           <div className="grid">
