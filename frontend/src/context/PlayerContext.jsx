@@ -1,42 +1,82 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 
+const CURRENT_DATE = '2025-01-23 18:08:02';
+const CURRENT_USER = 'gabrielisaacs';
+
 const PlayerContext = createContext();
 
 export const PlayerProvider = ({ children }) => {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(50);
-  const [repeat, setRepeat] = useState('none'); // 'none', 'all', 'one'
+  const [repeat, setRepeat] = useState('none');
   const [shuffle, setShuffle] = useState(false);
   const [queue, setQueue] = useState([]);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const audioRef = useRef(new Audio());
+  const [error, setError] = useState(null);
+  const audioRef = useRef(null);
 
-  const handleTrackSelect = (track, tracks = []) => {
-    if (!track?.url) {
-      console.error('Track URL is missing:', track);
-      return;
-    }
+  useEffect(() => {
+    audioRef.current = new Audio();
+    audioRef.current.crossOrigin = "anonymous";
+    audioRef.current.preload = "metadata";
 
-    setCurrentTrack({
-      ...track,
-      url: track.stream_url || track.url // Handle both Jamendo and your existing format
-    });
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
+      }
+    };
+  }, []);
 
-    const trackIndex = tracks.findIndex(t => t.id === track.id);
-    setQueue(tracks.slice(trackIndex + 1));
+  const handleTrackSelect = async (track, tracks = []) => {
+    try {
+      if (!track?.url && !track?.stream_url) {
+        throw new Error('No playable URL found for this track');
+      }
 
-    const audio = audioRef.current;
-    audio.src = track.stream_url || track.url;
-    audio.load();
-    audio.play()
-      .then(() => setIsPlaying(true))
-      .catch(error => {
-        console.error('Playback failed:', error);
-        setIsPlaying(false);
+      const audioUrl = track.stream_url || track.url;
+
+      // Test if the URL is accessible
+      const response = await fetch(audioUrl, { method: 'HEAD' });
+      if (!response.ok) {
+        throw new Error('Audio source is not accessible');
+      }
+
+      // Update current track and queue
+      setCurrentTrack({
+        ...track,
+        url: audioUrl
       });
+
+      const trackIndex = tracks.findIndex(t => t.id === track.id);
+      setQueue(tracks.slice(trackIndex + 1));
+
+      // Reset error state
+      setError(null);
+
+      // Update audio source and play
+      const audio = audioRef.current;
+      audio.src = audioUrl;
+      audio.load();
+
+      try {
+        await audio.play();
+        setIsPlaying(true);
+      } catch (playError) {
+        console.error('Playback failed:', playError);
+        setIsPlaying(false);
+        setError('Failed to play track. Please try again.');
+      }
+
+    } catch (error) {
+      console.error('Track selection failed:', error);
+      setError(error.message);
+      setIsPlaying(false);
+    }
   };
+
 
   // Audio event listeners
   useEffect(() => {
@@ -48,12 +88,16 @@ export const PlayerProvider = ({ children }) => {
 
     const handleLoadedMetadata = () => {
       setDuration(audio.duration);
+      setError(null);
     };
 
     const handleEnded = () => {
       if (repeat === 'one') {
         audio.currentTime = 0;
-        audio.play().catch(console.error);
+        audio.play().catch(error => {
+          console.error('Replay failed:', error);
+          setError('Failed to replay track');
+        });
       } else if (queue.length > 0) {
         playNext();
       } else if (repeat === 'all' && currentTrack) {
@@ -66,36 +110,50 @@ export const PlayerProvider = ({ children }) => {
     const handleError = (e) => {
       console.error('Audio error:', e);
       setIsPlaying(false);
+
+      // Provide more detailed error messages
+      let errorMessage = 'An error occurred while playing the track';
+      if (audio.error) {
+        switch (audio.error.code) {
+          case 1:
+            errorMessage = 'The audio file cannot be fetched';
+            break;
+          case 2:
+            errorMessage = 'Network error occurred while loading the audio';
+            break;
+          case 3:
+            errorMessage = 'Error decoding the audio file';
+            break;
+          case 4:
+            errorMessage = 'Audio source not supported';
+            break;
+        }
+      }
+      setError(errorMessage);
     };
 
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('error', handleError);
+    audio.addEventListener('abort', () => setError('Audio playback was aborted'));
+    audio.addEventListener('stalled', () => setError('Audio playback stalled'));
 
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('error', handleError);
+      audio.removeEventListener('abort', () => setError('Audio playback was aborted'));
+      audio.removeEventListener('stalled', () => setError('Audio playback stalled'));
     };
   }, [queue, repeat, currentTrack]);
 
+  // Volume effect
   useEffect(() => {
-    // Initialize audio element with default properties
-    audioRef.current = new Audio();
-    audioRef.current.crossOrigin = "anonymous";
-    audioRef.current.preload = "metadata";
-
-    return () => {
-      // Cleanup
-      audioRef.current.pause();
-      audioRef.current.src = '';
-    };
-  }, []);
-
-  useEffect(() => {
-    audioRef.current.volume = volume / 100;
+    if (audioRef.current) {
+      audioRef.current.volume = volume / 100;
+    }
   }, [volume]);
 
   const togglePlay = () => {
@@ -157,27 +215,29 @@ export const PlayerProvider = ({ children }) => {
     setShuffle(current => !current);
   };
 
+  const value = {
+    currentTrack,
+    isPlaying,
+    volume,
+    repeat,
+    shuffle,
+    queue,
+    currentTime,
+    error,
+    duration,
+    togglePlay,
+    setVolume,
+    toggleRepeat,
+    toggleShuffle,
+    playNext,
+    playPrevious,
+    seekTo,
+    handleTrackSelect,
+    setError
+  }
+
   return (
-    <PlayerContext.Provider
-      value={{
-        currentTrack,
-        isPlaying,
-        volume,
-        repeat,
-        shuffle,
-        queue,
-        currentTime,
-        duration,
-        togglePlay,
-        setVolume,
-        toggleRepeat,
-        toggleShuffle,
-        playNext,
-        playPrevious,
-        seekTo,
-        handleTrackSelect
-      }}
-    >
+    <PlayerContext.Provider value={value}>
       {children}
     </PlayerContext.Provider>
   );
@@ -190,3 +250,5 @@ export const usePlayer = () => {
   }
   return context;
 };
+
+export default PlayerContext;
