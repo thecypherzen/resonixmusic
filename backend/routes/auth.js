@@ -4,6 +4,7 @@ import { query } from 'express-validator';
 import {
   authAuthorize,
   authGrant,
+  logOutUser,
   refreshAuth,
   verifiers,
 } from '../controllers/index.js';
@@ -29,13 +30,7 @@ router.use('/login', async (req, res) => {
   return authManager.sendData(req, res);
 });
 
-router.use('/logout', async (req, res) => {
-  const loggedOut = await verifiers.isLoggedOut(req);
-  if (!loggedout) {
-    return authManager.logOutUser(req, res);
-  }
-  return res.redirect('https://resonix.vercel.app');
-});
+router.use('/logout', logOutUser);
 
 router.use('/refresh', refreshAuth);
 
