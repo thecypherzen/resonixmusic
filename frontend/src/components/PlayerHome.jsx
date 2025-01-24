@@ -108,6 +108,10 @@ const PlayerHome = () => {
   const { handleTrackSelect } = usePlayer();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // State for pagination
   const [visibleArtists, setVisibleArtists] = useState(0);
   const [visibleAlbums, setVisibleAlbums] = useState(0);
@@ -173,12 +177,21 @@ const PlayerHome = () => {
   const handleNext = (setVisible, visible, totalItems) => {
     if (visible + cardsPerSet < totalItems) {
       setVisible(visible + cardsPerSet);
+      const section = document.getElementById('section-id');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
   const handlePrevious = (setVisible, visible) => {
     if (visible - cardsPerSet >= 0) {
       setVisible(visible - cardsPerSet);
+      // Optional: Smooth scroll to the section
+      const section = document.getElementById('section-id');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -241,17 +254,17 @@ const PlayerHome = () => {
   };
 
   const handleArtistClick = (artist) => {
-    console.log('Navigating to artist:', artist);
+    window.scrollTo(0, 0);
     navigate(`/artist/${artist.id}`);
   };
 
   const handleAlbumClick = (album) => {
-    console.log('Navigating to album:', album);
+    window.scrollTo(0, 0);
     navigate(`/album/${album.id}`);
   };
 
   const handlePlaylistClick = (playlist) => {
-    console.log('Navigating to playlist:', playlist);
+    window.scrollTo(0, 0);
     navigate(`/playlist/${playlist.id}`);
   };
 
@@ -288,7 +301,10 @@ const PlayerHome = () => {
           <div className='flex flex-row w-full mb-4 items-center'>
             <p className='text-3xl font-extrabold'>Popular Artists</p>
             <div className='ml-auto flex gap-2 items-center'>
-              <button className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm">
+              <button onClick={() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                navigate('/artists');
+              }} className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm">
                 More
               </button>
               <button
@@ -433,7 +449,10 @@ const PlayerHome = () => {
             <p className='text-3xl font-extrabold'>Featured playlists</p>
             <div className='ml-auto flex gap-2 items-center'>
               <button
-                onClick={() => navigate('/playlists')}
+                onClick={() => {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  navigate('/playlists');
+                }}
                 className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm"
               >
                 More

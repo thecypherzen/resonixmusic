@@ -104,7 +104,7 @@ const SideBar = () => {
 
   return (
     <>
-      <div className='fixed left-0 top-0 bottom-0 w-[15rem] flex flex-col h-screen overflow-hidden bg-[#212124] bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-30 z-40'>
+      <div className='fixed left-0 top-0 bottom-0 w-[15rem] flex flex-col h-screen overflow-hidden bg-[#212124] bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30 z-40'>
         <div className='px-6 py-6'>
           {/* Navbar */}
           <div className="w-full h-[4.375rem]">

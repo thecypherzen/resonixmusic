@@ -126,7 +126,7 @@ const AlbumDetails = ({ id }) => {
             <h1 className="text-[5rem] font-bold leading-tight">{truncateTitle(album.title, 15)}</h1>
             <div className="flex items-center gap-2 text-md">
               <img
-                src={album.artist_image || '/artist_thumb.jpeg'}
+                src={album.artist_image || `https://usercontent.jamendo.com?type=artist&id=${album.artist_id}&width=300`}
                 alt={album.artist}
                 className="w-6 h-6 rounded-full"
               />

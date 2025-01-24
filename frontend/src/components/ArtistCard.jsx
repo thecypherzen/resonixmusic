@@ -1,7 +1,12 @@
 import React from 'react';
 import { FaPlay } from "react-icons/fa";
 
-const ArtistCard = ({ artist, onClick, truncateTitle }) => {
+const truncateTitle = (title, maxLength) => {
+  if (!title) return '';
+  return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
+};
+
+const ArtistCard = ({ artist, onClick }) => {
   return (
     <button
       onClick={() => onClick(artist)}
