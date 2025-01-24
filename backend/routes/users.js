@@ -1,10 +1,13 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 import { Router } from 'express';
 import { getTopArtists } from '../controllers/users/userControllers.js';
 =======
 >>>>>>> 59827ac (build(routers): expose users router)
+=======
+>>>>>>> cffe6ed (fix(users): resolve getAlbums router error)
 import { Router, json } from 'express';
 import { query } from 'express-validator';
 import {
@@ -19,13 +22,17 @@ import {
   RESPONSE_CODES as resCodes
 } from '../defaults/index.js';
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 5a78239 (build(routers): expose users router)
 >>>>>>> 59827ac (build(routers): expose users router)
+=======
+>>>>>>> cffe6ed (fix(users): resolve getAlbums router error)
 
 const router = Router();
 router.use(json());
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -34,6 +41,10 @@ router.get('/top', getTopArtists);
 =======
 =======
 >>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
+=======
+
+router.get('/albums', getUsersAlbums);
+>>>>>>> cffe6ed (fix(users): resolve getAlbums router error)
 /**
  * @openapi
  *   /users/albums:
@@ -121,9 +132,12 @@ router.get('/top', getTopArtists);
  *             $ref: '#/components/schemas/page_size'
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> a881f24 (feat: implement getUsersAlbums controller and router)
 >>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
+=======
+>>>>>>> cffe6ed (fix(users): resolve getAlbums router error)
 router.get(
   '/albums',
   [
@@ -813,8 +827,11 @@ router.use((req, res) => {
   })
 });
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 5a78239 (build(routers): expose users router)
 >>>>>>> 59827ac (build(routers): expose users router)
+=======
+>>>>>>> cffe6ed (fix(users): resolve getAlbums router error)
 
 export default router;
