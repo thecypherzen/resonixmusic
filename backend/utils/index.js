@@ -17,6 +17,7 @@ import {
 import {
   authClient,
   AuthError,
+  authManager,
 } from '../controllers/auth/utils/index.js';
 
 import getHostUrl from './getHostUrl.js';
@@ -33,6 +34,7 @@ export {
   RequestClientError,
   authClient,
   AuthError,
+  authManager,
   sortBy,
   storage,
   getHostUrl,
