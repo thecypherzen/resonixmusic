@@ -16,6 +16,7 @@ import {
   getUsersArtists,
   getUsersTracks,
 } from '../controllers/index.js';
+import usersPostRouter from './usersPost.js';
 import {
   MAX_PAGE_SIZE,
   MIN_PAGE_SIZE,
@@ -814,6 +815,8 @@ router.get(
 >>>>>>> 59827ac (build(routers): expose users router)
   getUsers
 );
+
+router.use('/post', usersPostRouter);
 
 router.use((req, res) => {
   return res.status(404).send({
