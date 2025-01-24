@@ -7,7 +7,7 @@ import MusicPlayer from '../pages/MusicPlayer';
 import SongDetailsPage from '../pages/SongDetailsPage';
 import PlaylistDetails from '../components/PlaylistDetails';
 import AlbumDetailsPage from '../pages/AlbumDetailsPage';
-import PlayerHome from '../components/PlayerHome';
+import ArtistPage from '../pages/ArtistPage';
 
 const AppRoutes = () => {
   return (
@@ -21,6 +21,7 @@ const AppRoutes = () => {
       <Route path="/song/:id" element={<SongDetailsPage />} />
       <Route path="/playlist/:id" element={<PlaylistDetails />} />
       <Route path="/album/:id" element={<AlbumDetailsPage />} />
+      <Route path="/artist/:id" element={<ArtistPage />} />
     </Routes>
   )
 };

@@ -76,6 +76,7 @@ const transformArtistData = (artist) => ({
   id: artist.id,
   name: artist.name,
   image: artist.image,
+  description: artist.description || '',
   joindate: artist.joindate || '2025-01-22 23:01:16',
   website: artist.website || '',
   shorturl: artist.shorturl || '',
@@ -186,14 +187,16 @@ export const getAlbumDetails = async (albumId) => {
         id: albumData.id,
         title: albumData.name,
         artist: albumData.artist_name,
+        artist_id: albumData.artist_id, // Add artist_id
         thumbnail: albumData.image,
+        artist_image: `https://usercontent.jamendo.com?type=artist&id=${albumData.artist_id}&width=300`, // Add artist_image
         releaseDate: albumData.releasedate,
         // Transform tracks
         tracks: tracks.map(track => ({
           id: track.id,
           title: track.name,
           artist: albumData.artist_name,
-          thumbnail: track.image || track.thumbnail || albumData.image,
+          thumbnail: track.image || track.album_image || albumData.image,
           url: track.audio,
           duration: parseInt(track.duration),
           position: parseInt(track.position),
@@ -217,29 +220,7 @@ export const getAlbumDetails = async (albumId) => {
     throw new Error('Album not found');
   } catch (error) {
     console.error('Error fetching album details:', error);
-    // Return fallback data
-    return {
-      data: {
-        album: {
-          id: albumId,
-          title: `Album ${albumId}`,
-          artist: 'Unknown Artist',
-          thumbnail: `https://picsum.photos/400/400?random=${albumId}`,
-          releaseDate: CURRENT_DATE,
-          tracks: Array(8).fill(null).map((_, index) => ({
-            id: `${albumId}-track-${index + 1}`,
-            title: `Track ${index + 1}`,
-            artist: 'Unknown Artist',
-            thumbnail: `https://picsum.photos/400/400?random=${index}`,
-            duration: 180 + (index * 30),
-            position: index + 1,
-            likes: `${Math.floor(Math.random() * 100)}k`,
-            download_url: null,
-            download_allowed: false
-          }))
-        }
-      }
-    };
+    throw error;
   }
 };
 
@@ -254,7 +235,8 @@ export const getPlaylists = async (params = {}) => {
     });
     
     if (response.data?.results) {
-      return { data: response.data.results.map(transformPlaylistData) };
+      const transformedPlaylists = response.data.results.map(transformPlaylistData);
+      return { data: transformedPlaylists };
     }
     throw new Error('No data received from server');
   } catch (error) {
@@ -290,48 +272,186 @@ export const getPlaylistDetails = async (playlistId) => {
   try {
     console.log('Fetching playlist details for:', playlistId);
     
-    const response = await api.get(`/playlists/id[]=${playlistId}/tracks`, { 
+    // First, get the playlist details
+    const playlistResponse = await api.get(`/playlists`, { 
       params: { 
-        format: 'json',
-        imagesize: 400
+        id: [playlistId],
+        format: 'jsonpretty'
       } 
     });
 
+    console.log('Playlist response:', playlistResponse);
+
+    if (!playlistResponse.data?.results?.[0]) {
+      throw new Error('Playlist not found');
+    }
+
+    // Transform the playlist data
+    const playlistData = transformPlaylistData(playlistResponse.data.results[0]);
+
+    // Then, get the tracks for this playlist
+    const tracksResponse = await api.get(`/playlists/${playlistId}/tracks`, {
+      params: {
+        format: 'jsonpretty'
+      }
+    });
+
+    console.log('Playlist tracks response:', tracksResponse);
+
+    let tracks = [];
+    if (tracksResponse.data?.results) {
+      tracks = tracksResponse.data.results.map(track => ({
+        id: track.id,
+        name: track.name,
+        artist_name: track.artist_name,
+        image: track.image || `https://usercontent.jamendo.com?type=album&id=${track.album_id}&width=300`,
+        audio: track.audio,
+        duration: parseInt(track.duration) || 0,
+        listened: track.listened || 0
+      }));
+    }
+
+    return {
+      data: {
+        ...playlistData,
+        tracks
+      }
+    };
+
+  } catch (error) {
+    console.error('Error fetching playlist details:', error);
+    throw error;
+  }
+};
+
+const getArtistDetails = async (artistId) => {
+  try {
+    console.log('Fetching artist details for:', artistId);
+    const response = await api.get('/artists/info', {
+      params: {
+        id: [artistId],
+        format: 'jsonpretty'
+      }
+    });
+
     if (response.data?.results?.[0]) {
-      const playlistData = response.data.results[0];
-      const tracks = playlistData.tracks || [];
-
-      const transformedPlaylist = {
-        id: playlistData.id,
-        title: playlistData.name,
-        artist: playlistData.user_name,
-        creationDate: playlistData.creationdate,
-        userId: playlistData.user_id,
-        shortUrl: playlistData.shorturl,
-        shareUrl: playlistData.shareurl,
-        tracks: tracks.map(track => ({
-          id: track.id,
-          title: track.name,
-          artist: track.artist_name,
-          thumbnail: track.image,
-          url: track.audio,
-          duration: parseInt(track.duration),
-          position: parseInt(track.position) || 0,
-          likes: `${Math.floor((track.listened || 0) / 1000)}k Plays`
-        }))
-      };
-
+      const artistData = response.data.results[0];
       return {
         data: {
-          playlist: transformedPlaylist,
-          tracks: transformedPlaylist.tracks
+          id: artistData.id,
+          name: artistData.name,
+          website: artistData.website,
+          joindate: artistData.joindate,
+          image: artistData.image || `https://usercontent.jamendo.com?type=artist&id=${artistData.id}&width=500`,
+          shorturl: artistData.shorturl,
+          shareurl: artistData.shareurl,
+          musicinfo: {
+            tags: artistData.musicinfo?.tags || [],
+            description: artistData.musicinfo?.description || {}
+          }
         }
       };
     }
-
-    throw new Error('Playlist not found');
+    throw new Error('Artist not found');
   } catch (error) {
-    console.error('Error fetching playlist details:', error);
+    console.error('Error fetching artist details:', error);
+    throw error;
+  }
+};
+
+const getArtistTracks = async (artistId) => {
+  try {
+    console.log('Fetching artist tracks for:', artistId);
+    const response = await api.get('/artists/tracks', {
+      params: {
+        id: [artistId],
+        audioformat: 'mp31'
+      }
+    });
+
+    if (response.data?.results?.[0]?.tracks) {
+      // Access the tracks array from the nested structure
+      const tracks = response.data.results[0].tracks;
+      return {
+        data: tracks.map(track => ({
+          id: track.id,
+          title: track.name,
+          artist: response.data.results[0].name,
+          thumbnail: track.image || track.album_image,
+          url: track.audio,
+          stream_url: track.audio,
+          duration: parseInt(track.duration || 0),
+          likes: `${Math.floor(Math.random() * 100)}k`,
+          album_name: track.album_name,
+          album_id: track.album_id,
+          releasedate: track.releasedate
+        }))
+      };
+    }
+    throw new Error('No tracks found');
+  } catch (error) {
+    console.error('Error fetching artist tracks:', error);
+    throw error;
+  }
+};
+
+const getArtistAlbums = async (artistId) => {
+  try {
+    console.log('Fetching artist albums for:', artistId);
+    const response = await api.get('/artists/albums', {
+      params: {
+        id: [artistId]
+      }
+    });
+
+    if (response.data?.results?.[0]?.albums) {
+      // Access the albums array from the nested structure
+      const albums = response.data.results[0].albums;
+      const artistName = response.data.results[0].name;
+      
+      return {
+        data: albums.map(album => ({
+          id: album.id,
+          title: album.name,
+          artist: artistName,
+          thumbnail: album.image,
+          releaseDate: album.releasedate
+        }))
+      };
+    }
+    throw new Error('No albums found');
+  } catch (error) {
+    console.error('Error fetching artist albums:', error);
+    throw error;
+  }
+};
+
+const getSimilarArtists = async (artistId) => {
+  try {
+    console.log('Fetching similar artists for:', artistId);
+    const response = await api.get('/artists', {
+      params: {
+        format: 'jsonpretty',
+        limit: 15,
+        order: 'popularity_total'
+      }
+    });
+
+    if (response.data?.results) {
+      return {
+        data: response.data.results
+          .filter(artist => artist.id !== artistId)
+          .map(artist => ({
+            id: artist.id,
+            name: artist.name,
+            image: artist.image || `https://usercontent.jamendo.com?type=artist&id=${artist.id}&width=300`,
+            followerCount: artist.sharecount || 0
+          }))
+      };
+    }
+    throw new Error('No similar artists found');
+  } catch (error) {
+    console.error('Error fetching similar artists:', error);
     throw error;
   }
 };
@@ -399,5 +519,9 @@ export default {
   getAlbumDetails,
   getPlaylistDetails,
   getRecentTracks,
-  getAlbums
+  getAlbums,
+  getArtistDetails,
+  getArtistTracks,
+  getArtistAlbums,
+  getSimilarArtists
 };
