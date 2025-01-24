@@ -104,7 +104,7 @@ const SideBar = () => {
 
   return (
     <>
-      <div className='fixed left-0 top-0 bottom-0 w-[15rem] flex flex-col h-screen overflow-hidden bg-[#212124] bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-30 z-40'>
+      <div className='fixed left-0 top-0 bottom-0 w-[15rem] flex flex-col h-screen overflow-hidden bg-[#212124] bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30 z-40'>
         <div className='px-6 py-6'>
           {/* Navbar */}
           <div className="w-full h-[4.375rem]">
@@ -124,8 +124,8 @@ const SideBar = () => {
           {/* Navigation Links */}
           <div className="flex flex-col gap-6 mb-10 mt-2 ml-2">
             <Link
-              to='/music'
-              className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${location.pathname === '/music' ? 'text-[#08B2F0]' : ''
+              to='/'
+              className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${location.pathname === '/' ? 'text-[#08B2F0]' : ''
                 }`}
             >
               <House />

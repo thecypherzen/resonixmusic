@@ -21,7 +21,8 @@ const app = express();
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 // - json body-parser
 app.use(express.json());
@@ -36,6 +37,14 @@ app.use('/auth', authRouter);
 app.use('/playlists', playlistRouter);
 app.use('/tracks', tracksRouter);
 app.use('/users', usersRouter);
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ 
+    error: 'Route not found',
+    status: 404 
+  });
+});
 
 // Native routes
 /**
@@ -74,8 +83,26 @@ app.listen(RXBE_PORT, '0.0.0.0', () => {
 
 // Events
 process.on('unhandledRejection', (err) => {
-  console.error('Unhandled Rejection:', err);
+  console.error('Unhandled Rejection:', {
+    message: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+    timestamp: new Date().toISOString()
+  });
+  
   if (process.env.NODE_ENV === 'production') {
-    process.exit(1);
+    server.close(() => process.exit(1));
+  }
+});
+
+// Uncaught exception handler
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', {
+    message: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+    timestamp: new Date().toISOString()
+  });
+  
+  if (process.env.NODE_ENV === 'production') {
+    server.close(() => process.exit(1));
   }
 });

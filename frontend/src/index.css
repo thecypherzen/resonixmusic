@@ -83,3 +83,24 @@ button:hover {
 ::-webkit-scrollbar-corner {
   background: #1F1F22; /* Background color of the scrollbar corner */
 }
+
+
+input[type="range"]::-webkit-slider-thumb {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #08B2F0;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 2px;
+  margin-top: -12px;
+  border-radius: 100px;
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+  background: #08B2F0;
+}
