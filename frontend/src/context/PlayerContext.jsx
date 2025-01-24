@@ -8,6 +8,7 @@ const PlayerContext = createContext();
 export const PlayerProvider = ({ children }) => {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [volume, setVolume] = useState(50);
   const [repeat, setRepeat] = useState('none');
   const [shuffle, setShuffle] = useState(false);
@@ -32,6 +33,8 @@ export const PlayerProvider = ({ children }) => {
 
   const handleTrackSelect = async (track, tracks = []) => {
     try {
+      setIsLoading(true);
+
       if (!track?.url && !track?.stream_url) {
         throw new Error('No playable URL found for this track');
       }
@@ -74,6 +77,8 @@ export const PlayerProvider = ({ children }) => {
       console.error('Track selection failed:', error);
       setError(error.message);
       setIsPlaying(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -218,6 +223,7 @@ export const PlayerProvider = ({ children }) => {
   const value = {
     currentTrack,
     isPlaying,
+    isLoading,
     volume,
     repeat,
     shuffle,
