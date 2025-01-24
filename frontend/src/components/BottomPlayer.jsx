@@ -6,6 +6,7 @@ const BottomPlayer = () => {
   const {
     currentTrack,
     isPlaying,
+    isLoading,
     togglePlay,
     volume,
     setVolume,
@@ -50,15 +51,33 @@ const BottomPlayer = () => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
   };
 
+  // loading component
+  const LoadingAnimation = () => (
+    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+    </div>
+  );
+
   return (
     <div className='h-[7rem] fixed bottom-0 left-0 z-50 w-full bg-white-400 bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30 items-center justify-center'>
       <div className="flex mx-2 gap-10">
         {/* Track info */}
         <div className="flex flex-row items-center m-4 w-[25rem] gap-4">
-          <img src={currentTrack.artwork || currentTrack.thumbnail} alt='Thumbnail' className="w-[4rem] h-[4rem] rounded-xl" />
-          <div className="flex flex-col text-[0.875rem] font-semibold w-full">
-            <p className='text-lg'>{truncateTitle(currentTrack.title, 12)}</p>
-            <p className='text-neutral-500'>{currentTrack.artist}</p>
+          <div className="relative w-16 h-16 flex-shrink-0">
+            <img
+              src={currentTrack.artwork || currentTrack.thumbnail}
+              alt='Thumbnail'
+              className="w-full h-full rounded-xl object-cover"
+            />
+            {isLoading && (
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-xl">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col text-[0.875rem] font-semibold min-w-0">
+            <p className='text-lg truncate'>{truncateTitle(currentTrack.title, 12)}</p>
+            <p className='text-neutral-500 truncate'>{currentTrack.artist}</p>
           </div>
         </div>
 
@@ -80,11 +99,15 @@ const BottomPlayer = () => {
             <button
               onClick={togglePlay}
               className='bg-transparent transition-colors duration-200'
+              disabled={isLoading}
             >
-              {isPlaying
-                ? <FaPause className=' mx-auto my-auto text-white hover:text-[#08b2f0] w-[1.7rem] h-[1.7rem]' />
-                : <FaPlay className=' mx-auto my-auto text-white hover:text-[#08b2f0] w-[1.7rem] h-[1.7rem]' />
-              }
+              {isLoading ? (
+                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white"></div>
+              ) : isPlaying ? (
+                <FaPause className='mx-auto my-auto text-white hover:text-[#08b2f0] w-[1.7rem] h-[1.7rem]' />
+              ) : (
+                <FaPlay className='mx-auto my-auto text-white hover:text-[#08b2f0] w-[1.7rem] h-[1.7rem]' />
+              )}
             </button>
             <button
               onClick={playNext}
