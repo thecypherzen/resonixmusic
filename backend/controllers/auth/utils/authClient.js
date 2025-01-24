@@ -55,7 +55,6 @@ class AuthClient extends RequestClient {
       this.cache.set(
         `refresh:${access_token}`,
         refresh_token,
-        expires_in + 3600
       )
     ];
     try {
