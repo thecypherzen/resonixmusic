@@ -8,6 +8,8 @@ import SongDetailsPage from '../pages/SongDetailsPage';
 import PlaylistDetails from '../components/PlaylistDetails';
 import AlbumDetailsPage from '../pages/AlbumDetailsPage';
 import ArtistPage from '../pages/ArtistPage';
+import ProtectedRoute from '../components/ProtectedRoute';
+import CreatePlaylist from '../components/CreatePlaylist'
 
 const AppRoutes = () => {
   return (
@@ -22,6 +24,14 @@ const AppRoutes = () => {
       <Route path="/playlist/:id" element={<PlaylistDetails />} />
       <Route path="/album/:id" element={<AlbumDetailsPage />} />
       <Route path="/artist/:id" element={<ArtistPage />} />
+      <Route
+        path="/create-playlist"
+        element={
+          <ProtectedRoute>
+            <CreatePlaylist />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   )
 };
