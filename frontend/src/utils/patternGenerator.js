@@ -34,8 +34,6 @@ export const generatePattern = (id) => {
   const xFactor = 10 ** length.toString().length;
   const colorIndex = Math.floor((Math.random(Date.now()) * xFactor))
         % length;
-  console.log('colorsLen:', length, 'xFactor:',
-              xFactor, 'colorIndex:', colorIndex);
   const [bgColor, patternColor] = COLORS[colorIndex];
   // Fill background
   ctx.fillStyle = bgColor;
