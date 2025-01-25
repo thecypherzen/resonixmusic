@@ -23,19 +23,22 @@ async function postDislike(req, res) {
   if (!validation.isEmpty()) {
     return handlers.validationError(validation.array(), res);
   }
-  const queryParams = matchedData(req, { locations: ['query'] });
+  const dataParams = matchedData(req, { locations: ['body'] });
   const config = {
     method: 'POST',
-    url: `/setuser/dislike/`,
-    params: {
-      format: defaultParams.format,
+    url: `/setuser/dislike`,
+    data: qs.stringify({
       client_id: api.id,
-    },
+      ...dataParams,
+    }),
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    }
   };
-  requestClient.setQueryParams(queryParams, config);
-  const data = qs.stringify(config.params);
-  config.data = data;
-  delete config.params;
+  if (dataParams.full_count) {
+    config.data.fullcount = dataParams.full_count;
+    delete dataParams.full_count;
+  }
   // make request
   try {
     const response = await requestClient.make(config);

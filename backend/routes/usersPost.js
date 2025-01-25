@@ -1,5 +1,9 @@
-import { Router, json } from 'express';
-import { query } from 'express-validator';
+import {
+  Router,
+  json,
+  urlencoded,
+} from 'express';
+import { body } from 'express-validator';
 import {
   postDislike,
   postFan,
@@ -15,29 +19,30 @@ import {
 
 const router = Router();
 router.use(json());
+router.use(urlencoded({ extended: true }));
 
 router.post(
   '/dislike',
   [
-    query('access_token')
+    body('access_token')
       .trim()
       .notEmpty()
       .withMessage('Value cannot be empty')
       .escape(),
-    query('format')
-      .optional()
+    body('format')
+      .default('jsonpretty')
       .trim()
       .isIn(['json', 'jsonpretty'])
       .withMessage('Expects json or jsonpretty')
       .escape(),
-    query('full_count')
-       .optional()
+    body('full_count')
+      .optional()
       .trim()
       .toBoolean()
       .isBoolean({ strict: true })
       .withMessage('Expects true/false')
       .escape(),
-    query('track_id')
+    body('track_id')
       .trim()
       .notEmpty()
       .withMessage('Value cannot be empty')
