@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import {
   matchedData,
   validationResult,
@@ -52,10 +51,6 @@ async function getUsers(req, res) {
     requestClient.log({ req });
     return res.send(resData);
   }
-=======
-async function getUsers(req, res) {
-  return res.send({ controller: 'getUsers' });
->>>>>>> 51c812b (build(controllers): add users controllers skeleton)
 }
 
 export default getUsers;

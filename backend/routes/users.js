@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-import { Router } from 'express';
-import { getTopArtists } from '../controllers/users/userControllers.js';
-=======
->>>>>>> 59827ac (build(routers): expose users router)
-=======
->>>>>>> cffe6ed (fix(users): resolve getAlbums router error)
 import { Router, json } from 'express';
 import { query } from 'express-validator';
 import {
@@ -15,37 +5,17 @@ import {
   getUsersAlbums,
   getUsersArtists,
   getUsersTracks,
-} from '../controllers/index.js';
+ } from '../controllers/index.js';
 import usersPostRouter from './usersPost.js';
 import {
   MAX_PAGE_SIZE,
   MIN_PAGE_SIZE,
   RESPONSE_CODES as resCodes
 } from '../defaults/index.js';
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 5a78239 (build(routers): expose users router)
->>>>>>> 59827ac (build(routers): expose users router)
-=======
->>>>>>> cffe6ed (fix(users): resolve getAlbums router error)
 
 const router = Router();
 router.use(json());
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-router.get('/top', getTopArtists);
-=======
-=======
->>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
-=======
-
-router.get('/albums', getUsersAlbums);
->>>>>>> cffe6ed (fix(users): resolve getAlbums router error)
 /**
  * @openapi
  *   /users/albums:
@@ -111,11 +81,7 @@ router.get('/albums', getUsersAlbums);
  *             Sort results by `createdate`. Can also specify
  *             if order should be ascending or descending by
  *             adding `_asc` or `_desc` resppectively. The default
-<<<<<<< HEAD
- *             order is `updatedate_desc`.
-=======
  *             order is ascending.
->>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
  *           schema:
  *             type: string
  *             enum:
@@ -132,13 +98,6 @@ router.get('/albums', getUsersAlbums);
  *           schema:
  *             $ref: '#/components/schemas/page_size'
  */
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> a881f24 (feat: implement getUsersAlbums controller and router)
->>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
-=======
->>>>>>> cffe6ed (fix(users): resolve getAlbums router error)
 router.get(
   '/albums',
   [
@@ -196,11 +155,7 @@ router.get(
       .withMessage('Invalid image_size. Expects 30, 50 or 100'),
     query('order_by')
       .optional()
-<<<<<<< HEAD
       .default('updatedate_desc')
-=======
-      .default('id_asc')
->>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
       .trim()
       .notEmpty()
       .withMessage('Value cannot be empty')
@@ -698,11 +653,7 @@ router.get(
  *             adding `_asc` or `_desc` resppectively. The default
  *             order is ascending. Supported values are
  *             `updatedate`. By default, they are sorted
-<<<<<<< HEAD
- *             by `updatedate_desc`.
-=======
  *             by relevance.
->>>>>>> 89f8282 (feat: implement getUsersAlbums controller and router)
  *           schema:
  *             type: string
  *             enum:
@@ -791,28 +742,6 @@ router.get(
                   + ` to ${MAX_PAGE_SIZE}`)
       .escape(),
   ],
-=======
-<<<<<<< HEAD
-router.get('/top', getTopArtists);
-=======
-router.get(
-  '/albums',
-  getUsersAlbums
-);
-
-router.get(
-  '/artists',
-  getUsersArtists
-);
-
-router.get(
-  '/tracks',
-  getUsersTracks
-);
-
-router.get(
-  '/',
->>>>>>> 59827ac (build(routers): expose users router)
   getUsers
 );
 
@@ -829,12 +758,5 @@ router.use((req, res) => {
     }
   })
 });
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 5a78239 (build(routers): expose users router)
->>>>>>> 59827ac (build(routers): expose users router)
-=======
->>>>>>> cffe6ed (fix(users): resolve getAlbums router error)
 
 export default router;
