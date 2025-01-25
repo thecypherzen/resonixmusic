@@ -29,10 +29,14 @@ export const generatePattern = (id) => {
   const ctx = canvas.getContext('2d');
 
   // Get deterministic colors based on id
-  const numericId = parseInt(String(id).replace(/\D/g, '')) || 0;
-  const colorIndex = numericId % COLORS.length;
+  const numericId = id.replace(/\D/g) || 0;
+  const length = COLORS.length;
+  const xFactor = 10 ** length.toString().length;
+  const colorIndex = Math.floor((Math.random(Date.now()) * xFactor))
+        % length;
+  console.log('colorsLen:', length, 'xFactor:',
+              xFactor, 'colorIndex:', colorIndex);
   const [bgColor, patternColor] = COLORS[colorIndex];
-
   // Fill background
   ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
