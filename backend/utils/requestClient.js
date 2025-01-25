@@ -90,8 +90,13 @@ class RequestClient {
     }
   }
 
-  log({ message = null, type = 'normal', req = null }) {
-    logger.log({ message, type, req });
+  log({
+    error = null,
+    message = null,
+    type = 'normal',
+    req = null
+  }) {
+    logger.log({ error, message, type, req });
   }
 
   async make(config) {

@@ -1,7 +1,10 @@
 class AuthError extends Error {
   #name = 'AuthError';
   constructor(message, options = {}) {
-    super(message, options);
+    super(message);
+    for (const[key, value] of Object.entries(options)) {
+      this[key] = value;
+    }
   }
 
   get name(){
@@ -14,7 +17,6 @@ class AuthError extends Error {
       message: this.message || 'An error occured',
       code: this.code || 'UNKNOWN',
       errno: this.errno,
-      stack: this.stack,
     };
     return `${this[Symbol.toStringTag]} ${details}`;
   }
@@ -24,7 +26,6 @@ class AuthError extends Error {
       'message': this.message,
       'code': this.code,
       'errno': this.errno,
-      'stack': this.stack
     }
   }
 }

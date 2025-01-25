@@ -29,7 +29,15 @@ const generalError = (error, res) => {
   return res.status(error.errno > 0 ? error.errno : 500)
             .send(resBody);
 }
+
+const accessDenied = (error, res, options = {}) => {
+  const resBody = { headers: { }, results: [] };
+  requestClient.setDataHeaders(resBody, {  error, options });
+  return res.status(error.errno).send(resBody);
+}
+
 const handlers = {
+  accessDenied,
   generalError,
   validationError,
 };
