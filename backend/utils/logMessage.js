@@ -16,19 +16,32 @@ class MessageLogger {
     return this.#name;
   }
 
-  log ({ message = null, type = 'normal', req = null }) {
+  log ({
+    message = null,
+    type = 'normal',
+    req = null,
+    error = null,
+  }) {
     let prefix = `${this.#colours[type] || ''}`;
     if (message) {
       console.log(`${prefix}${message}${this.#colours.normal}`);
       return;
     }
     const { method, originalUrl, res } = req;
-    type = res.statusCode < 100 || res.statusCode >= 400
-      ? 'error' : res.statusCode < 200
-      ? 'info' : res.statusCode < 300
-      ? 'success' : 'warning';
+    if (!error){
+      type = res.statusCode < 100 || res.statusCode >= 400
+        ? 'error' : res.statusCode < 200
+        ? 'info' : res.statusCode < 300
+        ? 'success' : 'warning';
+    }
+    let statusCode;
+    if (error && error.errno > 0) {
+      statusCode = error.errno;
+    } else {
+      statusCode = res.statusCode
+    }
     prefix = `${this.#colours[type]}`;
-    const body = `[${req.method}] ${originalUrl} ${res.statusCode}`;
+    const body = `[${req.method} ${statusCode}] ${originalUrl}`;
     console.log(`${prefix}${body}${this.#colours.normal}`);
     return;
   }
