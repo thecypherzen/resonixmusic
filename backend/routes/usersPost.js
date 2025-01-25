@@ -16,7 +16,37 @@ import {
 const router = Router();
 router.use(json());
 
-router.post('/dislike', postDislike);
+router.post(
+  '/dislike',
+  [
+    query('access_token')
+      .trim()
+      .notEmpty()
+      .withMessage('Value cannot be empty')
+      .escape(),
+    query('format')
+      .optional()
+      .trim()
+      .isIn(['json', 'jsonpretty'])
+      .withMessage('Expects json or jsonpretty')
+      .escape(),
+    query('full_count')
+       .optional()
+      .trim()
+      .toBoolean()
+      .isBoolean({ strict: true })
+      .withMessage('Expects true/false')
+      .escape(),
+    query('track_id')
+      .trim()
+      .notEmpty()
+      .withMessage('Value cannot be empty')
+      .isInt({ min: 1 })
+      .withMessage('Expects an integer > 0')
+      .escape(),
+  ],
+  postDislike
+);
 router.post('/fan', postFan);
 router.post('/favorite', postFavorite);
 router.post('/like', postLike);
