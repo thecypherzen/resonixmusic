@@ -5,6 +5,7 @@ import { FaPlay } from 'react-icons/fa6';
 import { usePlayer } from '../context/PlayerContext';
 import AuthModal from './AuthModal';
 import authService from '../services/authService';
+import UserMenu from './UserMenu';
 
 // Create a new CreatePlaylistModal component
 const CreatePlaylistModal = ({ isOpen, onClose, onSubmit }) => {
@@ -119,12 +120,12 @@ const SideBar = () => {
               {/* Profile */}
               <img src="/logo-grad.png" alt="resonix logo" className='w-[5.75rem] h-auto' />
 
-              <button className="flex w-[2rem] h-[2rem] bg-[#212124] rounded-full border border-neutral-800 items-start ml-auto">
-                <p className="text-white text-xs text-center justify-center m-auto shadow-lg hover:opacity-60 transition-opacity duration-200 ">{initials}</p>
-              </button>
-              <button className='bg-transparent'>
-                <Menu />
-              </button>
+              <div className="ml-auto flex items-center gap-2">
+                <UserMenu />
+                <button className='bg-transparent'>
+                  <Menu />
+                </button>
+              </div>
             </div>
           </div>
 

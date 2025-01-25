@@ -1,8 +1,10 @@
 import React from 'react';
 import { LuSearch } from "react-icons/lu";
-
+import { useNavigate } from 'react-router-dom';
 
 const TopNav = () => {
+  const navigate = useNavigate();
+
   return (
     <div className='flex flex-row bg-transparent items-center py-10 px-16 h-[4.375rem] w-full mx-auto sticky top-0 z-50 bg-white-400 bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-20'>
       {/* Searchbar */}
