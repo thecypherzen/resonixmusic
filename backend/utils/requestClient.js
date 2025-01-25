@@ -29,8 +29,8 @@ class RequestClientError extends Error {
     const details = {
       message: this.message || 'An error occured',
       code: this.code || 'UNKNOWN',
-      errno: this.errno,
-      stack: this.stack,
+      errno: this?.errno ?? 500,
+      stack: this?.stack ?? null,
     };
     return `${this[Symbol.toStringTag]} ${details}`;
   }
@@ -38,9 +38,9 @@ class RequestClientError extends Error {
     return {
       'name': this.name,
       'message': this.message,
-      'code': this.code,
-      'errno': this.errno,
-      'stack': this.stack
+      'code': this?.code ?? 'UNKNOWN',
+      'errno': this?.errno ?? 500,
+      'stack': this?.stack ?? null,
     }
   }
 }
@@ -130,6 +130,7 @@ class RequestClient {
         this.setTimeTaken(timeStart, timeEnd, response);
         return response;
       } catch (error) {
+        console.log(error);
         errorObj = error;
         if (error?.response) {
           break;
