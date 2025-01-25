@@ -7,6 +7,7 @@ import api from '../services/api';
 import { MdErrorOutline } from "react-icons/md";
 import PlaylistCard from './PlaylistCard';
 import ArtistCard from './ArtistCard';
+import helpers from '../utils/utilityFunctions.js';
 
 // Constants
 const CURRENT_DATE = '2025-01-23 00:03:46';
@@ -41,16 +42,18 @@ const transformJamendoAlbum = (album) => ({
   trackCount: album.tracks_count || 0
 });
 
-const transformJamendoPlaylist = (playlist) => ({
-  id: playlist.id,
-  title: playlist.name || '',
-  artist: playlist.user_name || '',
-  thumbnail: `https://usercontent.jamendo.com?type=playlist&id=${playlist.id}&width=300`,
-  creationDate: playlist.creationdate,
-  shareUrl: playlist.shareurl,
-  shortUrl: playlist.shorturl,
-  userId: playlist.user_id
-});
+const transformJamendoPlaylist = (playlist) => {
+  return ({
+    id: playlist.id,
+    title: helpers.capitalize(playlist.title) || '',
+    artist: helpers.capitalize(playlist.artist) || '',
+    thumbnail: `https://usercontent.jamendo.com?type=playlist&id=${playlist.id}&width=300`,
+    creationDate: playlist.creationDate,
+    shareUrl: playlist.shareUrl,
+    shortUrl: playlist.shortUrl,
+    userId: playlist.userId
+  });
+};
 
 // Loading components
 const SectionLoadingMessage = () => (
@@ -197,8 +200,6 @@ const PlayerHome = () => {
 
   // Playback handlers
   const handlePlaySong = (song, index) => {
-    console.log('Playing song:', song);
-
     const trackToPlay = {
       id: song.id,
       title: song.title || song.name,
@@ -472,16 +473,18 @@ const PlayerHome = () => {
             </div>
           </div>
           <div className="flex flex-row bg-transparent h-[16rem] w-full gap-4 mt-4">
-            {transformedPlaylists
+            {
+              transformedPlaylists
               .slice(visiblePlaylists, visiblePlaylists + cardsPerSet)
-              .map((playlist) => (
-                <PlaylistCard
-                  key={playlist.id}
-                  playlist={playlist}
-                  onClick={handlePlaylistClick}
-                  truncateTitle={truncateTitle}
-                />
-              ))}
+              .map((playlist) => {
+                return (
+                  <PlaylistCard
+                    key={playlist.id}
+                    playlist={playlist}
+                    onClick={handlePlaylistClick}
+                    truncateTitle={truncateTitle}
+                  />);
+              })}
           </div>
         </div>
       )}
