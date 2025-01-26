@@ -13,14 +13,14 @@ const ApiDocs = () => {
       <SideBar />
       <div className="flex flex-col max-h-screen w-full ml-[15rem]">
         <TopNav />
-        <div className="w-screen h-full pr-[15.5rem] pb-[5rem] bg-[#1a1a1a]">
+        <div className="w-screen h-full bg-[#000]">
           <iframe
             src={docsUrl.toString()}
             title="Resonix API Documentation"
-            className="w-full h-full border-0 bg-[#000]"
+            className="w-screen h-full border-0 pb-[3.8rem] pr-[15.5rem] pl-8 bg-[#000]"
             style={{
-              height: 'calc(100vh - 5rem)',
-              backgroundColor: '#1a1a1a'
+              height: '100vh',
+              backgroundColor: '#000'
             }}
           />
         </div>
