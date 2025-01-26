@@ -104,8 +104,6 @@ const Profile = () => {
               </div>
             </div>
           </div>
-
-          {/* Rest of your profile sections remain the same */}
         </div>
       </div>
     </div>
