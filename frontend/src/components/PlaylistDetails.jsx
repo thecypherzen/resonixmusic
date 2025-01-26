@@ -122,7 +122,8 @@ const PlaylistDetails = () => {
                 {playlist?.user_name}
               </span>
               <span className="text-neutral-400">
-                • {new Date(playlist?.creationdate).getFullYear()}
+                { console.log('CREATIONDATE', playlist.creationDate) }
+                {new Date(playlist?.creationDate).getFullYear()}
               </span>
               <span className="text-neutral-400">• {playlist.tracks.length} songs</span>
             </div>
