@@ -6,9 +6,6 @@ import { usePlayer } from '../context/PlayerContext';
 import api from '../services/api';
 import { saveAs } from 'file-saver';
 
-const CURRENT_DATE = '2025-01-17 21:19:53';
-const CURRENT_USER = 'gabrielisaacs';
-
 const AlbumDetails = ({ id }) => {
   const player = usePlayer();
   const { handleTrackSelect, currentTrack, isPlaying } = player;
