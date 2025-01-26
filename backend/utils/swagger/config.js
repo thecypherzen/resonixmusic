@@ -28,6 +28,7 @@ const options = {
 const swaggerSpec = swaggerJsdoc(options);
 
 const swaggerDocs = function (app) {
+  // Swagger UI with dark theme
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     explorer: true,
     customSiteTitle: "Resonix API Documentation",
@@ -42,52 +43,55 @@ const swaggerDocs = function (app) {
         border: 1px solid #333;
         color: #fff;
       }
+
+      .swagger-ui input[type=dropdown] {
+        outline: none;
+      }
+
       .swagger-ui .opblock .opblock-summary-method {
         background-color: #333;
       }
       .swagger-ui .opblock .opblock-summary {
         border-bottom: 1px solid #333;
       }
-      .swagger-ui input[type=text], 
-      .swagger-ui textarea {
+      .swagger-ui input[type=text], .swagger-ui textarea {
         background-color: #000;
         color: #fff;
-        border: 1px solid #333;
+        outline: none;
       }
       .swagger-ui .topbar {
-        display: none;
+        opacity: 0;
+        background-color: #000;
+        height: 2px;
       }
       .swagger-ui .scheme-container {
         background-color: #000;
+        outline: none;
       }
       .swagger-ui select {
         background-color: #000;
         color: #fff;
-        border: 1px solid #333;
-      }
-      .swagger-ui select option {
-        background-color: #000;
-        color: #fff;
-      }
-      .swagger-ui select::placeholder {
-        color: #fff;
+        outline: none;
       }
       .swagger-ui .btn {
         background-color: #000;
         color: #fff;
-        border: 1px solid #333;
+        outline: none;
       }
       .swagger-ui .model {
         color: #fff;
+        outline: none;
       }
       .swagger-ui .model-toggle:after {
         background-color: #000;
       }
       .swagger-ui section.models {
         border: 1px solid #333;
+        outline: none;
       }
       .swagger-ui section.models .model-container {
         background-color: #242424;
+        outline: none;
       }
       .swagger-ui .responses-table thead tr td, 
       .swagger-ui .responses-table thead tr th, 
@@ -119,19 +123,10 @@ const swaggerDocs = function (app) {
       .swagger-ui .info table {
         color: #fff;
       }
-      .swagger-ui input::placeholder,
-      .swagger-ui textarea::placeholder {
-        color: #fff;
-      }
-      .swagger-ui select:focus,
-      .swagger-ui input:focus,
-      .swagger-ui textarea:focus,
-      .swagger-ui button:focus {
-        outline: none;
-      }
     `
   }));
 
+  // Docs in JSON format
   app.get('/docs.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(swaggerSpec);
