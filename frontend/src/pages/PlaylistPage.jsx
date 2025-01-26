@@ -27,6 +27,7 @@ const PlaylistPage = () => {
 
         {/* Playlist Content */}
         <div className="mt-[4rem] pb-[90px] relative">
+          { console.log('PLAYLISTS DETAILS FOR', id) }
           <PlaylistDetails id={id} />
         </div>
 

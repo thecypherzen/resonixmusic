@@ -50,14 +50,30 @@ const DUMMY_DATA = {
 const api = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json'
-  },
   retry: 3,
   retryDelay: (retryCount) => {
     return retryCount * 2000;
   }
 });
+
+const imageapi = axios.create({
+  baseURL: 'https://api.unsplash.com/photos/',
+});
+
+const getRandomImage = async (orientation) => {
+  try {
+    const response = await imageapi.get('/random', {
+      params: {
+        query: 'dark music',
+        orientation,
+        client_id: 'IS8nNFC4MfhBLi-F8KZdlaGMfELuMhY7-3RK3iIPtgk',
+      }
+    });
+    return response?.data?.urls?.full;
+  } catch (error) {
+    console.log('RANDOM IMAGE ERROR\n\t', error);
+  }
+};
 
 // Transform functions to match frontend format
 const transformTrackData = (track) => ({
@@ -103,7 +119,7 @@ const transformPlaylistData = (playlist) => ({
   thumbnailId: playlist.id
 });
 
-export const getTrendingTracks = async (params = {}) => {
+const getTrendingTracks = async (params = {}) => {
   try {
     console.log('Fetching trending tracks...');
     const response = await api.get('/tracks', { params });
@@ -120,7 +136,7 @@ export const getTrendingTracks = async (params = {}) => {
   }
 };
 
-export const getAlbums = async (params = {}) => {
+const getAlbums = async (params = {}) => {
   try {
     console.log('Fetching albums...');
     const response = await api.get('/albums', { 
@@ -141,7 +157,7 @@ export const getAlbums = async (params = {}) => {
   }
 };
 
-export const getTopArtists = async (params = {}) => {
+const getTopArtists = async (params = {}) => {
   try {
     console.log('Fetching top artists...');
     const response = await api.get('/artists', { 
@@ -164,7 +180,7 @@ export const getTopArtists = async (params = {}) => {
   }
 };
 
-export const getAlbumDetails = async (albumId) => {
+const getAlbumDetails = async (albumId) => {
   try {
     console.log('Fetching album details for:', albumId);
     
@@ -224,7 +240,7 @@ export const getAlbumDetails = async (albumId) => {
   }
 };
 
-export const getPlaylists = async (params = {}) => {
+const getPlaylists = async (params = {}) => {
   try {
     console.log('Fetching playlists...');
     const response = await api.get('/playlists', { 
@@ -235,6 +251,7 @@ export const getPlaylists = async (params = {}) => {
     });
     
     if (response.data?.results) {
+      console.log('PLAYLISTS FETCHED:\n', response.data.results);
       const transformedPlaylists = response.data.results.map(transformPlaylistData);
       return { data: transformedPlaylists };
     }
@@ -245,7 +262,7 @@ export const getPlaylists = async (params = {}) => {
   }
 };
 
-export const getRecentTracks = async (params = {}) => {
+const getRecentTracks = async (params = {}) => {
   try {
     console.log('Fetching recent tracks...');
     const response = await api.get('/tracks', { 
@@ -268,15 +285,13 @@ export const getRecentTracks = async (params = {}) => {
   }
 };
 
-export const getPlaylistDetails = async (playlistId) => {
+const getPlaylistDetails = async (playlistId) => {
   try {
     console.log('Fetching playlist details for:', playlistId);
-    
     // First, get the playlist details
     const playlistResponse = await api.get(`/playlists`, { 
       params: { 
-        id: [playlistId],
-        format: 'jsonpretty'
+        id: [ parseInt(playlistId) ],
       } 
     });
 
@@ -287,20 +302,23 @@ export const getPlaylistDetails = async (playlistId) => {
     }
 
     // Transform the playlist data
-    const playlistData = transformPlaylistData(playlistResponse.data.results[0]);
-
+    const playlistData = transformPlaylistData(
+      playlistResponse.data.results[0]
+    );
+    console.log('TRANSFORMED PLAYLIST DATA\n', playlistData);
     // Then, get the tracks for this playlist
-    const tracksResponse = await api.get(`/playlists/${playlistId}/tracks`, {
+    const tracksResponse = await api.get(`/playlists/tracks`, {
       params: {
-        format: 'jsonpretty'
+        id: [playlistId],
+        format: 'jsonpretty',
       }
     });
 
     console.log('Playlist tracks response:', tracksResponse);
 
     let tracks = [];
-    if (tracksResponse.data?.results) {
-      tracks = tracksResponse.data.results.map(track => ({
+    if (tracksResponse.data?.results?.length) {
+      tracks = tracksResponse.data.results[0].tracks.map(track => ({
         id: track.id,
         name: track.name,
         artist_name: track.artist_name,
@@ -513,6 +531,7 @@ api.interceptors.response.use(
 );
 
 export default {
+  getRandomImage,
   getPlaylists,
   getTrendingTracks,
   getTopArtists,

@@ -28,7 +28,6 @@ async function getTracks(req, res) {
   };
   const queryParams = matchedData(req, { locations: ['query'] });
   requestClient.setQueryParams(queryParams, config);
-  console.log('config\n',config);
   try {
     const response = await requestClient.make(config);
     requestClient.setDataHeaders(response.data, {

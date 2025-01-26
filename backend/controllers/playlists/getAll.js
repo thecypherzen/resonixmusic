@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {
   matchedData,
   validationResult,
@@ -5,6 +6,7 @@ import {
 
 import {
   errorHandlers as handlers,
+  filters,
   requestClient,
   RequestClientError,
 } from '../../utils/index.js';
@@ -20,6 +22,16 @@ async function getAll(req, res) {
   if (!validation.isEmpty()) {
     return handlers.validationError(validation.array(), res);
   }
+  const ids = [
+    123785, 123798, 123793, 123791, 123783, 123794,
+    123781, 123780, 123777, 123782, 123797, 500246386,
+    500246453, 500246480, 500246618, 500246656, 500246738,
+    500246814, 500246966, 500247018, 500247068, 500247140,
+    500247191, 500247207, 500247248, 500247291, 500247302,
+    500247308, 500247321, 500247373, 500247385, 500247387,
+    500247449, 500247465, 500247492, 500247497, 500247502,
+    500247504, 500247505, 500247531
+  ];
   const config = {
     url: '/playlists',
     params: {
@@ -28,9 +40,15 @@ async function getAll(req, res) {
   };
   delete config.params['imagesize'];
   const queryParams = matchedData(req, { locations: ['query'] });
+  if (!queryParams?.id) {
+    queryParams.id = ids;
+  }
+  console.log(queryParams);
   requestClient.setQueryParams(queryParams, config);
   try {
-    const response = await requestClient.make(config);
+    let response = await requestClient.make(config);
+    // const filtered = await filters.playlists.byTracks(response.data.results);
+    // console.log('filtered playlists\n', filtered);
     requestClient.setDataHeaders(response.data, {
       options: { 'x-took': response.timeTaken },
     });

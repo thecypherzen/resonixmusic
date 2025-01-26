@@ -1,40 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { FaPlay, FaHeart, FaEllipsisH, FaClock } from 'react-icons/fa';
+import { useParams } from 'react-router-dom';
 import { MdErrorOutline } from "react-icons/md";
 import { usePlayer } from '../context/PlayerContext';
 import api from '../services/api';
+import { usePlaylistThumbnail } from '../hooks/usePlaylistThumbnail';
 
 const CURRENT_DATE = '2025-01-23 01:20:24';
 const CURRENT_USER = 'gabrielisaacs';
 
-const PlaylistDetails = ({ id }) => {
+const PlaylistDetails = () => {
   const { setCurrentTrack, setQueue, currentTrack } = usePlayer();
   const [playlist, setPlaylist] = useState(null);
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { id } = useParams();
+  console.log('GETTING DETAILS FOR PLAYLIST:\n\t', id);
 
   useEffect(() => {
     const fetchPlaylistDetails = async () => {
       if (!id) return;
-
+      const thumbnail = await api.getRandomImage('squarish');
+      const image = await api.getRandomImage('landscape');
       try {
         setLoading(true);
         const response = await api.getPlaylistDetails(id);
-        console.log('Playlist details response:', response);
+        console.log('Playlist details data:', response?.data ?? 'NONE');
 
-        if (response.results && response.results.length > 0) {
-          const playlistData = response.results[0]; // Get the first playlist from results
+        if (response.data) {
+          const playlistData = response.data; // Get the first playlist from results
           setPlaylist({
             ...playlistData,
-            image: `https://usercontent.jamendo.com?type=playlist&id=${playlistData.id}&width=300`,
+            thumbnail,
+            image
           });
 
           // Fetch tracks for the playlist
-          const tracksResponse = await api.getPlaylistTracks(playlistData.id);
-          if (tracksResponse.results) {
-            setTracks(tracksResponse.results);
+          if (playlistData.tracks) {
+            setTracks(playlistData.tracks);
           }
+          console.log(`PLAYLIST ${id} TRACKS: \n\t`, playlistData.tracks);
         } else {
           throw new Error('Playlist not found');
         }
@@ -97,7 +103,7 @@ const PlaylistDetails = ({ id }) => {
         {/* Playlist Header */}
         <div className="flex items-end gap-6 p-6 h-[20rem] bg-gradient-to-b from-neutral-800/50 to-[#121212]">
           <img
-            src={playlist?.image}
+            src={playlist.thumbnail}
             alt={playlist?.name}
             className="w-[10.75rem] h-[10.75rem] shadow-2xl rounded-lg"
           />
@@ -108,7 +114,7 @@ const PlaylistDetails = ({ id }) => {
             </h1>
             <div className="flex items-center gap-2 text-md">
               <img
-                src={`https://usercontent.jamendo.com?type=user&id=${playlist?.user_id}&width=300`}
+                src={playlist.thumbnail}
                 alt={playlist?.user_name}
                 className="w-6 h-6 rounded-full"
               />
@@ -118,7 +124,7 @@ const PlaylistDetails = ({ id }) => {
               <span className="text-neutral-400">
                 • {new Date(playlist?.creationdate).getFullYear()}
               </span>
-              <span className="text-neutral-400">• {tracks.length} songs</span>
+              <span className="text-neutral-400">• {playlist.tracks.length} songs</span>
             </div>
           </div>
         </div>

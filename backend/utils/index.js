@@ -1,4 +1,4 @@
-import { filterBy, sortBy } from './filters.js';
+import filters from './filters.js';
 import getPageFromArray from './getPageFrom.js';
 import errorHandlers from './errorHandlers.js';
 import storage from './localStorage.js';
@@ -27,7 +27,7 @@ export {
   CacheClientError,
   cacheClientReady,
   errorHandlers,
-  filterBy,
+  filters,
   getPageFromArray,
   RequestClient,
   requestClient,
@@ -35,7 +35,6 @@ export {
   authClient,
   AuthError,
   authManager,
-  sortBy,
   storage,
   getHostUrl,
 };

@@ -266,6 +266,7 @@ const PlayerHome = () => {
 
   const handlePlaylistClick = (playlist) => {
     window.scrollTo(0, 0);
+    console.log('CLICKED ON: ', playlist.id);
     navigate(`/playlist/${playlist.id}`);
   };
 
@@ -477,6 +478,7 @@ const PlayerHome = () => {
               transformedPlaylists
               .slice(visiblePlaylists, visiblePlaylists + cardsPerSet)
               .map((playlist) => {
+                { console.log("PLAYLIST MAPPED:", playlist) }
                 return (
                   <PlaylistCard
                     key={playlist.id}

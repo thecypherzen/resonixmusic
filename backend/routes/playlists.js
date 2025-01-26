@@ -449,11 +449,11 @@ router.get(
       .withMessage('Expects an integer > 0')
       .escape(),
     query('page_size')
-      .default(`${MIN_PAGE_SIZE}`)
+      .default('50')
       .notEmpty()
       .withMessage('Value cannot be empty')
-      .isInt({ min: MIN_PAGE_SIZE, max: MAX_PAGE_SIZE })
-      .withMessage(`Expects an integer from ${MIN_PAGE_SIZE}`
+      .isInt({ min: 10, max: MAX_PAGE_SIZE })
+      .withMessage(`Expects an integer from ${10}`
                   + ` to ${MAX_PAGE_SIZE}`)
       .escape(),
   ],

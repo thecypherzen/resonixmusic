@@ -130,7 +130,7 @@ class RequestClient {
         this.setTimeTaken(timeStart, timeEnd, response);
         return response;
       } catch (error) {
-        console.log(error);
+        console.log(error.message);
         errorObj = error;
         if (error?.response) {
           break;
