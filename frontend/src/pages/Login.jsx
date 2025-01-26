@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import authService from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL, AUTH_ENDPOINTS } from '../constants/config';
+import { ChevronLeft } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -52,9 +53,10 @@ const Login = () => {
 
       <div className="flex h-full px-20">
         <div className="w-1/2 h-full flex items-center">
-          <div className="ml-[10rem] mt-[22rem]">
+          <div className="ml-[10rem] mt-[22rem] relative">
             <img src="/logo-grad.png" alt="resonix logo" className="w-[10rem] " />
             <img src="/user-3d.png" className="w-[30rem]" />
+
           </div>
         </div>
 
@@ -89,6 +91,12 @@ const Login = () => {
               <Link to="/coming-soon" className="text-sky-500">Privacy Policy</Link>
             </p>
           </div>
+          <button
+            onClick={() => navigate(-1)}
+            className="flex bg-transparent border border-neutral-600 hover:bg-neutral-800 text-white rounded-full p-3 transition-colors absolute right-24 top-[33rem] w-12 h-12 items-center justify-center"
+          >
+            <ChevronLeft />
+          </button>
         </div>
       </div>
     </div>
