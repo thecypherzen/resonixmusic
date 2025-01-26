@@ -5,7 +5,7 @@ import Login from '../pages/Login';
 import ForgotPassword from '../pages/ForgotPassword';
 import MusicPlayer from '../pages/MusicPlayer';
 import SongDetailsPage from '../pages/SongDetailsPage';
-import PlaylistDetails from '../components/PlaylistDetails';
+import PlaylistPage from '../pages/PlaylistPage';
 import AlbumDetailsPage from '../pages/AlbumDetailsPage';
 import ArtistPage from '../pages/ArtistPage';
 import Profile from '../pages/Profile';
@@ -38,7 +38,7 @@ const AppRoutes = () => {
       <Route path="/song/:id" element={<SongDetailsPage />} />
       <Route path="/album/:id" element={<AlbumDetailsPage />} />
       <Route path="/artist/:id" element={<ArtistPage />} />
-      <Route path="/playlist/:id" element={<PlaylistDetails />} />
+      <Route path="/playlist/:id" element={<PlaylistPage />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/docs" element={<ApiDocs />} />
 
