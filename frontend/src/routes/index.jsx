@@ -14,6 +14,7 @@ import CreatePlaylist from '../components/CreatePlaylist';
 import AuthCallback from '../pages/AuthCallback';
 import LoginSuccess from '../pages/LoginSuccess';
 import ApiDocs from '../components/ApiDocs';
+import ComingSoonPage from '../pages/ComingSoonPage';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -41,17 +42,15 @@ const AppRoutes = () => {
       <Route path="/playlist/:id" element={<PlaylistPage />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/docs" element={<ApiDocs />} />
+      <Route path="/coming-soon" element={<ComingSoonPage />} />
 
-      {/* Protected routes */}
+
       <Route
         path="/create-playlist"
-        element={
-          <ProtectedRoute>
-            <CreatePlaylist />
-          </ProtectedRoute>
-        }
+        element={<Navigate to="/coming-soon" replace />}
       />
 
+      {/* Protected routes */}
       <Route
         path="/profile"
         element={
