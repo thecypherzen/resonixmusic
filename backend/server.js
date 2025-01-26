@@ -21,7 +21,8 @@ const app = express();
 app.use(cors({
   origin: ['http://localhost:5173', 'https://resonix.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['Set-Cookie'],
   credentials: true
 }));
 // - json body-parser

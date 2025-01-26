@@ -5,6 +5,7 @@ import { FaPlay } from 'react-icons/fa6';
 import { usePlayer } from '../context/PlayerContext';
 import AuthModal from './AuthModal';
 import authService from '../services/authService';
+import { useAuth } from '../context/AuthContext';
 import UserMenu from './UserMenu';
 
 // Create a new CreatePlaylistModal component
@@ -81,9 +82,10 @@ const SideBar = () => {
   const initials = userLogin.substring(0, 2).toUpperCase();
   const location = useLocation();
   const { play } = usePlayer();
+  const { isAuthenticated } = useAuth();
 
   const handleCreatePlaylistClick = () => {
-    if (authService.isAuthenticated()) {
+    if (isAuthenticated) {
       setIsCreateModalOpen(true);
     } else {
       setIsAuthModalOpen(true);

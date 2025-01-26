@@ -10,16 +10,16 @@ const CURRENT_USER = 'gabrielisaacs';
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <ErrorBoundary>
           <PlayerProvider>
             <ScrollToTop />
             <Routes />
           </PlayerProvider>
         </ErrorBoundary>
-      </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
