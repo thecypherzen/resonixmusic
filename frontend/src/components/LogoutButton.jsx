@@ -7,7 +7,7 @@ const LogoutButton = () => {
 
   const handleLogout = () => {
     authService.logout();
-    navigate('/login');
+    navigate('/');
   };
 
   return (

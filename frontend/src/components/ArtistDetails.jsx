@@ -8,8 +8,6 @@ import { MdErrorOutline } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 import ArtistCard from './ArtistCard';
 
-const CURRENT_DATE = '2025-01-23 14:11:28';
-const CURRENT_USER = 'gabrielisaacs';
 const DEFAULT_THUMBNAIL = '/thumbnail.png';
 
 const truncateTitle = (title, maxLength) => {

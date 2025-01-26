@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import authService from '../services/authService';
 import { useAuth } from '../context/AuthContext';
@@ -17,17 +17,21 @@ const Login = () => {
   }, [isAuthenticated, navigate]);
 
   const handleJamendoLogin = () => {
-    // This will redirect to the backend login endpoint
-    authService.initiateLogin();
+    // authService.initiateLogin();
+    navigate('/coming-soon')
   };
 
-  const handleJamendoSignup = async () => {
-    try {
-      await authService.initiateSignup();
-    } catch (error) {
-      console.error('Signup failed:', error);
-    }
+  const handleJamendoSignup = () => {
+    navigate('/coming-soon')
   };
+
+  // const handleJamendoSignup = async () => {
+  //   try {
+  //     await authService.initiateSignup();
+  //   } catch (error) {
+  //     console.error('Signup failed:', error);
+  //   }
+  // };
 
   return (
     <div className="fixed inset-0 flex flex-col bg-[#121212]">
@@ -80,9 +84,9 @@ const Login = () => {
 
             <p className="mt-6 text-sm text-neutral-500">
               By continuing, you agree to Resonix's{' '}
-              <a href="#" className="text-sky-500">Terms of Service</a>
+              <Link to="/coming-soon" className="text-sky-500">Terms of Service</Link>
               {' '}and{' '}
-              <a href="#" className="text-sky-500">Privacy Policy</a>
+              <Link to="/coming-soon" className="text-sky-500">Privacy Policy</Link>
             </p>
           </div>
         </div>
