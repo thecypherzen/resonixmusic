@@ -5,7 +5,8 @@ import {
   getUsersAlbums,
   getUsersArtists,
   getUsersTracks,
-} from '../controllers/index.js';
+ } from '../controllers/index.js';
+import usersPostRouter from './usersPost.js';
 import {
   MAX_PAGE_SIZE,
   MIN_PAGE_SIZE,
@@ -80,7 +81,7 @@ router.use(json());
  *             Sort results by `createdate`. Can also specify
  *             if order should be ascending or descending by
  *             adding `_asc` or `_desc` resppectively. The default
- *             order is `updatedate_desc`.
+ *             order is ascending.
  *           schema:
  *             type: string
  *             enum:
@@ -652,7 +653,7 @@ router.get(
  *             adding `_asc` or `_desc` resppectively. The default
  *             order is ascending. Supported values are
  *             `updatedate`. By default, they are sorted
- *             by `updatedate_desc`.
+ *             by relevance.
  *           schema:
  *             type: string
  *             enum:
@@ -743,6 +744,8 @@ router.get(
   ],
   getUsers
 );
+
+router.use('/post', usersPostRouter);
 
 router.use((req, res) => {
   return res.status(404).send({

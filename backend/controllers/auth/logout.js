@@ -11,7 +11,6 @@ async function logout(req, res) {
   const startTime = Date.now();
   const resData = { headers: {}, results: [] };
   const loggedOut = await verifiers.isLoggedOut(req);
-  console.log(req.cookies?.access_token);
   if (loggedOut) {
     authClient.log({
       message: 'user already loggedout',

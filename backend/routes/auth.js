@@ -119,7 +119,7 @@ router.use(
       .isString()
       .withMessage('Invalid parameter'),
   ],
-  authGrant
+  authManager.verifyAuth
 );
 
 router.use('/denied', (req, res) => {

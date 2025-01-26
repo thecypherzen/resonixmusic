@@ -8,7 +8,8 @@ import {
 import {
   cacheClient,
   errorHandlers as handlers,
-  RequestClient
+  requestClient,
+  RequestClient,
 } from '../../../utils/index.js';
 
 class AuthClient extends RequestClient {
@@ -95,6 +96,12 @@ class AuthClient extends RequestClient {
     };
   }
 
+   async currentState() {
+     // If no state exists, it returns null;
+     const state = await this.cache.get('state');
+     return state;
+  }
+
   getUri(config) {
     const requestUri = this.client.getUri(config);
     return requestUri;
@@ -151,7 +158,7 @@ class AuthClient extends RequestClient {
     };
     const authUri = this.getUri(config);
     this.log({
-      message: `redirecting to: ${authUri}`, type: 'success',
+      message: `redirecting to: ${authUri}`, type: 'info',
     });
     return res.redirect(authUri);
   }
@@ -165,15 +172,15 @@ class AuthClient extends RequestClient {
     const params = matchedData(req, { locations: ['query'] });
     const startTime = Date.now();
     try {
-      const savedState = await this.cache.get('state');
+      const savedState = await this.currentState();
       const { state, code } = params;
       if (state !== savedState.toString('utf-8')) {
         throw new AuthError(
-          'Possible CSRF detected. Unknown state was returned',
+          'Possible CSRF attack detected',
           {
             errno: 401,
             'x-took': `${Date.now() - startTime}ms`,
-            code: 'ESTATE_UNKNOWN',
+            code: 'EUNKNOWN_ORIGIN',
           }
         )
       }
@@ -203,7 +210,6 @@ class AuthClient extends RequestClient {
           error.message, {
             errno: error.errno < 0 ? error.errno : 401,
             code: error?.code || null,
-            stack: null
           }
         );
         for (const [key, value] of Object.entries(error)) {
