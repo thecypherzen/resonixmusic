@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import WelcomeScreen from '../pages/WelcomeScreen';
 import Login from '../pages/Login';
-import Signup from '../pages/Signup';
 import ForgotPassword from '../pages/ForgotPassword';
 import MusicPlayer from '../pages/MusicPlayer';
 import SongDetailsPage from '../pages/SongDetailsPage';
@@ -12,20 +11,26 @@ import ArtistPage from '../pages/ArtistPage';
 import Profile from '../pages/Profile';
 import ProtectedRoute from '../components/ProtectedRoute';
 import CreatePlaylist from '../components/CreatePlaylist';
-
-const CURRENT_DATE = '2025-01-24 23:57:34';
-const CURRENT_USER = 'gabrielisaacs';
+import AuthCallback from '../pages/AuthCallback';
+import LoginSuccess from '../pages/LoginSuccess';
+import ApiDocs from '../components/ApiDocs';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
 
   return (
     <Routes>
-      {/* Authentication routes */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
+      <Route
+        path="/login"
+        element={
+          isAuthenticated ?
+            <Navigate to="/profile" replace /> :
+            <Login />
+        }
+      />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/welcome" element={<WelcomeScreen />} />
+      <Route path="/auth/success" element={<LoginSuccess />} />
 
       {/* Public routes */}
       <Route path="/" element={<MusicPlayer />} />
@@ -34,8 +39,10 @@ const AppRoutes = () => {
       <Route path="/album/:id" element={<AlbumDetailsPage />} />
       <Route path="/artist/:id" element={<ArtistPage />} />
       <Route path="/playlist/:id" element={<PlaylistDetails />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route path="/docs" element={<ApiDocs />} />
 
-      {/* Protected routes - only for playlist creation and user profile */}
+      {/* Protected routes */}
       <Route
         path="/create-playlist"
         element={

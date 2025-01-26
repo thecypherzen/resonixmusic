@@ -3,106 +3,102 @@ import { API_BASE_URL, AUTH_ENDPOINTS } from '../constants/config';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  withCredentials: true
 });
 
-// Request interceptor to add auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Response interceptor to handle auth errors
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
-
 class AuthService {
-  async login(email, password) {
-    try {
-      const response = await api.post(AUTH_ENDPOINTS.LOGIN, { email, password });
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Login failed');
-    }
+  constructor() {
+    this.tokenRefreshTimeout = null;
   }
 
-  async register(userData) {
-    try {
-      const response = await api.post(AUTH_ENDPOINTS.REGISTER, userData);
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Registration failed');
-    }
-  }
-
-  async verifyToken() {
-    try {
-      const response = await api.get(AUTH_ENDPOINTS.VERIFY);
-      return response.data;
-    } catch (error) {
-      this.logout();
-      throw new Error('Token verification failed');
-    }
-  }
-
-  async forgotPassword(email) {
-    try {
-      const response = await api.post(AUTH_ENDPOINTS.FORGOT_PASSWORD, { email });
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Password reset request failed');
-    }
-  }
-
-  async resetPassword(token, newPassword) {
-    try {
-      const response = await api.post(AUTH_ENDPOINTS.RESET_PASSWORD, {
-        token,
-        newPassword
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Password reset failed');
-    }
-  }
-
-  async logout() {
-    try {
-      await api.post(AUTH_ENDPOINTS.LOGOUT);
-    } finally {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    }
-  }
-
-  getCurrentUser() {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+  initiateLogin() {
+    // Instead of making an XHR request, redirect the window
+    window.location.href = `${API_BASE_URL}${AUTH_ENDPOINTS.LOGIN}`;
   }
 
   isAuthenticated() {
-    return !!localStorage.getItem('token');
+    const authData = localStorage.getItem('auth_data');
+    if (!authData) return false;
+    
+    try {
+      const { expiresAt } = JSON.parse(authData);
+      return Date.now() < expiresAt;
+    } catch {
+      return false;
+    }
+  }
+
+  async checkAuthStatus() {
+    try {
+      const authData = localStorage.getItem('auth_data');
+      if (!authData) return { isAuthenticated: false };
+
+      const parsedData = JSON.parse(authData);
+      if (Date.now() >= parsedData.expiresAt) {
+        localStorage.removeItem('auth_data');
+        return { isAuthenticated: false };
+      }
+
+      return {
+        isAuthenticated: true,
+        user: parsedData
+      };
+    } catch (error) {
+      console.error('Check auth status failed:', error);
+      return { isAuthenticated: false };
+    }
+  }
+
+  setTokenRefreshTimeout(expiresIn) {
+    if (this.tokenRefreshTimeout) {
+      clearTimeout(this.tokenRefreshTimeout);
+    }
+    const refreshTime = (expiresIn - 300) * 1000; // 5 minutes before expiration
+    this.tokenRefreshTimeout = setTimeout(() => this.refreshToken(), refreshTime);
+  }
+
+  async refreshToken() {
+    try {
+      const response = await fetch(`${API_BASE_URL}${AUTH_ENDPOINTS.REFRESH}`, {
+        credentials: 'include'
+      });
+      const data = await response.json();
+
+      if (data.headers.status === 'success' && data.results?.[0]) {
+        return this.handleAuthData(data.results[0]);
+      }
+      throw new Error('Token refresh failed');
+    } catch (error) {
+      localStorage.removeItem('auth_data');
+      throw error;
+    }
+  }
+
+  handleAuthData(authData) {
+    const { access_token, expires_in, scope, token_type } = authData;
+    
+    const userData = {
+      accessToken: access_token,
+      tokenType: token_type,
+      scope: scope,
+      expiresAt: Date.now() + (expires_in * 1000)
+    };
+
+    localStorage.setItem('auth_data', JSON.stringify(userData));
+    this.setTokenRefreshTimeout(expires_in);
+
+    return {
+      isAuthenticated: true,
+      user: userData
+    };
+  }
+
+  logout() {
+    localStorage.removeItem('auth_data');
+    if (this.tokenRefreshTimeout) {
+      clearTimeout(this.tokenRefreshTimeout);
+    }
+    window.location.href = `${API_BASE_URL}${AUTH_ENDPOINTS.LOGOUT}`;
   }
 }
 
