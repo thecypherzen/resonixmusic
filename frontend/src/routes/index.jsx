@@ -13,6 +13,7 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import CreatePlaylist from '../components/CreatePlaylist';
 import AuthCallback from '../pages/AuthCallback';
 import LoginSuccess from '../pages/LoginSuccess';
+import ApiDocs from '../components/ApiDocs';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -39,6 +40,7 @@ const AppRoutes = () => {
       <Route path="/artist/:id" element={<ArtistPage />} />
       <Route path="/playlist/:id" element={<PlaylistDetails />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route path="/docs" element={<ApiDocs />} />
 
       {/* Protected routes */}
       <Route
