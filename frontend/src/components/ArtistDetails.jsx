@@ -40,6 +40,7 @@ const ArtistDetails = ({ id }) => {
   const [visibleArtists, setVisibleArtists] = useState(0);
   const [showMenu, setShowMenu] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [albumImages, setAlbumImages] = useState({});
   const cardsPerSet = 5;
 
   const formatDuration = (seconds) => {
@@ -114,6 +115,32 @@ const ArtistDetails = ({ id }) => {
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
+
+  const getRandomImageForAlbum = async (albumId) => {
+    if (albumImages[albumId]) return albumImages[albumId];
+
+    try {
+      const thumbnail = await api.getRandomImage('squarish');
+      setAlbumImages(prev => ({ ...prev, [albumId]: thumbnail }));
+      return thumbnail;
+    } catch (error) {
+      console.error('Error getting random image:', error);
+      return DEFAULT_THUMBNAIL;
+    }
+  };
+
+  useEffect(() => {
+    const fetchRandomImages = async () => {
+      if (!albums) return;
+
+      const albumsWithoutImages = albums.filter(album => !album.image);
+      const imagePromises = albumsWithoutImages.map(album => getRandomImageForAlbum(album.id));
+
+      await Promise.all(imagePromises);
+    };
+
+    fetchRandomImages();
+  }, [albums]);
 
   const handleMenuToggle = (e) => {
     e.stopPropagation();
@@ -396,11 +423,12 @@ const ArtistDetails = ({ id }) => {
                 </div>
                 <div className="aspect-w-1 aspect-h-1 w-full">
                   <img
-                    src={album.thumbnail}
+                    src={album.image || albumImages[album.id] || '/thumbnail.png'}
                     className="rounded-xl w-full h-full object-cover"
                     alt={album.title}
-                    onError={(e) => {
-                      e.target.src = DEFAULT_THUMBNAIL;
+                    onError={async (e) => {
+                      const randomImage = await getRandomImageForAlbum(album.id);
+                      e.target.src = randomImage;
                     }}
                   />
                 </div>
