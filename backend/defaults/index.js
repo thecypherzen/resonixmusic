@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 /** global constant values
  *
  * The following default values are defined:
