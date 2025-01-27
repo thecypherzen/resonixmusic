@@ -1,12 +1,8 @@
-# 🎵 Resonix
+# <img src="https://github.com/gabrielisaacs/resonix/raw/main/frontend/public/logo-grad.png" alt="Resonix Logo" width="32" height="32" style="vertical-align: middle; margin-right: 10px"/> Resonix
 
-A modern, full-stack music streaming application that provides seamless music playback experience with a sleek user interface. Powered by React, Node.js, and the Boomplay API.
+A modern, full-stack music streaming application that provides seamless music playback experience with a sleek user interface with loyalty-free tracks, playlists and albums download capabilities. Powered by React, Node.js, and the Jamendo Music API.
 
-## 📃 Project Overview# 🎵 ResonixMusic
-
-A modern, feature-rich music streaming platform built with React and Node.js, offering a seamless music experience wwhich allows you download your favorite, free-to-use tracks. Yes, you heard me right! Free! Even for commercial usage.
-
-![ResonixMusic](https://github.com/gabrielisaacs/resonix/raw/main/frontend/public/preview.png)
+🌐 <a href="https://resonix.vercel.app" target="_blank">Try Resonix</a>
 
 ## 🌟 Features
 
@@ -22,6 +18,7 @@ A modern, feature-rich music streaming platform built with React and Node.js, of
   - Queue management
   - Shuffle and repeat modes
   - Real-time progress bar
+  - Volume controls
 
 - **📚 Content Management**
   - Playlist creation and management
@@ -31,7 +28,7 @@ A modern, feature-rich music streaming platform built with React and Node.js, of
   - Search functionality
 
 - **👤 User Features**
-  - User authentication
+  - User authentication with Jamendo Oauth2
   - Profile customization
   - Favorites management
   - Social sharing
@@ -43,22 +40,16 @@ A modern, feature-rich music streaming platform built with React and Node.js, of
   - Responsive image loading
   - Error boundary handling
 
-## 🚀 Getting Started
+## 🛝 Getting Started
 
-### Prerequisites
+### 🧩 Prerequisites
 
 - Node.js (v16 or higher)
-- npm or yarn
-- MongoDB
+- npm (or yarn)
 - Redis (optional, for caching)
 
-### Installation
 
-1. Clone the repository
-```bash
-git clone https://github.com/gabrielisaacs/resonix.git
-cd resonix
-### 🚀 Features
+### 🌟 Features
 
 - 🎵 Stream music from Jamendo Music's extensive library
 - 🎨 Modern and responsive UI built with TailwindCSS
@@ -68,10 +59,11 @@ cd resonix
 - 🔍 Advanced search functionality
 - 👤 User authentication and profiles
 - 💾 Favorites and history tracking
+- ⬇️ Tracks, albums and playlist downloads to local machine
 
-### ⚙️ Tech Stack
+## 🛠️ Tech Stack
 
-#### Frontend
+### Frontend
 - React 18
 - Vite
 - TailwindCSS
@@ -81,17 +73,18 @@ cd resonix
 - Context API
 - Axios
 
-#### Backend
+### Backend
 - Node.js
 - Express
 - Swagger/OpenAPI
 - CORS
+- Axios
 - Redis
 
-#### APIs
+### APIs
 - Jamendo Music API
 
-#### Project Structure
+## 📂Project Structure
 
 resonix/
 ├── frontend/
@@ -115,10 +108,23 @@ resonix/
 └── README.md
 
 
-### API Documentation
+## 🚀 <span id="deployment">Deployment</span>
+
+### Live Demo
+- Production: [resonix.vercel.app](https://resonix.vercel.app)
+- API Docs: [resonix.vercel.app/docs](https://resonix.vercel.app/docs)
 
 
-## 🛠️ Usage Guidelines/Installation
+## 📚 API Documentation
+API documentation is available at <a href="#deployment">/docs</a>. Built with Swagger/OpenAPI, it provides:
+
+- Detailed endpoint descriptions
+- Request/response examples
+- Authentication requirements
+- Testing interface
+
+
+## Usage Guidelines & Installation
 
 1. Clone the repository
 ```bash
@@ -140,12 +146,13 @@ npm install
 
 4. Create a .env file in the backend directory
 ```env
-RXBE_PORT=
-JAM_CLIENT_ID=
-JAM_CLIENT_SECRET=
+RXBE_PORT=your_port
+JAM_CLIENT_ID=jamendo_client_id
+JAM_CLIENT_SECRET=jamendo_secret_id
 ```
 
 5. Start the development servers
+
 **For backend:**
 ```bash
 cd backend
@@ -157,6 +164,26 @@ npm start
 cd frontend
 npm run dev
 ```
+
+## 🤝 Contributing
+1. Fork the repository
+
+2. Create a feature branch
+    ```bash
+    git checkout -b feature/AmazingFeature
+    ```
+
+3. Commit changes
+    ```bash
+    git commit -m 'Add AmazingFeature'
+    ```
+
+4. Push to branch
+    ```bash
+    git push origin feature/AmazingFeature
+    ```
+5. Open a Pull Request
+
 
 ## 👥 Authors
 - [Gabriel Isaac](https://github.com/gabrielisaacs)
