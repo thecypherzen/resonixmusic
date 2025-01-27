@@ -3,9 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { User, Settings, LogOut } from 'lucide-react';
 
-const CURRENT_DATE = '2025-01-24 22:37:57';
-const CURRENT_USER = 'gabrielisaacs';
-
 const UserMenu = () => {
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);

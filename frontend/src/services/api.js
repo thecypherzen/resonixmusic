@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_URL } from "../constants/config";
+import { API_BASE_URL } from "../constants/config";
 
 const CURRENT_DATE = '2025-01-17 20:36:43';
 const CURRENT_USER = 'gabrielisaacs';
@@ -48,7 +48,7 @@ const DUMMY_DATA = {
 };
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: API_BASE_URL,
   timeout: 10000,
   withCredentials: true,
   retry: 3,

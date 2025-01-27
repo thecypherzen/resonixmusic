@@ -2,11 +2,21 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 
-const AuthContext = createContext(null);
+// Create the context with a default value
+const AuthContext = createContext({
+  isAuthenticated: false,
+  user: null,
+  loading: true,
+  error: null,
+  login: () => { },
+  logout: () => { },
+  handleAuthCallback: () => Promise.resolve()
+});
 
-export const AuthProvider = ({ children }) => {
+// Create a named function component for the provider
+function AuthProvider({ children }) {
   const navigate = useNavigate();
-  const [auth, setAuth] = useState({
+  const [authState, setAuthState] = useState({
     isAuthenticated: false,
     user: null,
     loading: true,
@@ -23,21 +33,21 @@ export const AuthProvider = ({ children }) => {
       };
 
       // Fetch user profile after successful auth
-      const userProfile = await fetchUserProfile(userData.accessToken);
+      const userProfile = await authService.fetchUserProfile(userData.accessToken);
 
       userData.profile = userProfile;
       localStorage.setItem('auth_data', JSON.stringify(userData));
 
-      setAuth(prev => ({
-        ...prev,
+      setAuthState({
         isAuthenticated: true,
         user: userData,
-        loading: false
-      }));
+        loading: false,
+        error: null
+      });
 
       return true;
     } catch (error) {
-      setAuth(prev => ({
+      setAuthState(prev => ({
         ...prev,
         error: 'Authentication failed',
         loading: false
@@ -46,27 +56,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
   const checkAuth = async () => {
     try {
       const authStatus = await authService.checkAuthStatus();
-      setAuth(prev => ({
-        ...prev,
+      setAuthState({
         isAuthenticated: authStatus.isAuthenticated,
         user: authStatus.user,
-        loading: false
-      }));
+        loading: false,
+        error: null
+      });
     } catch (error) {
-      setAuth(prev => ({
-        ...prev,
-        error: error.message,
-        loading: false
-      }));
+      setAuthState({
+        isAuthenticated: false,
+        user: null,
+        loading: false,
+        error: error.message
+      });
     }
   };
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   const login = () => {
     authService.initiateLogin();
@@ -75,37 +86,47 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await authService.logout();
-      setAuth(prev => ({
-        ...prev,
+      setAuthState({
         isAuthenticated: false,
-        user: null
-      }));
+        user: null,
+        loading: false,
+        error: null
+      });
       navigate('/login');
     } catch (error) {
-      setAuth(prev => ({
+      setAuthState(prev => ({
         ...prev,
         error: 'Logout failed. Please try again.'
       }));
     }
   };
 
+  const value = {
+    ...authState,
+    login,
+    logout,
+    handleAuthCallback
+  };
+
+  if (authState.loading) {
+    return null; // or a loading spinner
+  }
+
   return (
-    <AuthContext.Provider
-      value={{
-        ...auth,
-        login,
-        logout
-      }}
-    >
-      {!auth.loading && children}
+    <AuthContext.Provider value={value}>
+      {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
+// Create a custom hook with a memorable name
+function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
-};
+}
+
+// Export the provider component and hook separately
+export { AuthProvider, useAuth };
