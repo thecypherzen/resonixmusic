@@ -16,22 +16,48 @@ import {
 
 const app = express();
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://resonix.vercel.app'
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin'
+  ],
+  exposedHeaders: ['Set-Cookie', 'Date', 'ETag'],
+  maxAge: 86400 // 24 hours
+};
+
 // Middlewares
 // - CORS
-app.use(cors({
-  origin: ['http://localhost:5173', 'https://resonix.vercel.app'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
-  exposedHeaders: ['Set-Cookie'],
-  credentials: true
-}));
+app.use(cors(corsOptions));
+// - Enable pre-flight requests for all routes
+app.options('*', cors(corsOptions));
 // - json body-parser
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // - query-parser setting
 app.set('query parser', 'extended');
 
 // Routers
 swaggerDocs(app); // middlewares for swagger docs
+
 app.use('/albums', albumsRouter);
 app.use('/artists', artistsRouter);
 app.use('/auth', authRouter);
@@ -60,8 +86,13 @@ app.use((req, res) => {
  *       200:
  *         description: Resonix API is up and running.
  */
+
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK' });
+  res.status(200).json({ 
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
+  });
 });
 
 app.use((req, res) => {

@@ -1,6 +1,13 @@
-const isDevelopment = process.env.NODE_ENV === "development"
+// frontend/src/constants/config.js
+const isDevelopment = import.meta.env.MODE === "development";
 
-export const API_BASE_URL = isDevelopment ? import.meta.env.VITE_DEV_API_URL : import.meta.env.VITE_PROD_API_URL;
+export const API_BASE_URL = isDevelopment 
+  ? import.meta.env.VITE_DEV_API_URL 
+  : import.meta.env.VITE_PROD_API_URL;
+
+// Add a debug log to verify the environment and URL
+console.log('Environment:', import.meta.env.MODE);
+console.log('API URL:', API_BASE_URL);
 
 export const AUTH_ENDPOINTS = {
   LOGIN: '/login',

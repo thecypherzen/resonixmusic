@@ -49,11 +49,15 @@ const DUMMY_DATA = {
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 15000,
   withCredentials: true,
   retry: 3,
   retryDelay: (retryCount) => {
     return retryCount * 2000;
+  },
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
   }
 });
 
@@ -487,6 +491,11 @@ api.interceptors.request.use(
     if (config.url.includes('/albums') || config.url.includes('/playlists')) {
       config.params.imagesize = config.params.imagesize || 500;
     }
+
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     
     console.log('[API Request]', {
       method: config.method.toUpperCase(),
@@ -512,6 +521,11 @@ api.interceptors.response.use(
     
     if (!config || !config.retry) {
       return Promise.reject(error);
+    }
+
+    if (error.response?.status === 401) {
+      localStorage.removeItem('auth_token');
+      window.location.href = '/login';
     }
 
     config.retryCount = config.retryCount || 0;

@@ -3,9 +3,8 @@
 node_modules
 test.js
 *package*
-*.json
 *package-lock.json
-*package.json
+package.json
 *zip
 *testResults
 *getLocations.js
