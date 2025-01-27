@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5001';
+const BASE_URL = 'http://localhost:5001' || 'https://resonixbe.vercel.app';
 const CURRENT_DATE = '2025-01-17 20:36:43';
 const CURRENT_USER = 'gabrielisaacs';
 
