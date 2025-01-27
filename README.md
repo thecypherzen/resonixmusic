@@ -2,10 +2,65 @@
 
 A modern, full-stack music streaming application that provides seamless music playback experience with a sleek user interface. Powered by React, Node.js, and the Boomplay API.
 
-## 📃 Project Overview
+## 📃 Project Overview# 🎵 ResonixMusic
+
+A modern, feature-rich music streaming platform built with React and Node.js, offering a seamless music experience wwhich allows you download your favorite, free-to-use tracks. Yes, you heard me right! Free! Even for commercial usage.
+
+![ResonixMusic](https://github.com/gabrielisaacs/resonix/raw/main/frontend/public/preview.png)
+
+## 🌟 Features
+
+- **🎨 Modern UI/UX**
+  - Sleek, responsive design
+  - Dark mode interface
+  - Custom animations and transitions
+  - Framer Motion integrations
+
+- **🎵 Music Playback**
+  - High-quality audio streaming
+  - Gapless playback
+  - Queue management
+  - Shuffle and repeat modes
+  - Real-time progress bar
+
+- **📚 Content Management**
+  - Playlist creation and management
+  - Album browsing
+  - Artist profiles
+  - Track details
+  - Search functionality
+
+- **👤 User Features**
+  - User authentication
+  - Profile customization
+  - Favorites management
+  - Social sharing
+
+- **🔧 Technical Features**
+  - Public API with Swagger documentation
+  - Real-time updates
+  - Caching system
+  - Responsive image loading
+  - Error boundary handling
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
+- MongoDB
+- Redis (optional, for caching)
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/gabrielisaacs/resonix.git
+cd resonix
 ### 🚀 Features
 
-- 🎵 Stream music from Boomplay's extensive library
+- 🎵 Stream music from Jamendo Music's extensive library
 - 🎨 Modern and responsive UI built with TailwindCSS
 - 📱 Cross-platform compatibility
 - 🎼 Real-time music playback controls
@@ -17,16 +72,48 @@ A modern, full-stack music streaming application that provides seamless music pl
 ### ⚙️ Tech Stack
 
 #### Frontend
-- React.js
+- React 18
+- Vite
 - TailwindCSS
+- Framer Motion
+- React Router DOM
+- React Icons/Lucide React
+- Context API
+- Axios
 
 #### Backend
 - Node.js
-- Express.js
-- MongoDB
+- Express
+- Swagger/OpenAPI
+- CORS
+- Redis
 
 #### APIs
-- Boomplay Music API
+- Jamendo Music API
+
+#### Project Structure
+
+resonix/
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── hooks/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   └── utils/
+│   ├── package.json
+│   └── vite.config.js
+├── backend/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── utils/
+│   ├── server.js
+│   └── package.json
+└── README.md
+
 
 
 ## 🛠️ Usage Guidelines/Installation
@@ -51,16 +138,16 @@ npm install
 
 4. Create a .env file in the backend directory
 ```env
-MONGODB_URI=your_mongodb_connection_string
-BOOMPLAY_API_KEY=your_boomplay_api_key
-JWT_SECRET=your_jwt_secret
+RXBE_PORT=
+JAM_CLIENT_ID=
+JAM_CLIENT_SECRET=
 ```
 
 5. Start the development servers
 **For backend:**
 ```bash
 cd backend
-npm run dev
+npm start
 ```
 
 **For frontend:**
