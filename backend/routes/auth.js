@@ -29,7 +29,7 @@ router.use('/login', async (req, res) => {
       req.session.oauth_state = state;
 
       const jamendoAuthUrl = 'https://api.jamendo.com/v3.0/oauth/authorize';
-      const redirectUri = 'http://localhost:5173/auth/callback'; // Frontend callback URL
+      const redirectUri = 'https://resonix.vercel.app/auth/callback'; // Frontend callback URL
       
       const params = new URLSearchParams({
         client_id: process.env.JAMENDO_CLIENT_ID,

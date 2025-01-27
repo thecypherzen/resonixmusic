@@ -1,4 +1,4 @@
-export const API_BASE_URL = ['http://localhost:5001/auth', 'https//resonixbe.vercel.app'];
+export const API_BASE_URL = 'https//resonixbe.vercel.app/auth';
 export const AUTH_ENDPOINTS = {
   LOGIN: '/login',
   REGISTER: '/register',
