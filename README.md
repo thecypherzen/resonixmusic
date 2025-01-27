@@ -1,4 +1,4 @@
-# <img src="https://github.com/gabrielisaacs/resonix/raw/main/frontend/public/logo-grad.png" alt="Resonix Logo" width="32" height="32" style="vertical-align: middle; margin-right: 10px"/> Resonix
+# <img src="https://github.com/gabrielisaacs/resonix/raw/main/frontend/public/logo-grad.png" alt="Resonix Logo" width="auto" height="28" style="vertical-align: middle; margin-right: 10px"/> Music
 
 A modern, full-stack music streaming application that provides seamless music playback experience with a sleek user interface with loyalty-free tracks, playlists and albums download capabilities. Powered by React, Node.js, and the Jamendo Music API.
 
@@ -85,7 +85,7 @@ A modern, full-stack music streaming application that provides seamless music pl
 - Jamendo Music API
 
 ## 📂Project Structure
-
+<pre>
 resonix/
 ├── frontend/
 │   ├── public/
@@ -106,7 +106,7 @@ resonix/
 │   ├── server.js
 │   └── package.json
 └── README.md
-
+</pre>
 
 ## 🚀 <span id="deployment">Deployment</span>
 
@@ -127,43 +127,43 @@ API documentation is available at <a href="#deployment">/docs</a>. Built with Sw
 ## Usage Guidelines & Installation
 
 1. Clone the repository
-```bash
-git clone https://github.com/gabrielisaacs/resonix.git
-cd resonix
-```
+    ```bash
+    git clone https://github.com/gabrielisaacs/resonix.git
+    cd resonix
+    ```
 
 2. Install dependencies for frontend
-```bash
-cd frontend
-npm install
-```
+    ```bash
+    cd frontend
+    npm install
+    ```
 
 3. Install dependencies for backend
-```bash
-cd backend
-npm install
-```
+    ```bash
+    cd backend
+    npm install
+    ```
 
 4. Create a .env file in the backend directory
-```env
-RXBE_PORT=your_port
-JAM_CLIENT_ID=jamendo_client_id
-JAM_CLIENT_SECRET=jamendo_secret_id
-```
+    ```env
+    RXBE_PORT=your_port
+    JAM_CLIENT_ID=jamendo_client_id
+    JAM_CLIENT_SECRET=jamendo_secret_id
+    ```
 
 5. Start the development servers
 
-**For backend:**
-```bash
-cd backend
-npm start
-```
-
-**For frontend:**
-```bash
-cd frontend
-npm run dev
-```
+  - **For backend:**
+    ```bash
+    cd backend
+    npm start
+    ```
+  
+  - **For frontend:**
+    ```bash
+    cd frontend
+    npm run dev
+    ```
 
 ## 🤝 Contributing
 1. Fork the repository
