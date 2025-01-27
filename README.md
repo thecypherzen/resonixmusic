@@ -115,6 +115,8 @@ resonix/
 └── README.md
 
 
+### API Documentation
+
 
 ## 🛠️ Usage Guidelines/Installation
 
