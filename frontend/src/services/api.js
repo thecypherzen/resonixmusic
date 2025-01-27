@@ -1,6 +1,6 @@
 import axios from 'axios';
+import { API_URL } from "../constants/config";
 
-const BASE_URL = 'http://localhost:5001';
 const CURRENT_DATE = '2025-01-17 20:36:43';
 const CURRENT_USER = 'gabrielisaacs';
 
@@ -48,8 +48,9 @@ const DUMMY_DATA = {
 };
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_URL,
   timeout: 10000,
+  withCredentials: true,
   retry: 3,
   retryDelay: (retryCount) => {
     return retryCount * 2000;
