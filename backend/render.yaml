@@ -11,7 +11,3 @@ services:
         value: 5001
       - key: FRONTEND_URL
         value: https://resonix.vercel.app
-      - key: JAM_CLIENT_ID
-        fromGroup: resonix-secrets
-      - key: JAM_CLIENT_SECRET
-        fromGroup: resonix-secrets

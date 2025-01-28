@@ -1,20 +1,39 @@
+import { readFile } from 'fs/promises';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import version from '../../package.json' assert { type: 'json' };
 import { RXBE_PORT } from '../../defaults/index.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Read package.json manually
+const packageJson = JSON.parse(
+  await readFile(join(__dirname, '../../package.json'), 'utf8')
+);
+
 const options = {
   definition: {
-    openapi: '3.1.0',
+    openapi: '3.0.0',
     info: {
-      title: 'ResonixMusic Public API Documentation',
-      version: version.version,
-      description: 'Interact with ResonixMusic through our robust and public API',
+      title: 'Resonix API Documentation',
+      version: packageJson.version,
+      description: 'Documentation for the Resonix Music API',
+      contact: {
+        name: packageJson.author,
+        url: packageJson.homepage
+      }
     },
     servers: [
       {
-        url: `http://127.0.0.1:${RXBE_PORT}`,
-        description: 'Backend Development server'
+        url: process.env.NODE_ENV === 'production' 
+          ? 'https://resonixbe.onrender.com'
+          : 'http://localhost:5001',
+        description: process.env.NODE_ENV === 'production' 
+          ? 'Production server' 
+          : 'Development server'
       }
     ],
   },
