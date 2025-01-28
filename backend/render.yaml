@@ -2,12 +2,21 @@ services:
   - type: web
     name: resonix-backend
     env: node
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: |
+      # Install Redis
+      apt-get update
+      apt-get install -y redis-server
+      # Install npm dependencies
+      npm install
+    startCommand: |
+      # Start Redis server in the background
+      redis-server --daemonize yes --port 6379
+      # Wait for Redis to be ready
+      sleep 2
+      # Start the Node.js application
+      npm start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: RXBE_PORT
-        value: 5001
-      - key: FRONTEND_URL
-        value: https://resonix.vercel.app
+      - key: REDIS_PORT
+        value: 6379
