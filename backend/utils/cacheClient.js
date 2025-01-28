@@ -31,8 +31,8 @@ class CacheClient {
   initializeClient() {
     const config = {
       socket: {
-        host: process.env.NODE_ENV === 'production' ? 'localhost' : 'localhost',
-        port: 5050,
+        host: 'localhost',
+        port: cachePort,
         reconnectStrategy: (retries) => {
           if (retries > this.maxRetries) {
             console.log('Max reconnection attempts reached. Disabling Redis.');
@@ -53,7 +53,7 @@ class CacheClient {
       .on('ready', () => {
         this.isReady = true;
         this.retryCount = 0;
-        console.log(`${this.name} is ready using port 5050`);
+        console.log(`${this.name} is ready using port ${cachePort}`);
       })
       .on('end', () => {
         this.isReady = false;
