@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: resonix-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: RXBE_PORT
+        value: 5001
+      - key: FRONTEND_URL
+        value: https://resonix.vercel.app
+      - key: JAM_CLIENT_ID
+        fromGroup: resonix-secrets
+      - key: JAM_CLIENT_SECRET
+        fromGroup: resonix-secrets

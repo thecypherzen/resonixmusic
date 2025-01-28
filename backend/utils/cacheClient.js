@@ -13,24 +13,42 @@ class CacheClient {
   constructor() {
     this.client = null;
     this.isReady = false;
-    this.clientEngine = createClient({
-      socket: {
-        host: 'localhost',
-        port: cachePort,
-      },
-    }).on('error', (err) => {
-      console.error(`${this.name} encountered an error: ${err}`);
-    })
+
+    const config = process.env.NODE_ENV === 'production'
+      ? {
+          url: process.env.REDIS_URL,
+          socket: {
+            tls: true,
+            rejectUnauthorized: false
+          }
+        }
+      : {
+          socket: {
+            host: 'localhost',
+            port: cachePort,
+          }
+        };
+
+    this.clientEngine = createClient(config)
+      .on('error', (err) => {
+        console.error(`${this.name} encountered an error: ${err}`);
+      })
       .on('ready', () => {
         this.isReady = true;
-        console.log(`${this.name} is ready using port ${cachePort}`);
-      })
-      .on('end', () => console.log(`${this.name} says goodbye...`))
-      .connect()
-      .then((client) => {
-        this.client = client;
+        console.log(`${this.name} is ready`);
       });
+
+    this.connect();
+  }
+
+  async connect() {
+    try {
+      await this.clientEngine.connect();
+      this.client = this.clientEngine;
+    } catch (error) {
+      console.error('Redis connection error:', error);
     }
+  }
 
   get name() {
     return this.#name;
