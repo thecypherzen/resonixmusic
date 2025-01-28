@@ -3,10 +3,10 @@
   "name": "resonixbe",
   "version": "1.0.0",
   "description": "Music player backend",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon --exec babel-node --presets @babel/preset-env server.js",
+    "dev": "nodemon server.js",
     "build": "echo 'No build step required'",
     "lint": "eslint ."
   },
