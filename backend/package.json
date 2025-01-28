@@ -8,7 +8,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "build": "echo 'No build step required'",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "start-cache": "redis-server --port 5050 --bind 127.0.0.1 --daemonize yes"
   },
   "repository": {
     "type": "git",

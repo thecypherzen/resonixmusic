@@ -55,12 +55,12 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-app.use('/api/albums', albumsRouter);
-app.use('/api/artists', artistsRouter);
-app.use('/api/auth', authRouter);
-app.use('/api/playlists', playlistRouter);
-app.use('/api/tracks', tracksRouter);
-app.use('/api/users', usersRouter);
+app.use('/albums', albumsRouter);
+app.use('/artists', artistsRouter);
+app.use('/auth', authRouter);
+app.use('/playlists', playlistRouter);
+app.use('/tracks', tracksRouter);
+app.use('/users', usersRouter);
 
 // Setup Swagger docs
 if (process.env.NODE_ENV !== 'production') {
