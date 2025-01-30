@@ -1,13 +1,12 @@
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import version from '../../package.json' assert { type: 'json' };
 
 const options = {
   definition: {
     openapi: '3.1.0',
     info: {
       title: 'ResonixMusic Public API Documentation',
-      version: version.version,
+      version: 1.0,
       description: 'Interact with ResonixMusic through our robust and public API',
     },
     servers: [
