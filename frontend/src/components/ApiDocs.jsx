@@ -5,7 +5,7 @@ import BottomPlayer from '../components/BottomPlayer';
 
 const ApiDocs = () => {
   // Use URL constructor to add dark theme parameter
-  const docsUrl = new URL('http://localhost:5001/docs');
+  const docsUrl = new URL('https://resonixbe.onrender.com/docs');
   docsUrl.searchParams.append('theme', 'dark');
 
   return (

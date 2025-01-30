@@ -2,7 +2,6 @@
 *.txt
 node_modules
 test.js
-*package*
 *package-lock.json
 package.json
 *zip

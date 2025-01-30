@@ -46,12 +46,7 @@ async function createSwaggerConfig() {
       },
       servers: [
         {
-          url: process.env.NODE_ENV === 'production' 
-            ? 'https://resonixbe.onrender.com'
-            : `http://localhost:${RXBE_PORT}`,
-          description: process.env.NODE_ENV === 'production' 
-            ? 'Production server' 
-            : 'Development server'
+          url: 'https://resonixbe.onrender.com'
         }
       ],
     },

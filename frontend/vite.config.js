@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
       '/api': {
         target: mode === 'development' 
           ? 'http://localhost:5001'
-          : 'https://resonixbe.vercel.app',
+          : 'https://resonixbe.onrender.com',
         changeOrigin: true,
         secure: false,
         ws: true
