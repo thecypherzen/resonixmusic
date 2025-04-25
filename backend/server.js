@@ -64,7 +64,7 @@ app.use('/users', usersRouter);
 
 // Setup Swagger docs
 if (process.env.NODE_ENV !== 'production') {
-  await swaggerDocs(app);
+  swaggerDocs(app);
 }
 
 // Error handling middleware
