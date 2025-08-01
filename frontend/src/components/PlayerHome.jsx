@@ -64,18 +64,18 @@ const ErrorMessage = ({ message, onRetry }) => (
 );
 
 // Section component with error handling and retry capability
-const ContentSection = ({ title, loading, error, data, onRetry, children }) => {
-  if (loading) return <SectionLoadingMessage />;
-  if (error) return <ErrorMessage message={error.message} onRetry={onRetry} />;
-  if (!data?.length) return null;
+//const ContentSection = ({ title, loading, error, data, onRetry, children }) => {
+//  if (loading) return <SectionLoadingMessage />;
+//  if (error) return <ErrorMessage message={error.message} onRetry={onRetry} />;
+//  if (!data?.length) return null;
 
-  return (
-    <div className="flex flex-col mb-10">
-      <h2 className="text-3xl font-extrabold mb-4">{title}</h2>
-      {children}
-    </div>
-  );
-};
+//  return (
+//    <div className="flex flex-col mb-10">
+//      <h2 className="text-3xl font-extrabold mb-4">{title}</h2>
+//      {children}
+//    </div>
+//  );
+//};
 
 /**
  * @func PlayerHome

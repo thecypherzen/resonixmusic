@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { dataCache } from "../utils/cache";
 import { CACHE_DEFAULTS } from "../constants/config";
 import api from "../services/api";
@@ -34,7 +34,7 @@ export const useFetch = (options) => {
     CACHE_DEFAULTS.keys[options.type]
   }`;
 
-  const fetchData = async (retryAttempt = 0) => {
+  const fetchData = useCallback(async (retryAttempt = 0) => {
     let response;
     try {
       // Check cache first
@@ -52,24 +52,33 @@ export const useFetch = (options) => {
             ...options?.extras,
           });
           console.log("\nResponse:", response);
-          setData({ artists: {} });
+          if (response.success) {
+            setData(response.data);
+            // Cache the successful response
+            dataCache.set(fullCacheKey, response.data);
+          } else {
+            let reason,
+              message = "Try again later";
+            switch (response.data?.errno) {
+              case 1:
+              case 3:
+                reason = "An error on our part";
+                break;
+              case 2:
+                reason = "A network Error";
+                message = "Check your connection or try again later";
+                break;
+              default:
+                reason = "An unknown Error";
+            }
+            setError({ ...response.data, reason, message });
+          }
           break;
         default:
           console.log("\nANOTHER REQUEST TYPE", options);
           break;
       }
-      //if (!response || !response.data) {
-      //  throw new Error("Invalid response format");
-      //}
-
-      // Cache the successful response
-      dataCache.set(fullCacheKey, response.data);
-      setData(response.data);
-      if (error) {
-        setError(null);
-      }
-      setRetryCount(0);
-      console.log(`Data successfully fetched and cached for ${fullCacheKey}`);
+      //console.log(`Data successfully fetched and cached for ${fullCacheKey}`);
     } catch (err) {
       console.error(
         `Fetch attempt ${retryAttempt + 1} failed for ${fullCacheKey}:`,
@@ -87,7 +96,7 @@ export const useFetch = (options) => {
         setError(err);
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -99,7 +108,7 @@ export const useFetch = (options) => {
     setError(null);
     await fetchData(0);
   };
-
+  console.log("returning");
   return {
     data,
     error,

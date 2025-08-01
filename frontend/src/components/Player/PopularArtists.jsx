@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useFetch } from "../../hooks/useFetch";
-import { useCallback } from "react";
 import SectionSkeleton from "./SectionSkeleton";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import ArtistCard from "../ArtistCard";
 
-const transformJamendoArtist = (artist) => ({
+const transformArtists = (artist) => ({
   id: artist.id,
   name: artist.name,
   image:
@@ -21,28 +22,35 @@ const transformJamendoArtist = (artist) => ({
  */
 const PopularArtists = ({ cardsPerSet = 5 }) => {
   const [visibleArtists, setVisibleArtists] = useState(0);
+  const [dataState, setDataState] = useState({ artists: null, error: null });
   const [isLoading, setIsLoading] = useState(true);
+  const { data, error } = useFetch({
+    type: "artists",
+    method: "get",
+  });
 
+  useEffect(() => {
+    console.log("error:", error);
+    if (data) {
+      setDataState({ error: null, artists: data.map(transformArtists) });
+      setIsLoading(false);
+    } else if (error) {
+      setDataState({
+        error,
+        artists: null,
+      });
+      setIsLoading(false);
+    }
+  }, [data, error]);
   // Use the custom hook for data fetching with caching and retry
   const handleArtistClick = useCallback((artist) => {
     window.scrollTo(0, 0);
     navigate(`/artist/${artist.id}`);
   }, []);
 
-  const {
-    data: artists,
-    error: artistsError,
-    retry: retryArtists,
-  } = useFetch({
-    type: "artists",
-    method: "get",
-  });
-
-  //const artistsData = artists ? artists.map(transformJamendoArtist) : [];
-
   return isLoading ? (
     <SectionSkeleton cardsPerset={cardsPerSet} />
-  ) : artistsData.length ? (
+  ) : dataState.artists?.length ? (
     <div className="flex flex-col mb-10 w-full">
       <div className="flex flex-row w-full mb-4 items-center">
         <p className="text-3xl font-extrabold">Popular Artists</p>
@@ -57,14 +65,20 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
             More
           </button>
           <button
-            onClick={() => handlePrevious(setVisibleArtists, visibleArtists)}
+            onClick={() => console.log("clicked")}
+            //onClick={() => handlePrevious(setVisibleArtists, visibleArtists)}
             className="bg-transparent hover:bg-[#212121] p-2 rounded-full border border-neutral-800"
           >
             <FaChevronLeft />
           </button>
           <button
+            //onClick={() => console.log("clicked")}
             onClick={() =>
-              handleNext(setVisibleArtists, visibleArtists, artistsData.length)
+              handleNext(
+                setVisibleArtists,
+                visibleArtists,
+                dataState.artists.length
+              )
             }
             className="bg-transparent hover:bg-[#212121] p-2 rounded-full border border-neutral-800"
           >
@@ -73,21 +87,31 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
         </div>
       </div>
       <div className="flex flex-row bg-transparent h-[16rem] w-full gap-4">
-        {artistsData
+        {dataState.artists
           .slice(visibleArtists, visibleArtists + cardsPerSet)
           .map((artist) => (
             <ArtistCard
               key={artist.id}
               artist={artist}
-              onClick={handleArtistClick}
-              truncateTitle={truncateTitle}
+              //onClick={handleArtistClick}
+              onClick={() => console.log("clicked")}
             />
           ))}
       </div>
     </div>
   ) : (
     <div>
-      <p>error</p>
+      <p className="text-neutral-500 flex flex-col gap-1 items-center justify-center p-5 bg-neutral-900 rounded-lg border-1 border-neutral-500">
+        <span>
+          Loading Artists failed due to&nbsp;
+          <span className="font-semibold text-neutral-400">
+            {dataState.error.reason}
+          </span>
+        </span>
+        <span className="text-sm text-neutral-400">
+          {dataState.error?.message}
+        </span>
+      </p>
     </div>
   );
 };
