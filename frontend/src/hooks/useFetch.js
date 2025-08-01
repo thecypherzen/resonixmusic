@@ -34,7 +34,7 @@ export const useFetch = (options) => {
     CACHE_DEFAULTS.keys[options.type]
   }`;
 
-  const fetchData = useCallback(async (retryAttempt = 0) => {
+  const fetchData = useCallback(async () => {
     let response;
     try {
       // Check cache first
@@ -52,68 +52,44 @@ export const useFetch = (options) => {
             ...options?.extras,
           });
           console.log("\nResponse:", response);
-          if (response.success) {
-            setData(response.data);
-            // Cache the successful response
-            dataCache.set(fullCacheKey, response.data);
-          } else {
-            let reason,
-              message = "Try again later";
-            switch (response.data?.errno) {
-              case 1:
-              case 3:
-                reason = "An error on our part";
-                break;
-              case 2:
-                reason = "A network Error";
-                message = "Check your connection or try again later";
-                break;
-              default:
-                reason = "An unknown Error";
-            }
-            setError({ ...response.data, reason, message });
+          // handle success
+          switch (response.success) {
+            case true:
+              setData(response.data);
+              // Cache the successful response
+              dataCache.set(fullCacheKey, response.data);
+              break;
+            default:
+              let reason,
+                message = "Try again later";
+              switch (response.data?.errno) {
+                case 1:
+                case 3:
+                  reason = "An error on our part";
+                  break;
+                case 2:
+                  reason = "A network Error";
+                  message = "Check your connection or try again later";
+                  break;
+                default:
+                  reason = "An unknown Error";
+              }
+              setError({ ...response.data, reason, message });
           }
           break;
         default:
           console.log("\nANOTHER REQUEST TYPE", options);
           break;
       }
-      //console.log(`Data successfully fetched and cached for ${fullCacheKey}`);
     } catch (err) {
-      console.error(
-        `Fetch attempt ${retryAttempt + 1} failed for ${fullCacheKey}:`,
-        err
-      );
-
-      if (retryAttempt < options.retries) {
-        const nextRetryDelay = options.delay * Math.pow(2, retryAttempt); // Exponential backoff
-        console.log(`Retrying in ${nextRetryDelay}ms...`);
-        setTimeout(() => {
-          setRetryCount(retryAttempt + 1);
-          fetchData(retryAttempt + 1);
-        }, nextRetryDelay);
-      } else {
-        setError(err);
-      }
+      console.error(`Fetch Failed`, err);
     }
   }, []);
 
+  // fetchData is called when the component mounts
   useEffect(() => {
     fetchData();
   }, []);
 
-  const retry = async () => {
-    console.log(`Manual retry initiated for ${fullCacheKey}`);
-    setRetryCount(0);
-    setError(null);
-    await fetchData(0);
-  };
-  console.log("returning");
-  return {
-    data,
-    error,
-    retryCount,
-    retry,
-    isStale: dataCache.isStale(fullCacheKey),
-  };
+  return { data, error };
 };
