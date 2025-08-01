@@ -1,5 +1,7 @@
-import { useDataFetching } from "../../hooks/useDataFetching";
+//import { useDataFetching } from "../../hooks/useDataFetching";
 import api from "../../services/api";
+import SectionSkeleton from "./SectionSkeleton";
+import helpers from "../../utils/utilityFunctions";
 
 const transformJamendoPlaylist = (playlist) => {
   return {
@@ -16,22 +18,24 @@ const transformJamendoPlaylist = (playlist) => {
 
 const Playlists = ({ cardsPerSet = 5 }) => {
   const [visiblePlaylists, setVisiblePlaylists] = useState(0);
-
+  const [isLoading, setIsLoading] = useState(true);
   const handlePlaylistClick = useCallback((playlist) => {
     window.scrollTo(0, 0);
     console.log("CLICKED ON: ", playlist.id);
     navigate(`/playlist/${playlist.id}`);
   }, []);
 
-  const {
-    data: playlists,
-    loading: loadingPlaylists,
-    error: playlistsError,
-    retry: retryPlaylists,
-  } = useDataFetching(() => api.getPlaylists({ limit: 20 }), "playlists");
+  //const {
+  //  data: playlists,
+  //  loading: loadingPlaylists,
+  //  error: playlistsError,
+  //  retry: retryPlaylists,
+  //} = useDataFetching(() => api.getPlaylists({ limit: 20 }), "playlists");
 
   const playlistData = playlists ? playlists.map(transformJamendoPlaylist) : [];
-  return playlistData.length ? (
+  return isLoading ? (
+    <SectionSkeleton cardsPerset={cardsPerSet} />
+  ) : playlistData.length ? (
     <div className="flex flex-col mb-[10rem]">
       <div className="flex flex-row w-full mb-4 items-center">
         <p className="text-3xl font-extrabold">Featured playlists</p>

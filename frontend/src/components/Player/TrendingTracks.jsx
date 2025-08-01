@@ -1,5 +1,7 @@
+import { useState } from "react";
 import api from "../../services/api";
-import { useDataFetching } from "../../hooks/useDataFetching";
+import { useFetch } from "../../hooks/useFetch";
+import SectionSkeleton from "./SectionSkeleton";
 
 const transformJamendoTrack = (track) => ({
   id: track.id,
@@ -14,21 +16,24 @@ const transformJamendoTrack = (track) => ({
 const TrendingTracks = () => {
   const trendingCardsPerPage = 12;
   const [visibleTrending, setVisibleTrending] = useState(0);
-  const {
-    data: trendingSongs,
-    loading: loadingTrending,
-    error: trendingError,
-    retry: retryTrending,
-  } = useDataFetching(
-    () => api.getTrendingTracks({ limit: 30 }),
-    "trending-tracks",
-    []
-  );
-  const traksData = trendingSongs
-    ? trendingSongs.map(transformJamendoTrack)
-    : [];
+  const [isLoading, setIsLoading] = useState(true);
+  //const {
+  //  data: trendingSongs,
+  //  loading: loadingTrending,
+  //  error: trendingError,
+  //  retry: retryTrending,
+  //} = useDataFetching(
+  //  () => api.getTrendingTracks({ limit: 30 }),
+  //  "trending-tracks",
+  //  []
+  //);
+  //const traksData = trendingSongs
+  //  ? trendingSongs.map(transformJamendoTrack)
+  //  : [];
 
-  return traksData.length ? (
+  return isLoading ? (
+    <SectionSkeleton />
+  ) : traksData.length ? (
     <div className="flex flex-col mb-10">
       <div className="flex flex-row w-full mb-4 items-center">
         <p className="text-3xl font-extrabold">Trending Tracks</p>

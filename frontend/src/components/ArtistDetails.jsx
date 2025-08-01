@@ -1,29 +1,38 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaPlay, FaPause, FaChevronLeft, FaChevronRight, FaHeart, FaShare, FaEllipsisH } from "react-icons/fa";
-import { usePlayer } from '../context/PlayerContext';
-import { useDataFetching } from '../hooks/useDataFetching';
-import api from '../services/api';
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  FaPlay,
+  FaPause,
+  FaChevronLeft,
+  FaChevronRight,
+  FaHeart,
+  FaShare,
+  FaEllipsisH,
+} from "react-icons/fa";
+import { usePlayer } from "../context/PlayerContext";
+import { useFetch } from "../hooks/useFetch";
+import api from "../services/api";
 import { MdErrorOutline } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
-import ArtistCard from './ArtistCard';
+import ArtistCard from "./ArtistCard";
 
-const DEFAULT_THUMBNAIL = '/thumbnail.png';
+const DEFAULT_THUMBNAIL = "/thumbnail.png";
 
 const truncateTitle = (title, maxLength) => {
-  if (!title) return '';
+  if (!title) return "";
   return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
 };
 
 const stripHtmlTags = (html) => {
-  if (!html) return '';
-  return html.replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
+  if (!html) return "";
+  return html
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
     .replace(/&quot;/g, '"')
     .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
     .trim();
 };
 
@@ -44,7 +53,7 @@ const ArtistDetails = ({ id }) => {
   const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   const isTrackPlaying = (track, currentTrack) => {
@@ -56,48 +65,32 @@ const ArtistDetails = ({ id }) => {
     data: artist,
     loading: loadingArtist,
     error: artistError,
-    retry: retryArtist
-  } = useDataFetching(
-    () => api.getArtistDetails(id),
-    `artist-${id}`,
-    [id]
-  );
+    retry: retryArtist,
+  } = useFetch(() => api.getArtistDetails(id), `artist-${id}`, [id]);
 
   // Fetch artist's songs
   const {
     data: songs,
     loading: loadingSongs,
     error: songsError,
-    retry: retrySongs
-  } = useDataFetching(
-    () => api.getArtistTracks(id),
-    `artist-tracks-${id}`,
-    [id]
-  );
+    retry: retrySongs,
+  } = useFetch(() => api.getArtistTracks(id), `artist-tracks-${id}`, [id]);
 
   // Fetch artist's albums
   const {
     data: albums,
     loading: loadingAlbums,
     error: albumsError,
-    retry: retryAlbums
-  } = useDataFetching(
-    () => api.getArtistAlbums(id),
-    `artist-albums-${id}`,
-    [id]
-  );
+    retry: retryAlbums,
+  } = useFetch(() => api.getArtistAlbums(id), `artist-albums-${id}`, [id]);
 
   // Fetch similar artists
   const {
     data: similarArtists,
     loading: loadingSimilar,
     error: similarError,
-    retry: retrySimilar
-  } = useDataFetching(
-    () => api.getSimilarArtists(id),
-    `similar-artists-${id}`,
-    [id]
-  );
+    retry: retrySimilar,
+  } = useFetch(() => api.getSimilarArtists(id), `similar-artists-${id}`, [id]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -110,19 +103,19 @@ const ArtistDetails = ({ id }) => {
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   const getRandomImageForAlbum = async (albumId) => {
     if (albumImages[albumId]) return albumImages[albumId];
 
     try {
-      const thumbnail = await api.getRandomImage('squarish');
-      setAlbumImages(prev => ({ ...prev, [albumId]: thumbnail }));
+      const thumbnail = await api.getRandomImage("squarish");
+      setAlbumImages((prev) => ({ ...prev, [albumId]: thumbnail }));
       return thumbnail;
     } catch (error) {
-      console.error('Error getting random image:', error);
+      console.error("Error getting random image:", error);
       return DEFAULT_THUMBNAIL;
     }
   };
@@ -131,8 +124,10 @@ const ArtistDetails = ({ id }) => {
     const fetchRandomImages = async () => {
       if (!albums) return;
 
-      const albumsWithoutImages = albums.filter(album => !album.image);
-      const imagePromises = albumsWithoutImages.map(album => getRandomImageForAlbum(album.id));
+      const albumsWithoutImages = albums.filter((album) => !album.image);
+      const imagePromises = albumsWithoutImages.map((album) =>
+        getRandomImageForAlbum(album.id)
+      );
 
       await Promise.all(imagePromises);
     };
@@ -151,7 +146,7 @@ const ArtistDetails = ({ id }) => {
     try {
       handleTrackSelect(songs[0], songs);
     } catch (error) {
-      console.error('Error playing track:', error);
+      console.error("Error playing track:", error);
     }
   };
 
@@ -161,7 +156,7 @@ const ArtistDetails = ({ id }) => {
     try {
       handleTrackSelect(track, songs);
     } catch (error) {
-      console.error('Error playing track:', error);
+      console.error("Error playing track:", error);
     }
   };
 
@@ -188,19 +183,21 @@ const ArtistDetails = ({ id }) => {
   };
 
   const stripHtmlTags = (html) => {
-    if (!html) return '';
-    return html.replace(/<[^>]*>/g, '')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
+    if (!html) return "";
+    return html
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
       .replace(/&quot;/g, '"')
       .replace(/&apos;/g, "'")
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
       .trim();
   };
 
   if (loadingArtist) return <LoadingState />;
-  if (artistError) return <ErrorMessage message={artistError} onRetry={retryArtist} />;
+  if (artistError)
+    return <ErrorMessage message={artistError} onRetry={retryArtist} />;
   if (!artist) return <div>Artist not found</div>;
 
   return (
@@ -224,27 +221,38 @@ const ArtistDetails = ({ id }) => {
           </div>
 
           {/* Description Container*/}
-          <div className={`transform ${showFullDescription ? '-translate-y-0 opacity-100' : 'translate-y-0 opacity-100'
-            }`}>
+          <div
+            className={`transform ${
+              showFullDescription
+                ? "-translate-y-0 opacity-100"
+                : "translate-y-0 opacity-100"
+            }`}
+          >
             {/* Description Section */}
             {artist.musicinfo?.description?.en && (
               <div className="mb-6">
-                <div className={`text-md text-white max-w-[40rem] ${showFullDescription ? '' : 'line-clamp-2'
-                  }`}>
+                <div
+                  className={`text-md text-white max-w-[40rem] ${
+                    showFullDescription ? "" : "line-clamp-2"
+                  }`}
+                >
                   {stripHtmlTags(artist.musicinfo.description.en)}
                 </div>
                 <button
                   onClick={() => setShowFullDescription(!showFullDescription)}
                   className="bg-transparent text-neutral-400 hover:text-white text-sm mt-2"
                 >
-                  {showFullDescription ? 'Show less' : 'Show more'}
+                  {showFullDescription ? "Show less" : "Show more"}
                 </button>
               </div>
             )}
 
             {/* Tags Section */}
-            <div className={`transition-all duration-300 ease-in-out transform ${showFullDescription ? '-translate-y-4' : 'translate-y-0'
-              }`}>
+            <div
+              className={`transition-all duration-300 ease-in-out transform ${
+                showFullDescription ? "-translate-y-4" : "translate-y-0"
+              }`}
+            >
               {artist.musicinfo?.tags && artist.musicinfo.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-6">
                   {artist.musicinfo.tags.map((tag, index) => (
@@ -268,7 +276,10 @@ const ArtistDetails = ({ id }) => {
                 </button>
 
                 <button className="bg-transparent text-white">
-                  <FaHeart size={24} className='hover:fill-red-500 transition-colors duration-300' />
+                  <FaHeart
+                    size={24}
+                    className="hover:fill-red-500 transition-colors duration-300"
+                  />
                 </button>
 
                 <div className="relative" ref={menuRef}>
@@ -285,7 +296,7 @@ const ArtistDetails = ({ id }) => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.open(artist.website, '_blank');
+                            window.open(artist.website, "_blank");
                             setShowMenu(false);
                           }}
                           className="bg-transparent w-full text-left px-4 py-3 hover:bg-white/10 rounded-none"
@@ -297,7 +308,7 @@ const ArtistDetails = ({ id }) => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.open(artist.shareurl, '_blank');
+                            window.open(artist.shareurl, "_blank");
                             setShowMenu(false);
                           }}
                           className="bg-transparent w-full text-left px-4 py-3 hover:bg-white/10 rounded-none"
@@ -357,14 +368,19 @@ const ArtistDetails = ({ id }) => {
                   </div>
                 </div>
                 <div className="flex flex-col flex-1 min-w-0">
-                  <p className={`text-base truncate ${isTrackPlaying(song, currentTrack) ? 'text-[#08B2F0]' : ''
-                    }`}>
+                  <p
+                    className={`text-base truncate ${
+                      isTrackPlaying(song, currentTrack) ? "text-[#08B2F0]" : ""
+                    }`}
+                  >
                     {song.title}
                   </p>
                   <div className="flex flex-row items-center gap-2">
                     {song.album_name && (
                       <>
-                        <p className="text-sm opacity-45 truncate">{song.album_name}</p>
+                        <p className="text-sm opacity-45 truncate">
+                          {song.album_name}
+                        </p>
                         <span className="h-1.5 w-1.5 bg-white opacity-45 rounded-full flex-shrink-0"></span>
                       </>
                     )}
@@ -392,7 +408,9 @@ const ArtistDetails = ({ id }) => {
                 <FaChevronLeft />
               </button>
               <button
-                onClick={() => handleNext(setVisibleAlbums, visibleAlbums, albums?.length)}
+                onClick={() =>
+                  handleNext(setVisibleAlbums, visibleAlbums, albums?.length)
+                }
                 className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800"
               >
                 <FaChevronRight />
@@ -403,39 +421,52 @@ const ArtistDetails = ({ id }) => {
         {loadingAlbums ? (
           <div className="flex gap-4">
             {[...Array(cardsPerSet)].map((_, i) => (
-              <div key={i} className="animate-pulse w-[11.45rem] h-[15rem] bg-neutral-800 rounded-xl" />
+              <div
+                key={i}
+                className="animate-pulse w-[11.45rem] h-[15rem] bg-neutral-800 rounded-xl"
+              />
             ))}
           </div>
         ) : albumsError ? (
           <ErrorMessage message={albumsError} onRetry={retryAlbums} />
         ) : albums?.length > 0 ? (
           <div className="flex gap-4">
-            {albums.slice(visibleAlbums, visibleAlbums + cardsPerSet).map(album => (
-              <button
-                key={album.id}
-                onClick={() => handleAlbumClick(album)}
-                className='flex flex-col bg-white bg-opacity-[2%] rounded-xl w-[11.45rem] h-full p-3 gap-4 hover:border-none transition-all relative group hover:bg-opacity-5'
-              >
-                <div className="opacity-0 group-hover:opacity-100 flex bg-white w-10 h-10 rounded-full shadow-2xl absolute right-6 top-[7.5rem] hover:scale-110 transition-all duration-300">
-                  <FaPlay className='m-auto shadow-lg fill-black' />
-                </div>
-                <div className="aspect-w-1 aspect-h-1 w-full">
-                  <img
-                    src={album.image || albumImages[album.id] || '/thumbnail.png'}
-                    className="rounded-xl w-full h-full object-cover"
-                    alt={album.title}
-                    onError={async (e) => {
-                      const randomImage = await getRandomImageForAlbum(album.id);
-                      e.target.src = randomImage;
-                    }}
-                  />
-                </div>
-                <div className="flex flex-col text-left">
-                  <p className='font-bold text-lg'>{truncateTitle(album.title, 12)}</p>
-                  <p className='font-bold text-sm text-neutral-400'>{truncateTitle(album.artist, 18)}</p>
-                </div>
-              </button>
-            ))}
+            {albums
+              .slice(visibleAlbums, visibleAlbums + cardsPerSet)
+              .map((album) => (
+                <button
+                  key={album.id}
+                  onClick={() => handleAlbumClick(album)}
+                  className="flex flex-col bg-white bg-opacity-[2%] rounded-xl w-[11.45rem] h-full p-3 gap-4 hover:border-none transition-all relative group hover:bg-opacity-5"
+                >
+                  <div className="opacity-0 group-hover:opacity-100 flex bg-white w-10 h-10 rounded-full shadow-2xl absolute right-6 top-[7.5rem] hover:scale-110 transition-all duration-300">
+                    <FaPlay className="m-auto shadow-lg fill-black" />
+                  </div>
+                  <div className="aspect-w-1 aspect-h-1 w-full">
+                    <img
+                      src={
+                        album.image || albumImages[album.id] || "/thumbnail.png"
+                      }
+                      className="rounded-xl w-full h-full object-cover"
+                      alt={album.title}
+                      onError={async (e) => {
+                        const randomImage = await getRandomImageForAlbum(
+                          album.id
+                        );
+                        e.target.src = randomImage;
+                      }}
+                    />
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <p className="font-bold text-lg">
+                      {truncateTitle(album.title, 12)}
+                    </p>
+                    <p className="font-bold text-sm text-neutral-400">
+                      {truncateTitle(album.artist, 18)}
+                    </p>
+                  </div>
+                </button>
+              ))}
           </div>
         ) : (
           <p className="text-neutral-400">No albums found</p>
@@ -454,7 +485,13 @@ const ArtistDetails = ({ id }) => {
               <FaChevronLeft />
             </button>
             <button
-              onClick={() => handleNext(setVisibleArtists, visibleArtists, similarArtists?.length)}
+              onClick={() =>
+                handleNext(
+                  setVisibleArtists,
+                  visibleArtists,
+                  similarArtists?.length
+                )
+              }
               className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800"
             >
               <FaChevronRight />
@@ -462,13 +499,15 @@ const ArtistDetails = ({ id }) => {
           </div>
         </div>
         <div className="flex gap-4">
-          {similarArtists?.slice(visibleArtists, visibleArtists + cardsPerSet).map(artist => (
-            <ArtistCard
-              key={artist.id}
-              artist={artist}
-              onClick={handleArtistClick}
-            />
-          ))}
+          {similarArtists
+            ?.slice(visibleArtists, visibleArtists + cardsPerSet)
+            .map((artist) => (
+              <ArtistCard
+                key={artist.id}
+                artist={artist}
+                onClick={handleArtistClick}
+              />
+            ))}
         </div>
       </div>
     </div>
@@ -480,7 +519,10 @@ const SectionLoadingMessage = () => (
     <div className="h-10 w-[20rem] bg-neutral-800 rounded-2xl"></div>
     <div className="grid grid-cols-5 gap-4 mt-[1rem]">
       {[...Array(5)].map((_, i) => (
-        <div key={i} className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"></div>
+        <div
+          key={i}
+          className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"
+        ></div>
       ))}
     </div>
   </div>

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useDataFetching } from "../../hooks/useDataFetching";
+//import { useDataFetching } from "../../hooks/useDataFetching";
 import api from "../../services/api";
 
 const transformJamendoAlbum = (album) => ({
@@ -12,19 +12,22 @@ const transformJamendoAlbum = (album) => ({
 
 const Albums = ({ cardsPerSet = 5 }) => {
   const [visibleAlbums, setVisibleAlbums] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const handleAlbumClick = useCallback((album) => {
     window.scrollTo(0, 0);
     navigate(`/album/${album.id}`);
   }, []);
-  const {
-    data: albums,
-    loading: loadingAlbums,
-    error: albumsError,
-    retry: retryAlbums,
-  } = useDataFetching(() => api.getAlbums({ limit: 20 }), "albums");
+  //const {
+  //  data: albums,
+  //  loading: loadingAlbums,
+  //  error: albumsError,
+  //  retry: retryAlbums,
+  //} = useDataFetching(() => api.getAlbums({ limit: 20 }), "albums");
 
   const albumsData = albums ? albums.map(transformJamendoAlbum) : [];
-  return albumsData.length ? (
+  return isLoading ? (
+    <SectionSkeleton cardsPerset={cardsPerSet} />
+  ) : albumsData.length ? (
     <div className="flex flex-col mb-10">
       <div className="flex flex-row w-full mb-4 items-center">
         <p className="text-3xl font-extrabold">Albums for you</p>

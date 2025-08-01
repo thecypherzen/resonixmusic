@@ -1,75 +1,223 @@
 import axios from "axios";
-import { API_BASE_URL } from "../constants/config";
+import { API_BASE_URL, API_DEFAULTS } from "../constants/config";
+
 console.log("API_BASE_URL: ", API_BASE_URL);
 const CURRENT_DATE = "2025-01-17 20:36:43";
 const CURRENT_USER = "gabrielisaacs";
 
 // Define dummy data that matches Jamendo API structure
-const DUMMY_DATA = {
-  tracks: Array(30)
-    .fill(null)
-    .map((_, index) => ({
-      id: `track-${index + 1}`,
-      name: `Track ${index + 1}`,
-      artist_name: `Artist ${Math.floor(index / 3) + 1}`,
-      image: `https://picsum.photos/400/400?random=${index}`,
-      audio: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${
-        (index % 15) + 1
-      }.mp3`,
-      duration: 180 + index * 30,
-      sharecount: Math.floor(Math.random() * 500) + 50,
-      is_streamable: "true",
-      listened: Math.floor(Math.random() * 100000),
-    })),
+//const DUMMY_DATA = {
+//  tracks: Array(30)
+//    .fill(null)
+//    .map((_, index) => ({
+//      id: `track-${index + 1}`,
+//      name: `Track ${index + 1}`,
+//      artist_name: `Artist ${Math.floor(index / 3) + 1}`,
+//      image: `https://picsum.photos/400/400?random=${index}`,
+//      audio: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${
+//        (index % 15) + 1
+//      }.mp3`,
+//      duration: 180 + index * 30,
+//      sharecount: Math.floor(Math.random() * 500) + 50,
+//      is_streamable: "true",
+//      listened: Math.floor(Math.random() * 100000),
+//    })),
 
-  artists: Array(15)
-    .fill(null)
-    .map((_, index) => ({
-      id: `artist-${index + 1}`,
-      name: `Artist ${index + 1}`,
-      image: `https://picsum.photos/400/400?random=${index + 100}`,
-      joindate: CURRENT_DATE,
-      website: "https://example.com",
-    })),
+//  artists: Array(15)
+//    .fill(null)
+//    .map((_, index) => ({
+//      id: `artist-${index + 1}`,
+//      name: `Artist ${index + 1}`,
+//      image: `https://picsum.photos/400/400?random=${index + 100}`,
+//      joindate: CURRENT_DATE,
+//      website: "https://example.com",
+//    })),
 
-  albums: Array(15)
-    .fill(null)
-    .map((_, index) => ({
-      id: `album-${index + 1}`,
-      name: `Album ${index + 1}`,
-      artist_name: `Artist ${Math.floor(Math.random() * 15) + 1}`,
-      image: `https://picsum.photos/400/400?random=${index + 200}`,
-      tracks_count: Math.floor(Math.random() * 20) + 5,
-      releasedate: CURRENT_DATE,
-    })),
+//  albums: Array(15)
+//    .fill(null)
+//    .map((_, index) => ({
+//      id: `album-${index + 1}`,
+//      name: `Album ${index + 1}`,
+//      artist_name: `Artist ${Math.floor(Math.random() * 15) + 1}`,
+//      image: `https://picsum.photos/400/400?random=${index + 200}`,
+//      tracks_count: Math.floor(Math.random() * 20) + 5,
+//      releasedate: CURRENT_DATE,
+//    })),
 
-  playlists: Array(15)
-    .fill(null)
-    .map((_, index) => ({
-      id: `playlist-${index + 1}`,
-      name: `Playlist ${index + 1}`,
-      creationdate: CURRENT_DATE,
-      user_id: `user-${index + 1}`,
-      user_name: `User ${index + 1}`,
-      image: `https://picsum.photos/400/400?random=${index + 200}`,
-      shorturl: `https://jamen.do/l/p${index + 1}`,
-      shareurl: `https://www.jamendo.com/list/p${index + 1}`,
-    })),
-};
+//  playlists: Array(15)
+//    .fill(null)
+//    .map((_, index) => ({
+//      id: `playlist-${index + 1}`,
+//      name: `Playlist ${index + 1}`,
+//      creationdate: CURRENT_DATE,
+//      user_id: `user-${index + 1}`,
+//      user_name: `User ${index + 1}`,
+//      image: `https://picsum.photos/400/400?random=${index + 200}`,
+//      shorturl: `https://jamen.do/l/p${index + 1}`,
+//      shareurl: `https://www.jamendo.com/list/p${index + 1}`,
+//    })),
+//};
 
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 15000,
-  withCredentials: true,
-  retry: 3,
-  retryDelay: (retryCount) => {
-    return retryCount * 2000;
-  },
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
+class RequestAPI {
+  #client = null;
+  async #makeRequest(
+    requestFunction,
+    funcParams = [],
+    extras = { retry: true }
+  ) {
+    try {
+      const result = await requestFunction(...funcParams);
+      console.log(result);
+      return { success: true, data: result };
+    } catch (err) {
+      console.error("REQUEST FAILED", err);
+      return { success: false, data: err };
+    }
+  }
+
+  static addMiddleWare(apiInstance) {
+    // Enhanced debug interceptors
+    apiInstance.interceptors.request.use(
+      (config) => {
+        config.params = {
+          format: "json",
+          ...config.params,
+        };
+
+        // Add imagesize if the endpoint is albums or playlists
+        if (
+          config.url.includes("/albums") ||
+          config.url.includes("/playlists")
+        ) {
+          config.params.imagesize = config.params.imagesize || 500;
+        }
+
+        const token = localStorage.getItem("auth_token");
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        console.log("[API Request]", {
+          method: config.method.toUpperCase(),
+          url: config.url,
+          params: config.params,
+          timestamp: new Date().toISOString(),
+        });
+        return config;
+      },
+      (error) => {
+        console.error("[API Request Error]", {
+          error: error.message,
+          timestamp: new Date().toISOString(),
+        });
+        return Promise.reject(error);
+      }
+    );
+
+    apiInstance.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const { config, response } = error;
+
+        if (!config || !config.retry) {
+          return Promise.reject(error);
+        }
+
+        if (error.response?.status === 401) {
+          localStorage.removeItem("auth_token");
+          window.location.href = "/login";
+        }
+        console.log("\n\nREQUEST FAILURE DETAILS:", response);
+        config.retryCount = config.retryCount || 0;
+
+        if (config.retryCount >= config.retry) {
+          return Promise.reject(error);
+        }
+
+        config.retryCount += 1;
+
+        const delayRetry = new Promise((resolve) => {
+          console.log("\n........RETRYING REQUEST......");
+          setTimeout(resolve, config.retryDelay(config.retryCount));
+        });
+
+        await delayRetry;
+        return api(config);
+      }
+    );
+  }
+
+  /**
+   * @private @method Init
+   * @description Initialises the class client if not alive
+   */
+  #init() {
+    if (!this.#client) {
+      this.#client = axios.create({
+        baseURL: `${API_BASE_URL}me`,
+        timeout: API_DEFAULTS.timeout,
+        withCredentials: true,
+        retry: API_DEFAULTS.max_retries,
+        retryDelay: (retryCount) => {
+          return retryCount * API_DEFAULTS.delay;
+        },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+      RequestAPI.addMiddleWare(this.#client);
+    }
+  }
+
+  /**
+   * @getter @function client
+   * @description retries the api api request client.
+   * Initialises it if dead
+   */
+  get client() {
+    if (!this.#client) {
+      this.#init();
+    }
+    return this.#client;
+  }
+  // delete request handler
+  delete() {}
+
+  /**
+   *
+   * @param {string} url
+   * @param {Record<string, any>} options Request options
+   * @returns {Promise<>}
+   */
+  async get(url, options = {}) {
+    console.log("\n\nNEW GET REQUEST:\n\tURL:", url, "\n\tOPTIONS:", options);
+    // construct request options object
+    const requestOptions = {
+      ...options,
+    };
+    if (!requestOptions.order) {
+      requestOptions.order = "popularity_week_desc";
+    }
+    // call request handler with requet options and parameters
+    const response = await this.#makeRequest(this.client.get, [
+      "/artists",
+      requestOptions,
+    ]);
+    console.log("GET REQUEST HANDLER RESPONSE RECEIVED", response);
+    //if (response.data?.results) {
+    //  return {
+    //    data: response.data.results.map((artist) =>
+    //      transformArtistData(artist)
+    //    ),
+    //  };
+    //}
+    //console.log("THROWING ERROR:...");
+    //throw new Error("No data received from server");
+  }
+  post() {}
+  put() {}
+}
 
 const imageapi = axios.create({
   baseURL: "https://api.unsplash.com/photos/",
@@ -138,16 +286,11 @@ const getTrendingTracks = async (params = {}) => {
   try {
     console.log("Fetching trending tracks...");
     const response = await api.get("/tracks", { params });
-    console.log("Trending tracks response:", response);
-
     if (response.data && response.data.results) {
       return { data: response.data.results.map(transformTrackData) };
     }
-    console.warn("Using fallback data for trending tracks");
-    return { data: DUMMY_DATA.tracks.map(transformTrackData) };
   } catch (error) {
     console.warn("Error fetching tracks, using fallback data:", error);
-    return { data: DUMMY_DATA.tracks.map(transformTrackData) };
   }
 };
 
@@ -168,17 +311,15 @@ const getAlbums = async (params = {}) => {
     throw new Error("No data received from server");
   } catch (error) {
     console.warn("Error fetching albums, using fallback data:", error);
-    return { data: DUMMY_DATA.albums.map(transformAlbumData) };
   }
 };
 
-const getTopArtists = async (params = {}) => {
+const getTopArtists = async (params = { limit: 20 }) => {
   try {
     console.log("Fetching top artists...");
     const response = await api.get("/artists", {
       params: {
         ...params,
-        limit: params.limit || 20,
         order: "popularity_week_desc",
       },
     });
@@ -190,10 +331,11 @@ const getTopArtists = async (params = {}) => {
         ),
       };
     }
+    console.log("THROWING ERROR:...");
     throw new Error("No data received from server");
   } catch (error) {
+    console.warn(error?.message ?? "NO MESSAGE");
     console.warn("Error fetching artists, using fallback data:", error);
-    return { data: DUMMY_DATA.artists.map(transformArtistData) };
   }
 };
 
@@ -277,7 +419,6 @@ const getPlaylists = async (params = {}) => {
     throw new Error("No data received from server");
   } catch (error) {
     console.warn("Error fetching playlists, using fallback data:", error);
-    return { data: DUMMY_DATA.playlists.map(transformPlaylistData) };
   }
 };
 
@@ -296,11 +437,9 @@ const getRecentTracks = async (params = {}) => {
     if (response.data && response.data.results) {
       return { data: response.data.results.map(transformTrackData) };
     }
-    console.warn("Using fallback data for recent tracks");
-    return { data: DUMMY_DATA.tracks.map(transformTrackData) };
+    console.warn("No response.data or response.data.results");
   } catch (error) {
     console.warn("Error fetching recent tracks, using fallback data:", error);
-    return { data: DUMMY_DATA.tracks.map(transformTrackData) };
   }
 };
 
@@ -498,73 +637,7 @@ const getSimilarArtists = async (artistId) => {
   }
 };
 
-// Enhanced debug interceptors
-api.interceptors.request.use(
-  (config) => {
-    config.params = {
-      format: "json",
-      ...config.params,
-    };
-
-    // Add imagesize if the endpoint is albums or playlists
-    if (config.url.includes("/albums") || config.url.includes("/playlists")) {
-      config.params.imagesize = config.params.imagesize || 500;
-    }
-
-    const token = localStorage.getItem("auth_token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    console.log("[API Request]", {
-      method: config.method.toUpperCase(),
-      url: config.url,
-      params: config.params,
-      timestamp: new Date().toISOString(),
-    });
-    return config;
-  },
-  (error) => {
-    console.error("[API Request Error]", {
-      error: error.message,
-      timestamp: new Date().toISOString(),
-    });
-    return Promise.reject(error);
-  }
-);
-
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const { config, response } = error;
-
-    if (!config || !config.retry) {
-      return Promise.reject(error);
-    }
-
-    if (error.response?.status === 401) {
-      localStorage.removeItem("auth_token");
-      window.location.href = "/login";
-    }
-
-    config.retryCount = config.retryCount || 0;
-
-    if (config.retryCount >= config.retry) {
-      return Promise.reject(error);
-    }
-
-    config.retryCount += 1;
-
-    const delayRetry = new Promise((resolve) => {
-      setTimeout(resolve, config.retryDelay(config.retryCount));
-    });
-
-    await delayRetry;
-    return api(config);
-  }
-);
-
-export default {
+export {
   getRandomImage,
   getPlaylists,
   getTrendingTracks,
@@ -578,3 +651,6 @@ export default {
   getArtistAlbums,
   getSimilarArtists,
 };
+
+const API = new RequestAPI();
+export default API;

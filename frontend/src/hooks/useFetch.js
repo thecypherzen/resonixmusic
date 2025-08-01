@@ -1,43 +1,66 @@
 import { useState, useEffect } from "react";
 import { dataCache } from "../utils/cache";
 import { CACHE_DEFAULTS } from "../constants/config";
+import api from "../services/api";
 
 const CURRENT_DATE = "2025-01-23 15:02:45";
 const CURRENT_USER = "gabrielisaacs";
-
-export const useDataFetching = (
-  fetchFunction,
-  cacheKey,
-  dependencies = [],
-  options = {
-    retries: CACHE_DEFAULTS.max_retries,
-    delay: CACHE_DEFAULTS.delay,
-    cacheKeyPrefix: CACHE_DEFAULTS.key_prefix,
-  }
-) => {
+//fetchFunction,
+//cacheKey,
+//options = {
+//  retries: CACHE_DEFAULTS.max_retries,
+//  delay: CACHE_DEFAULTS.delay,
+//  cacheKeyPrefix: CACHE_DEFAULTS.key_prefix,
+//}
+const fetchDefaults = {
+  artists: {
+    url: "/artists",
+    options: { params: { limit: 20 } },
+  },
+};
+export const useFetch = (options) => {
+  /**
+   * Options signature
+   * { type: artists | tracks |,
+   *   method: "get" | "post", | "put" | "delete" | "head",
+   *   extras: Record<string, any>
+   * }
+   */
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
 
-  const fullCacheKey = `${options.cacheKeyPrefix}${cacheKey}`;
+  const fullCacheKey = `${CACHE_DEFAULTS.key_prefix}${
+    CACHE_DEFAULTS.keys[options.type]
+  }`;
 
   const fetchData = async (retryAttempt = 0) => {
-    setLoading(true);
+    let response;
     try {
       // Check cache first
       const cachedData = dataCache.get(fullCacheKey);
       if (cachedData) {
         console.log(`Cache hit for ${fullCacheKey}`);
         setData(cachedData);
-        setLoading(false);
-        return;
       }
-
-      const response = await fetchFunction();
-      if (!response || !response.data) {
-        throw new Error("Invalid response format");
+      // make request
+      const defaults = fetchDefaults[options.type];
+      switch (options.method.toLowerCase()) {
+        case "get":
+          response = await api.get(defaults.url, {
+            ...defaults.options,
+            ...options?.extras,
+          });
+          console.log("\nResponse:", response);
+          setData({ artists: {} });
+          break;
+        default:
+          console.log("\nANOTHER REQUEST TYPE", options);
+          break;
       }
+      //if (!response || !response.data) {
+      //  throw new Error("Invalid response format");
+      //}
 
       // Cache the successful response
       dataCache.set(fullCacheKey, response.data);
@@ -63,25 +86,12 @@ export const useDataFetching = (
       } else {
         setError(err);
       }
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    let isActive = true;
-
-    const executeFetch = async () => {
-      setLoading(true);
-      await fetchData();
-    };
-
-    executeFetch();
-
-    return () => {
-      isActive = false;
-    };
-  }, [...dependencies]);
+    fetchData();
+  }, []);
 
   const retry = async () => {
     console.log(`Manual retry initiated for ${fullCacheKey}`);
@@ -92,7 +102,6 @@ export const useDataFetching = (
 
   return {
     data,
-    loading,
     error,
     retryCount,
     retry,

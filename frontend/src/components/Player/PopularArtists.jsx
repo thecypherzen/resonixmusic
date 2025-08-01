@@ -1,7 +1,7 @@
-import React from "react";
-import { useDataFetching } from "../../hooks/useDataFetching";
-import api from "../../services/api";
+import { useState } from "react";
+import { useFetch } from "../../hooks/useFetch";
 import { useCallback } from "react";
+import SectionSkeleton from "./SectionSkeleton";
 
 const transformJamendoArtist = (artist) => ({
   id: artist.id,
@@ -13,8 +13,15 @@ const transformJamendoArtist = (artist) => ({
   followerCount: artist.sharecount || 0,
 });
 
+/**
+ * @function PopularArtists
+ * @description Component that renders Tracks of most popular artists
+ * @param props.cardsSet default number of cards to first render
+ * @returns {React.ReactNode}
+ */
 const PopularArtists = ({ cardsPerSet = 5 }) => {
   const [visibleArtists, setVisibleArtists] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Use the custom hook for data fetching with caching and retry
   const handleArtistClick = useCallback((artist) => {
@@ -24,14 +31,18 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
 
   const {
     data: artists,
-    loading: loadingArtists,
     error: artistsError,
     retry: retryArtists,
-  } = useDataFetching(() => api.getTopArtists({ limit: 20 }), "top-artists");
+  } = useFetch({
+    type: "artists",
+    method: "get",
+  });
 
-  const artistsData = artists ? artists.map(transformJamendoArtist) : [];
+  //const artistsData = artists ? artists.map(transformJamendoArtist) : [];
 
-  return artistsData.length ? (
+  return isLoading ? (
+    <SectionSkeleton cardsPerset={cardsPerSet} />
+  ) : artistsData.length ? (
     <div className="flex flex-col mb-10 w-full">
       <div className="flex flex-row w-full mb-4 items-center">
         <p className="text-3xl font-extrabold">Popular Artists</p>
