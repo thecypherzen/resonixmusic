@@ -84,9 +84,6 @@ const Playlists = ({ cardsPerSet = 5 }) => {
         {dataState?.playlists
           .slice(visiblePlaylists, visiblePlaylists + cardsPerSet)
           .map((playlist) => {
-            {
-              console.log("PLAYLIST MAPPED:", playlist);
-            }
             return (
               <PlaylistCard
                 key={playlist.id}

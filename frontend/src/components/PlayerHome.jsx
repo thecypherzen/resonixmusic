@@ -60,7 +60,6 @@ const PlayerHome = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    console.log("PLAYER HOME PAGE LOADED");
   }, []);
 
   // Constants

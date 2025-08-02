@@ -32,7 +32,6 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
   });
 
   useEffect(() => {
-    console.log("data mararaba:", data);
     if (data) {
       setDataState({ error: null, artists: data.map(transformArtists) });
       setIsLoading(false);

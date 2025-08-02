@@ -62,12 +62,12 @@ class RequestAPI {
           config.headers.Authorization = `Bearer ${token}`;
         }
 
-        console.log("[API Request]", {
-          method: config.method.toUpperCase(),
-          url: config.url,
-          params: config.params,
-          timestamp: new Date().toISOString(),
-        });
+        //console.log("[API Request]", {
+        //  method: config.method.toUpperCase(),
+        //  url: config.url,
+        //  params: config.params,
+        //  timestamp: new Date().toISOString(),
+        //});
         return config;
       },
       (error) => {
