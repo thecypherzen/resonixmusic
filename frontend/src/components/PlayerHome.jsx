@@ -200,7 +200,7 @@ const PlayerHome = () => {
   return (
     <div className="max-w-[60rem] min-h-screen flex flex-col mt-6 mx-16 gap-10 transition-all duration-300">
       <PopularArtists cardsPerSet={cardsPerSet} />
-      {/*<TrendingTracks />*/}
+      <TrendingTracks />
       {/*<Albums cardsPerSet={cardsPerSet} />*/}
       {/*<Playlists cardsPerSet={cardsPerSet} />*/}
     </div>

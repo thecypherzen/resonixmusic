@@ -3,6 +3,7 @@ import { useFetch } from "../../hooks/useFetch";
 import SectionSkeleton from "./SectionSkeleton";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ArtistCard from "../ArtistCard";
+import SectionErrorDisplay from "./SectionErrorDisplay";
 
 const transformArtists = (artist) => ({
   id: artist.id,
@@ -100,19 +101,11 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
       </div>
     </div>
   ) : (
-    <div>
-      <p className="text-neutral-500 flex flex-col gap-1 items-center justify-center p-5 bg-neutral-900 rounded-lg border-1 border-neutral-500">
-        <span>
-          Loading Artists failed due to&nbsp;
-          <span className="font-semibold text-neutral-400">
-            {dataState.error.reason}
-          </span>
-        </span>
-        <span className="text-sm text-neutral-400">
-          {dataState.error?.message}
-        </span>
-      </p>
-    </div>
+    <SectionErrorDisplay
+      reason={dataState.error?.reason || "An unnown reason"}
+      prefix={"Loading Artists failed due to"}
+      message={dataState.error?.message}
+    />
   );
 };
 
