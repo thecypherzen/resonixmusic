@@ -59,7 +59,7 @@ export const useFetch = (options) => {
             ...defaults.options,
             ...options?.extras,
           });
-          console.log("\nResponse:", response);
+          //console.log("\nResponse:", response);
           // handle success
           switch (response.success) {
             case true:

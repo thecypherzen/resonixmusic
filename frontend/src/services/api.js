@@ -14,7 +14,7 @@ class RequestAPI {
   ) {
     try {
       const result = await requestFunction(...funcParams);
-      console.log(result);
+      //console.log(result);
       return { success: true, data: result };
     } catch (err) {
       console.error("[ REQUEST FAILED ]", err);
@@ -157,7 +157,7 @@ class RequestAPI {
    * @returns {Promise<>}
    */
   async get(url, options = {}) {
-    console.log("\n\nNEW GET REQUEST:\n\tURL:", url, "\n\tOPTIONS:", options);
+    //console.log("\n\nNEW GET REQUEST:\n\tURL:", url, "\n\tOPTIONS:", options);
     // construct request options object
     const requestOptions = {
       ...options,
