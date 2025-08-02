@@ -21,6 +21,10 @@ const fetchDefaults = {
     url: "/tracks",
     options: { params: { limit: 30 } },
   },
+  albums: {
+    url: "/albums",
+    options: { params: { limit: 20 } },
+  },
 };
 export const useFetch = (options) => {
   /**

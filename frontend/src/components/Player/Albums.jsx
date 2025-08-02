@@ -1,8 +1,10 @@
-import { useCallback } from "react";
-//import { useDataFetching } from "../../hooks/useDataFetching";
+import { useCallback, useEffect, useState } from "react";
+import { useFetch } from "../../hooks/useFetch";
 import api from "../../services/api";
+import { FaChevronLeft, FaChevronRight, FaPlay } from "react-icons/fa";
+import SectionSkeleton from "./SectionSkeleton";
 
-const transformJamendoAlbum = (album) => ({
+const transformAlbum = (album) => ({
   id: album.id,
   title: album.name || album.title,
   artist: album.user_name || album.artist,
@@ -12,36 +14,40 @@ const transformJamendoAlbum = (album) => ({
 
 const Albums = ({ cardsPerSet = 5 }) => {
   const [visibleAlbums, setVisibleAlbums] = useState(0);
+  const [dataState, setDataState] = useState({ albums: null, error: null });
   const [isLoading, setIsLoading] = useState(true);
   const handleAlbumClick = useCallback((album) => {
     window.scrollTo(0, 0);
     navigate(`/album/${album.id}`);
   }, []);
-  //const {
-  //  data: albums,
-  //  loading: loadingAlbums,
-  //  error: albumsError,
-  //  retry: retryAlbums,
-  //} = useDataFetching(() => api.getAlbums({ limit: 20 }), "albums");
+  const { data, error } = useFetch({ type: "albums", method: "get" });
+  useEffect(() => {
+    if (data) {
+      setDataState({ error: null, albums: data.map(transformAlbum) });
+      setIsLoading(false);
+    } else if (error) {
+      setDataState({ error, albums: null });
+      setIsLoading(false);
+    }
+  }, [data, error]);
 
-  const albumsData = albums ? albums.map(transformJamendoAlbum) : [];
   return isLoading ? (
     <SectionSkeleton cardsPerset={cardsPerSet} />
-  ) : albumsData.length ? (
+  ) : dataState.albums?.length ? (
     <div className="flex flex-col mb-10">
       <div className="flex flex-row w-full mb-4 items-center">
         <p className="text-3xl font-extrabold">Albums for you</p>
         <div className="ml-auto flex gap-2 items-center">
           <button
-            onClick={() => handlePrevious(setVisibleAlbums, visibleAlbums)}
+            //onClick={() => handlePrevious(setVisibleAlbums, visibleAlbums)}
             className="bg-transparent hover:bg-[#212121] p-2 rounded-full border border-neutral-800"
           >
             <FaChevronLeft />
           </button>
           <button
-            onClick={() =>
-              handleNext(setVisibleAlbums, visibleAlbums, albumsData.length)
-            }
+            //onClick={() =>
+            //  handleNext(setVisibleAlbums, visibleAlbums, dataState.albums?.length)
+            //}
             className="bg-transparent hover:bg-[#212121] p-2 rounded-full border border-neutral-800"
           >
             <FaChevronRight />
@@ -49,7 +55,7 @@ const Albums = ({ cardsPerSet = 5 }) => {
         </div>
       </div>
       <div className="flex flex-row bg-transparent h-[16rem] w-full gap-4 mt-4">
-        {albumsData
+        {dataState?.albums
           .slice(visibleAlbums, visibleAlbums + cardsPerSet)
           .map((album) => (
             <button
@@ -63,14 +69,14 @@ const Albums = ({ cardsPerSet = 5 }) => {
               <img
                 src={album.thumbnail}
                 className="rounded-xl h-auto w-full shadow-md object-cover"
-                alt={album.title}
+                alt={`${album.title[0]}${album.title[1]}`}
               />
               <div className="flex flex-col text-left">
-                <p className="font-bold text-lg">
-                  {truncateTitle(album.title, 12)}
+                <p className="font-bold text-lg w-95/100 truncate text-ellipsis">
+                  {album.title}
                 </p>
-                <p className="font-bold text-sm text-neutral-400">
-                  {truncateTitle(album.artist, 18)}
+                <p className="font-bold text-sm text-neutral-400 w-4/5 truncate text-ellipsis">
+                  {album.artist}
                 </p>
               </div>
             </button>
@@ -78,9 +84,11 @@ const Albums = ({ cardsPerSet = 5 }) => {
       </div>
     </div>
   ) : (
-    <div>
-      <p>error</p>
-    </div>
+    <SectionErrorDisplay
+      reason={dataState?.error?.reason || "An unknown reason"}
+      prefix={"Loading Albums failed due to"}
+      message={dataState?.error?.message}
+    />
   );
 };
 
