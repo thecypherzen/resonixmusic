@@ -25,6 +25,7 @@ const TrendingTracks = () => {
   const [visibleTrending, setVisibleTrending] = useState(0);
   const [dataState, setDataState] = useState({ tracks: null, error: null });
   const [isLoading, setIsLoading] = useState(true);
+  const DEFAULT_THUMBNAIL = "/thumbnail.png";
 
   const { data, error } = useFetch({ type: "tracks", method: "get" });
 

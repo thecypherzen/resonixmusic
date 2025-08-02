@@ -13,17 +13,21 @@ const CURRENT_USER = "gabrielisaacs";
 //  cacheKeyPrefix: CACHE_DEFAULTS.key_prefix,
 //}
 const fetchDefaults = {
+  albums: {
+    url: "/albums",
+    options: { params: { limit: 20 } },
+  },
   artists: {
     url: "/artists",
+    options: { params: { limit: 20 } },
+  },
+  playlists: {
+    url: "/playlists",
     options: { params: { limit: 20 } },
   },
   tracks: {
     url: "/tracks",
     options: { params: { limit: 30 } },
-  },
-  albums: {
-    url: "/albums",
-    options: { params: { limit: 20 } },
   },
 };
 export const useFetch = (options) => {

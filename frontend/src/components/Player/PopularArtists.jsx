@@ -8,6 +8,7 @@ import SectionErrorDisplay from "./SectionErrorDisplay";
 const transformArtists = (artist) => ({
   id: artist.id,
   name: artist.name,
+  joinDate: artist.joindate || "Unknown",
   image:
     artist.image && artist.image.trim() !== ""
       ? artist.image
@@ -31,7 +32,7 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
   });
 
   useEffect(() => {
-    console.log("error:", error);
+    console.log("data mararaba:", data);
     if (data) {
       setDataState({ error: null, artists: data.map(transformArtists) });
       setIsLoading(false);

@@ -19,14 +19,18 @@ const ArtistCard = ({ artist, onClick }) => {
         <img
           src={artist.image}
           className="h-full w-full object-cover"
-          alt={artist.name}
+          alt={`${artist.name[0]}${artist.name[1]}`}
         />
       </div>
       <div className="flex flex-col text-left">
-        <p className="truncate text-ellipsis w-3/4 font-bold text-lg">
+        <p className="truncate text-ellipsis w-9/10 font-bold text-lg">
           {artist.name}
         </p>
-        <p className="font-bold text-sm text-neutral-400">Artist</p>
+        <p className="font-bold text-sm text-neutral-400">
+          {" "}
+          <span>Since &nbsp;</span>
+          <span>{artist.joinDate.split("-")[0]}</span>
+        </p>
       </div>
     </button>
   );

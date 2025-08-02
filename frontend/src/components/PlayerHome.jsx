@@ -18,35 +18,6 @@ const CURRENT_DATE = "2025-01-23 00:03:46";
 const CURRENT_USER = "gabrielisaacs";
 const DEFAULT_THUMBNAIL = "/thumbnail.png";
 
-// Loading components
-//const SectionLoadingMessage = ({ isSmall, isMedium }) => (
-//  <div className="animate-pulse flex flex-col">
-//    <div className="h-10 w-9/10 bg-neutral-800 rounded-2xl"></div>
-//    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-[1rem]">
-//      {[...Array(isSmall ? 2 : isMedium ? 4 : 5)].map((_, i) => (
-//        <div
-//          key={i}
-//          className="aspect-square bg-neutral-800 mb-4 rounded-3xl"
-//        ></div>
-//      ))}
-//    </div>
-//  </div>
-//);
-
-//const LoadingMessage = ({ isSmall, isMedium }) => (
-//  <div className="flex mx-2 md:mx-12 lg:mx-16 min-h-screen max-w-[60rem] py-10">
-//    <div className="flex flex-col mt-[1.75rem] gap-[5rem] w-full">
-//      {[...Array(isSmall ? 1 : isMedium ? 2 : 3)].map((_, index) => (
-//        <SectionLoadingMessage
-//          key={index}
-//          isSmall={isSmall}
-//          isMedium={isMedium}
-//        />
-//      ))}
-//    </div>
-//  </div>
-//);
-
 // Error message component with retry capability
 const ErrorMessage = ({ message, onRetry }) => (
   <div className="flex justify-center items-center p-4 bg-neutral-900 rounded-lg border-1 border-green-300">
@@ -173,36 +144,13 @@ const PlayerHome = () => {
     }
   };
 
-  //// Check if all sections are loading
-  //const isPageLoading =
-  //  loadingArtists && loadingAlbums && loadingTrending && loadingPlaylists;
-
-  //if (isPageLoading) {
-  //  return <LoadingMessage isSmall={isSmall} isMedium={isMedium} />;
-  //}
-
-  // Check if there's no data at all
-  //const hasNoData =
-  //  !transformedArtists.length &&
-  //  !transformedAlbums.length &&
-  //  !transformedTrending.length &&
-  //  !transformedPlaylists.length;
-
-  //if (hasNoData && !isPageLoading) {
-  //  return (
-  //    <div className="flex justify-center items-center h-[calc(100svh-5.2rem)] w-full ">
-  //      <div className="text-neutral-400">No content available</div>
-  //    </div>
-  //  );
-  //}
-
   // Main render
   return (
     <div className="max-w-[60rem] min-h-screen flex flex-col mt-6 mx-16 gap-10 transition-all duration-300">
       <PopularArtists cardsPerSet={cardsPerSet} />
       <TrendingTracks />
       <Albums cardsPerSet={cardsPerSet} />
-      {/*<Playlists cardsPerSet={cardsPerSet} />*/}
+      <Playlists cardsPerSet={cardsPerSet} />
     </div>
   );
 };
