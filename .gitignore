@@ -7,3 +7,4 @@ package.json
 *zip
 *testResults
 *getLocations.js
+*.env
