@@ -1,21 +1,21 @@
-import React from "react";
-import SideBar from "../components/SideBar";
 import TopNav from "../components/TopNav";
 import BottomPlayer from "../components/BottomPlayer";
 import PlayerHome from "../components/PlayerHome";
-import SongList from "../components/SongList";
+import { useTheme } from "../hooks/useTheme";
 
 const MusicPlayer = () => {
+  const { theme } = useTheme();
   return (
-    <div className="flex min-w-[100vw]">
-      <SideBar />
-      <div className="flex flex-col min-h-screen w-full ml-[15rem]">
-        <TopNav />
-        <div className="flex-1">
-          <PlayerHome />
-        </div>
-        <BottomPlayer />
+    <div
+      className="w-full min-h-screen border-2 border-yellow-200 bg-red-500"
+      data-theme={theme}
+    >
+      <h1>Music Player</h1>
+      {/*<TopNav />
+      <div className="border-2 border-purple-400">
+        <PlayerHome />
       </div>
+      <BottomPlayer />*/}
     </div>
   );
 };
