@@ -4,7 +4,7 @@ const useIsMedia = (query = 768) => {
   const [isMedia, setisMedia] = useState(undefined);
 
   useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${query - 1}px)`);
+    const mql = window.matchMedia(`(max-width: ${query}px)`);
     // define change handler
     const onChange = () => {
       setisMedia(mql.matches);
