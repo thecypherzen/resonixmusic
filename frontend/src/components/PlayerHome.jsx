@@ -12,6 +12,7 @@ import PopularArtists from "./Player/PopularArtists.jsx";
 import TrendingTracks from "./Player/TrendingTracks.jsx";
 import Albums from "./Player/Albums.jsx";
 import Playlists from "./Player/Playlists.jsx";
+import { useTheme } from "../hooks/useTheme.jsx";
 
 // Constants
 const CURRENT_DATE = "2025-01-23 00:03:46";
@@ -142,14 +143,18 @@ const PlayerHome = () => {
       handleTrackSelect(trackToPlay, remainingTracks);
     }
   };
-
+  const { theme } = useTheme();
+  console.log("[PLAYER HOME] Current theme:", theme);
   // Main render
   return (
-    <div className="max-w-[60rem] min-h-screen flex flex-col mt-6 mx-16 gap-10 transition-all duration-300">
+    <div
+      className="flex flex-col mt-6 mx-16 gap-10 transition-all duration-300 border-4 border-neutral-300"
+      data-theme={theme}
+    >
       <PopularArtists cardsPerSet={cardsPerSet} />
-      <TrendingTracks />
+      {/*<TrendingTracks />
       <Albums cardsPerSet={cardsPerSet} />
-      <Playlists cardsPerSet={cardsPerSet} />
+      <Playlists cardsPerSet={cardsPerSet} />*/}
     </div>
   );
 };

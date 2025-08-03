@@ -46,7 +46,7 @@ const Playlists = ({ cardsPerSet = 5 }) => {
     <SectionSkeleton cardsPerset={cardsPerSet} />
   ) : dataState?.playlists?.length ? (
     <div className="flex flex-col mb-[10rem]">
-      <div className="flex flex-row w-full mb-4 items-center">
+      <div className="flex flex-row mb-4 items-center">
         <p className="text-3xl font-extrabold">Featured playlists</p>
         <div className="ml-auto flex gap-2 items-center">
           <button

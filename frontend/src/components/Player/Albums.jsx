@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useFetch } from "../../hooks/useFetch";
-import api from "../../services/api";
 import { FaChevronLeft, FaChevronRight, FaPlay } from "react-icons/fa";
 import SectionSkeleton from "./SectionSkeleton";
+import SectionErrorDisplay from "./SectionErrorDisplay";
 
 const transformAlbum = (album) => ({
   id: album.id,
@@ -35,7 +35,7 @@ const Albums = ({ cardsPerSet = 5 }) => {
     <SectionSkeleton cardsPerset={cardsPerSet} />
   ) : dataState.albums?.length ? (
     <div className="flex flex-col mb-10">
-      <div className="flex flex-row w-full mb-4 items-center">
+      <div className="flex flex-row mb-4 items-center">
         <p className="text-3xl font-extrabold">Albums for you</p>
         <div className="ml-auto flex gap-2 items-center">
           <button

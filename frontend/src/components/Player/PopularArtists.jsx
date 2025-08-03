@@ -4,6 +4,7 @@ import SectionSkeleton from "./SectionSkeleton";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ArtistCard from "../ArtistCard";
 import SectionErrorDisplay from "./SectionErrorDisplay";
+import { useTheme } from "../../hooks/useTheme";
 
 const transformArtists = (artist) => ({
   id: artist.id,
@@ -48,11 +49,14 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
     window.scrollTo(0, 0);
     navigate(`/artist/${artist.id}`);
   }, []);
-
+  const { theme } = useTheme();
   return isLoading ? (
     <SectionSkeleton cardsPerset={cardsPerSet} />
   ) : dataState.artists?.length ? (
-    <div className="flex flex-col mb-10 w-full">
+    <div
+      className="flex flex-col flex-wrap mb-10 border-2 border-green-300 overflow-y-scroll"
+      data-theme={theme}
+    >
       <div className="flex flex-row w-full mb-4 items-center">
         <p className="text-3xl font-extrabold">Popular Artists</p>
         <div className="ml-auto flex gap-2 items-center">
@@ -87,7 +91,7 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
           </button>
         </div>
       </div>
-      <div className="flex flex-row bg-transparent h-[16rem] w-full gap-4">
+      <div className="w-auto flex overflow-x-scroll scroll bg-transparent max-h-[24rem] gap-4 border-3 border-blue-600 p-3 @container">
         {dataState.artists
           .slice(visibleArtists, visibleArtists + cardsPerSet)
           .map((artist) => (
