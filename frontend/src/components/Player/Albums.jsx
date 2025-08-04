@@ -7,6 +7,7 @@ import ActionButton from "./ActionButton";
 import HeadingText from "../HeadingText";
 import { useTheme } from "../../hooks/useTheme";
 import ImageBgOverlay from "../ImageBgOverlay";
+import MusicCard from "../MusicCard";
 
 const transformAlbum = (album) => ({
   id: album.id,
@@ -61,11 +62,11 @@ const Albums = ({ cardsPerSet = 5 }) => {
               <div className="opacity-0 group-hover:opacity-100 group-active:opacity-100 flex bg-gradient-to-b from-yellow-300  to-green-400 size-10 rounded-full shadow-2xl absolute right-6 top-[7.5rem] hover:scale-110 active:scale-110 transition-all duration-300 z-100 !text-white">
                 <FaPlay className="m-auto text-shadow-lg fill-[currentColor] text-shadow-neutral-900/20" />
               </div>
-              <ImageBgOverlay
+              <MusicCard
+                variant="overlay"
                 className="rounded-lg w-[160px] md:[200px]"
                 imageUrl={album.thumbnail || "/thumbnail.png"}
               >
-                {console.log(album)}
                 <div className="flex flex-col text-left w-full">
                   <p className="font-bold text-md w-95/100 truncate text-ellipsis dark:text-neutral-100/90 text-neutral-900">
                     {album.title}
@@ -74,7 +75,7 @@ const Albums = ({ cardsPerSet = 5 }) => {
                     {album.artist}
                   </p>
                 </div>
-              </ImageBgOverlay>
+              </MusicCard>
             </button>
           ))}
       </div>

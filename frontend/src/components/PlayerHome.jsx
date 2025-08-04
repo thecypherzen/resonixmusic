@@ -154,7 +154,7 @@ const PlayerHome = () => {
       <PopularArtists cardsPerSet={cardsPerSet} />
       <TrendingTracks />
       <Albums cardsPerSet={cardsPerSet} />
-      {/*<Playlists cardsPerSet={cardsPerSet} />*/}
+      <Playlists cardsPerSet={cardsPerSet} />
     </div>
   );
 };

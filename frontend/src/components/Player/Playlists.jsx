@@ -5,6 +5,8 @@ import { useFetch } from "../../hooks/useFetch";
 import PlaylistCard from "../PlaylistCard";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useCallback, useEffect, useState } from "react";
+import HeadingText from "../HeadingText";
+import ActionButton from "./ActionButton";
 
 const transformPlaylists = (playlist) => {
   return {
@@ -47,40 +49,12 @@ const Playlists = ({ cardsPerSet = 5 }) => {
   ) : dataState?.playlists?.length ? (
     <div className="flex flex-col mb-[10rem]">
       <div className="flex flex-row mb-4 items-center">
-        <p className="text-3xl font-extrabold">Featured playlists</p>
+        <HeadingText text={"Featured playlists"} />
         <div className="ml-auto flex gap-2 items-center">
-          <button
-            //onClick={() => {
-            //  window.scrollTo({ top: 0, behavior: "smooth" });
-            //  navigate("/playlists");
-            //}}
-            className="bg-transparent hover:bg-[#212121] py-2 px-4 rounded-full border border-neutral-800 text-sm"
-          >
-            More
-          </button>
-          <button
-            //onClick={() =>
-            //  handlePrevious(setVisiblePlaylists, visiblePlaylists)
-            //}
-            className="bg-transparent hover:bg-[#212121] p-2 rounded-full border border-neutral-800"
-          >
-            <FaChevronLeft />
-          </button>
-          <button
-            //onClick={() =>
-            //  handleNext(
-            //    setVisiblePlaylists,
-            //    visiblePlaylists,
-            //    dataState?.playlists?.length
-            //  )
-            //}
-            className="bg-transparent hover:bg-[#212121] p-2 rounded-full border border-neutral-800"
-          >
-            <FaChevronRight />
-          </button>
+          <ActionButton text={"Explore"} />
         </div>
       </div>
-      <div className="flex flex-row bg-transparent h-[16rem] w-full gap-4 mt-4">
+      <div className="flex flex-row bg-transparent h-[16rem] w-full gap-4 mt-4 @container overflow-x-scroll py-4 px-2">
         {dataState?.playlists
           .slice(visiblePlaylists, visiblePlaylists + cardsPerSet)
           .map((playlist) => {
