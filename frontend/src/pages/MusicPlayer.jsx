@@ -3,12 +3,20 @@ import BottomPlayer from "../components/BottomPlayer";
 import PlayerHome from "../components/PlayerHome";
 import { useTheme } from "../hooks/useTheme";
 
+/**
+ * @component
+ * @name MusicPlayer
+ * @description The main component that renders the music player interface
+ * Sets the current theme for children components to inherit from
+ * where applicable
+ * @returns {React.ReactNode} The Music Player Component
+ */
 const MusicPlayer = () => {
   const { theme } = useTheme();
   return (
-    <div className="border-3 border-red-500 flex flex-col " data-theme={theme}>
+    <div className="flex flex-col h-screen overflow-y-auto" data-theme={theme}>
       <TopNav />
-      <div className="h-full border-2 border-purple-400">
+      <div className="h-full">
         <PlayerHome />
       </div>
       <BottomPlayer />

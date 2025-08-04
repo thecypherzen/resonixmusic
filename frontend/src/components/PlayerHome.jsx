@@ -148,12 +148,12 @@ const PlayerHome = () => {
   // Main render
   return (
     <div
-      className="flex flex-col mt-6 px-5 md:px-10 lg:px-16 gap-10 transition-all duration-300 border-4 border-neutral-300"
+      className="flex flex-col mt-6 px-5 md:px-10 lg:px-16 gap-6 transition-all duration-300"
       data-theme={theme}
     >
       <PopularArtists cardsPerSet={cardsPerSet} />
-      {/*<TrendingTracks />
-      <Albums cardsPerSet={cardsPerSet} />
+      <TrendingTracks />
+      {/*<Albums cardsPerSet={cardsPerSet} />
       <Playlists cardsPerSet={cardsPerSet} />*/}
     </div>
   );

@@ -8,6 +8,7 @@ import authService from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import UserMenu from "./UserMenu";
 import { useIsMedia } from "../hooks/useIsMobile";
+import { cn } from "../lib/utils";
 
 // Create a new CreatePlaylistModal component
 const CreatePlaylistModal = ({ isOpen, onClose, onSubmit }) => {
@@ -75,60 +76,41 @@ const CreatePlaylistModal = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-const SideBar = () => {
+function SideBar() {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
   const [sideNav, setSideNav] = useState(null);
-
-  // Function to handle sticky navigation
-  const stickyScroll = () => {
-    if (sideNav) {
-      if (sideNav.getBoundingClientRect().top <= 0) {
-        sideNav.classList.add("sticky-nav-header");
-      } else {
-        sideNav.classList.remove("sticky-nav-header");
-      }
-    }
-  };
-
-  // Check if the screen is mobile or not
   const isMobileBreakpoint = useIsMedia(767);
 
-  // Add event listener for scroll if not on mobile
-  useEffect(() => {
-    setSideNav(document.getElementById("sticky-nav-header"));
-    if (!isMobileBreakpoint && sideNav) {
-      window.addEventListener("scroll", stickyScroll);
-      return () => {
-        window.removeEventListener("scroll", stickyScroll);
-      };
-    }
-  }, [isMobileBreakpoint, sideNav]);
+  useEffect(() => {}, [isMobileBreakpoint]);
 
-  // If on mobile, return an empty fragment to avoid rendering the sidebar
+  // Avoid rendering sidebar on mobile
   if (isMobileBreakpoint) {
     return <></>;
   }
   // Return the sidebar component when not on mobile
   return (
     <>
-      <div className="py-8 flex flex-col gap-6 min-h-screen bg-[#212124] bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30">
+      <div className="py-8 flex flex-col gap-6 h-screen bg-[#212124] bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30">
         {/* Navbar */}
-        <SideBarNav isMobileBreakpoint={isMobileBreakpoint} sideNav={sideNav} />
+        <SideBarNav isMobileBreakpoint={isMobileBreakpoint} />
         {/* Content */}
         <SideBarContent />
         {/* Modals */}
       </div>
     </>
   );
-};
+}
 
-const SideBarNav = ({ isMobileBreakpoint, sideNav }) => {
-  useEffect(() => {}, [isMobileBreakpoint, sideNav]);
+function SideBarNav({ isMobileBreakpoint, className }) {
+  useEffect(() => {}, [isMobileBreakpoint]);
   return (
     <div
       id="sticky-nav-header"
-      className="px-8 flex gap-2 items-center justify-between backdrop-blur-3xl bg-opacity-50 w-full"
+      className={cn(
+        "px-8 flex gap-2 items-center justify-between backdrop-blur-3xl bg-opacity-50 w-full shadow-lg shadow-neural-950/10 pb-6",
+        className
+      )}
     >
       {/* Profile */}
       <img
@@ -139,9 +121,9 @@ const SideBarNav = ({ isMobileBreakpoint, sideNav }) => {
       <UserMenu />
     </div>
   );
-};
+}
 
-const SideBarContent = () => {
+function SideBarContent() {
   const [playlists, setPlaylists] = useState([]);
   //const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   //const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -252,7 +234,7 @@ const SideBarContent = () => {
       </div>
     </div>
   );
-};
+}
 {
   /* Modals */
 }

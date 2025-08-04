@@ -2,6 +2,14 @@ import SideBar from "@/components/SideBar";
 import { useTheme } from "@/hooks/useTheme";
 import { Outlet } from "react-router-dom";
 
+/**
+ * @component
+ * @name MusicPlayerLayout
+ * @description A layout component for the music player that includes
+ * a sidebar and an outlet for nested routes. It applies the current
+ * theme to the layout.
+ * @returns {JSX.Element} The rendered music player layout component.
+ */
 const MusicPlayerLayout = () => {
   const { theme } = useTheme();
   return (
