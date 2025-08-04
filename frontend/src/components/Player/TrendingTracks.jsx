@@ -45,13 +45,15 @@ const TrendingTracks = () => {
     <SectionSkeleton />
   ) : dataState.tracks?.length ? (
     <div className="w-full flex flex-col mb-10">
+      {/* Heading and Action button */}
       <div className="flex flex-row w-full mb-4 items-center">
         <HeadingText text={"Trending Tracks"} />
         <div className="ml-auto flex gap-1 md:gap-2 items-center text-xs transition-all duration-300">
           <ActionButton text={"Play All"} />
         </div>
       </div>
-      <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-1 transition-all duration-300 max-h-[50vh] overflow-y-auto @container">
+      {/* Tracks */}
+      <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-1 transition-all duration-300 max-h-[50vh] overflow-y-auto @container">
         {dataState.tracks
           .slice(visibleTrending, visibleTrending + trendingCardsPerPage)
           .map((song, index) => (
@@ -60,18 +62,19 @@ const TrendingTracks = () => {
               //onClick={() => handlePlaySong(song, index + visibleTrending)}
               className="w-95/100 mx-auto flex bg-transparent hover:bg-gradient-to-r from-neutral-800 to-neutral-900 active:bg-gradient-to-r from-neutral-800 to-neutral-900 px-2 py-4 rounded-xl gap-4 group text-left transition-all"
             >
-              <div className="flex relative size-12">
-                <img
-                  src={song.thumbnail}
-                  className="w-full rounded-lg object-cover"
-                  //alt={`${song.title[0]}${song.title[1]}`}
-                />
+              <div className="w-1/5 relative">
+                <div
+                  className="flex size-[62px] aspect-ratio-square bg-cover bg-center bg-no-repeat overflow-hidden rounded-lg"
+                  style={{
+                    backgroundImage: `url(${song.thumbnail})`,
+                  }}
+                ></div>
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <FaPlay className="fill-white drop-shadow-lg" />
                 </div>
               </div>
-              <div className="flex flex-col max-w-4/5">
-                <p className="text-base truncate w-[180px] md:w-[360px]  text-ellipsis">
+              <div className="flex flex-col w-4/5">
+                <p className="text-base w-9/10 truncate text-ellipsis">
                   {song.title}
                 </p>
                 <div className="flex flex-row items-center gap-2">
