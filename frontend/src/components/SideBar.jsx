@@ -76,15 +76,78 @@ const CreatePlaylistModal = ({ isOpen, onClose, onSubmit }) => {
 };
 
 const SideBar = () => {
-  const [playlists, setPlaylists] = useState([]);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const userLogin = "gabrielisaacs";
-  const initials = userLogin.substring(0, 2).toUpperCase();
   const location = useLocation();
-  const { play } = usePlayer();
   const { isAuthenticated } = useAuth();
   const [sideNav, setSideNav] = useState(null);
+
+  // Function to handle sticky navigation
+  const stickyScroll = () => {
+    if (sideNav) {
+      if (sideNav.getBoundingClientRect().top <= 0) {
+        sideNav.classList.add("sticky-nav-header");
+      } else {
+        sideNav.classList.remove("sticky-nav-header");
+      }
+    }
+  };
+
+  // Check if the screen is mobile or not
+  const isMobileBreakpoint = useIsMedia(767);
+
+  // Add event listener for scroll if not on mobile
+  useEffect(() => {
+    setSideNav(document.getElementById("sticky-nav-header"));
+    if (!isMobileBreakpoint && sideNav) {
+      window.addEventListener("scroll", stickyScroll);
+      return () => {
+        window.removeEventListener("scroll", stickyScroll);
+      };
+    }
+  }, [isMobileBreakpoint, sideNav]);
+
+  // If on mobile, return an empty fragment to avoid rendering the sidebar
+  if (isMobileBreakpoint) {
+    return <></>;
+  }
+  // Return the sidebar component when not on mobile
+  return (
+    <>
+      <div className="py-8 flex flex-col gap-6 min-h-screen bg-[#212124] bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30">
+        {/* Navbar */}
+        <SideBarNav isMobileBreakpoint={isMobileBreakpoint} sideNav={sideNav} />
+        {/* Content */}
+        <SideBarContent />
+        {/* Modals */}
+      </div>
+    </>
+  );
+};
+
+const SideBarNav = ({ isMobileBreakpoint, sideNav }) => {
+  useEffect(() => {}, [isMobileBreakpoint, sideNav]);
+  return (
+    <div
+      id="sticky-nav-header"
+      className="px-8 flex gap-2 items-center justify-between backdrop-blur-3xl bg-opacity-50 w-full"
+    >
+      {/* Profile */}
+      <img
+        src="/logo-grad.png"
+        alt="resonix logo"
+        className="h-auto w-1/3 min-w-[100px] max-w-[150px]"
+      />
+      <UserMenu />
+    </div>
+  );
+};
+
+const SideBarContent = () => {
+  const [playlists, setPlaylists] = useState([]);
+  //const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  //const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const userLogin = "gabrielisaacs";
+  const initials = userLogin.substring(0, 2).toUpperCase();
+  const { play } = usePlayer();
 
   const handleCreatePlaylistClick = () => {
     if (isAuthenticated) {
@@ -113,136 +176,83 @@ const SideBar = () => {
     }
   };
 
-  // Function to handle sticky navigation
-  const stickyScroll = () => {
-    if (sideNav) {
-      if (sideNav.getBoundingClientRect().top <= 0) {
-        sideNav.classList.add("sticky-nav");
-      } else {
-        sideNav.classList.remove("sticky-nav");
-      }
-    }
-  };
-  // Check if the screen is mobile or not
-  const isMobileBreakpoint = useIsMedia(767);
-
-  // Add event listener for scroll if not on mobile
-  useEffect(() => {
-    setSideNav(document.getElementById("side-nav"));
-    if (!isMobileBreakpoint && sideNav) {
-      window.addEventListener("scroll", stickyScroll);
-      return () => {
-        window.removeEventListener("scroll", stickyScroll);
-      };
-    }
-  }, [isMobileBreakpoint, sideNav]);
-
-  // If on mobile, return an empty fragment to avoid rendering the sidebar
-  if (isMobileBreakpoint) {
-    return <></>;
-  }
-  // Return the sidebar component when not on mobile
   return (
-    <>
-      <div className="py-8 flex flex-col gap-6 min-h-screen bg-[#212124] bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30">
-        {/* Navbar */}
-        <div
-          id="side-nav"
-          className="px-8 flex gap-2 items-center justify-between backdrop-blur-3xl bg-opacity-50"
+    <div id="sidebar-content" className="space-y-3 overflow-y-auto">
+      {/* Navigation Links */}
+      <div className="px-8 flex flex-col gap-6 mt-2 ml-2 mt-4">
+        <Link
+          to="/"
+          className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${
+            location.pathname === "/" ? "text-[#08B2F0]" : ""
+          }`}
         >
-          {/* Profile */}
-          <img
-            src="/logo-grad.png"
-            alt="resonix logo"
-            className="h-auto w-1/3 min-w-[100px] max-w-[150px]"
-          />
+          <House />
+          <p>Home</p>
+        </Link>
+        <Link
+          to="/explore"
+          className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${
+            location.pathname === "/explore" ? "text-[#08B2F0]" : ""
+          }`}
+          onClick={(e) => e.preventDefault()}
+        >
+          <Compass />
+          <p>Explore</p>
+        </Link>
+        <Link
+          to="/playlist"
+          className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${
+            location.pathname === "/trending" ? "text-[#08B2F0]" : ""
+          }`}
+          onClick={(e) => e.preventDefault()}
+        >
+          <Library />
+          <p>Library</p>
+        </Link>
+      </div>
 
-          <div className="ml-auto flex items-center gap-2 border-1 border-zinc-400">
-            <UserMenu />
-            <button className="bg-transparent text-white p-1 hover:text-[#08B2F0] transition-colors duration-200">
-              <Menu />
-            </button>
-          </div>
-        </div>
-        <div id="sidebar-content" className="space-y-3 overflow-y-auto">
-          {/* Navigation Links */}
-          <div className="px-8 flex flex-col gap-6 mt-2 ml-2 mt-4">
-            <Link
-              to="/"
-              className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${
-                location.pathname === "/" ? "text-[#08B2F0]" : ""
-              }`}
-            >
-              <House />
-              <p>Home</p>
-            </Link>
-            <Link
-              to="/explore"
-              className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${
-                location.pathname === "/explore" ? "text-[#08B2F0]" : ""
-              }`}
-              onClick={(e) => e.preventDefault()}
-            >
-              <Compass />
-              <p>Explore</p>
-            </Link>
-            <Link
-              to="/playlist"
-              className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${
-                location.pathname === "/trending" ? "text-[#08B2F0]" : ""
-              }`}
-              onClick={(e) => e.preventDefault()}
-            >
-              <Library />
-              <p>Library</p>
-            </Link>
-          </div>
-
-          {/* Playlists Section */}
-          <div className="px-8 flex flex-col gap-4 my-6 text-[0.875rem] overflow-y-auto">
-            <p className="text-white opacity-40 text-xs font-400 mt-4">
-              MY PLAYLISTS
-            </p>
-            <div className="flex flex-col">
-              <button
-                onClick={handleCreatePlaylistClick}
-                className="inline-flex items-center justify-center py-2 px-4 bg-transparent gap-1 hover:bg-[#212121] transition-all duration-200 rounded-full border border-neutral-700 w-full"
-              >
-                <Plus size={16} />
-                <span className="text-xs">Create Playlist</span>
-              </button>
-              {playlists.length > 0 && (
-                <div className="flex flex-col gap-6 bg-transparent hover:bg-white hover:bg-opacity-5 py-2 px-4 rounded-md mt-4">
-                  {playlists.map((playlist, index) => (
-                    <div
-                      key={playlist.id}
-                      className="group flex items-center justify-between transition-colors group"
-                    >
-                      <Link
-                        to={`/playlist/${playlist.id}`}
-                        className="flex-grow hover:text-[#08B2F0] transition-colors duration-200"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        {playlist.title}
-                      </Link>
-                      <button
-                        onClick={() => handlePlayAllSongs(playlist)}
-                        className="opacity-0 group-hover:opacity-100 transition-all duration-200 ml-2 bg-transparent"
-                      >
-                        <FaPlay size={16} />
-                      </button>
-                    </div>
-                  ))}
+      {/* Playlists Section */}
+      <div className="px-8 flex flex-col gap-4 my-6 text-[0.875rem] overflow-y-auto">
+        <p className="text-white opacity-40 text-xs font-400 mt-4">
+          MY PLAYLISTS
+        </p>
+        <div className="flex flex-col">
+          <button
+            onClick={handleCreatePlaylistClick}
+            className="inline-flex items-center justify-center py-2 px-4 bg-transparent gap-1 hover:bg-[#212121] transition-all duration-200 rounded-full border border-neutral-700 w-full"
+          >
+            <Plus size={16} />
+            <span className="text-xs">Create Playlist</span>
+          </button>
+          {playlists.length > 0 && (
+            <div className="flex flex-col gap-6 bg-transparent hover:bg-white hover:bg-opacity-5 py-2 px-4 rounded-md mt-4">
+              {playlists.map((playlist, index) => (
+                <div
+                  key={playlist.id}
+                  className="group flex items-center justify-between transition-colors group"
+                >
+                  <Link
+                    to={`/playlist/${playlist.id}`}
+                    className="flex-grow hover:text-[#08B2F0] transition-colors duration-200"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    {playlist.title}
+                  </Link>
+                  <button
+                    onClick={() => handlePlayAllSongs(playlist)}
+                    className="opacity-0 group-hover:opacity-100 transition-all duration-200 ml-2 bg-transparent"
+                  >
+                    <FaPlay size={16} />
+                  </button>
                 </div>
-              )}
+              ))}
             </div>
-          </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
-
 {
   /* Modals */
 }
@@ -259,3 +269,4 @@ const SideBar = () => {
 />*/
 }
 export default SideBar;
+export { SideBarNav, SideBarContent };

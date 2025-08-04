@@ -220,6 +220,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 }
 
 /* Custom Extra styles */
-.sticky-nav {
+.sticky-nav-header {
   @apply sticky top-0 z-50 shadow-lg shadow-black/15 py-6;
 }
