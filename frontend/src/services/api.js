@@ -1,10 +1,21 @@
 import axios from "axios";
-import { API_BASE_URL, API_DEFAULTS } from "../constants/config";
+import {
+  API_BASE_URL,
+  API_DEFAULTS,
+  UNSPLASH_CLIENT_ID,
+} from "../constants/config";
 
-console.log("API_BASE_URL: ", API_BASE_URL);
 const CURRENT_DATE = "2025-01-17 20:36:43";
 const CURRENT_USER = "gabrielisaacs";
 
+/**
+ * @class RequestAPI
+ * @description A class to handle API requests with retry logic
+ * and error handling. It uses axios by default for HTTP requests
+ * and provides methods for GET, POST, PUT, and DELETE requests.
+ * The client can be modified in the future to use other libraries
+ * It also includes middleware for request logging and error handling.
+ */
 class RequestAPI {
   #client = null;
   async #makeRequest(
@@ -17,7 +28,6 @@ class RequestAPI {
       //console.log(result);
       return { success: true, data: result };
     } catch (err) {
-      console.error("[ REQUEST FAILED ]", err);
       let errno;
       switch (err?.name) {
         case "TypeError":
@@ -191,113 +201,12 @@ const getRandomImage = async (orientation) => {
       params: {
         query: "dark music",
         orientation,
-        client_id: "IS8nNFC4MfhBLi-F8KZdlaGMfELuMhY7-3RK3iIPtgk",
+        client_id: UNSPLASH_CLIENT_ID,
       },
     });
     return response?.data?.urls?.full;
   } catch (error) {
     console.log("RANDOM IMAGE ERROR\n\t", error);
-  }
-};
-
-// Transform functions to match frontend format
-const transformTrackData = (track) => ({
-  id: track.id,
-  title: track.name,
-  artist: track.artist_name,
-  artwork: track.image,
-  thumbnail: track.image,
-  url: track.audio,
-  duration: track.duration,
-  likes: `${Math.floor((track.listened || 0) / 1000)}k Plays`,
-  stream_url: track.audio,
-});
-
-const transformArtistData = (artist) => ({
-  id: artist.id,
-  name: artist.name,
-  image: artist.image,
-  description: artist.description || "",
-  joindate: artist.joindate || "2025-01-22 23:01:16",
-  website: artist.website || "",
-  shorturl: artist.shorturl || "",
-  shareurl: artist.shareurl || "",
-});
-
-const transformAlbumData = (album) => ({
-  id: album.id,
-  title: album.name,
-  artist: album.artist_name,
-  thumbnail: album.image,
-  releaseDate: album.releasedate,
-  trackCount: album.tracks_count || 0,
-});
-
-const transformPlaylistData = (playlist) => ({
-  id: playlist.id,
-  title: playlist.name,
-  artist: playlist.user_name,
-  creationDate: playlist.creationdate,
-  userId: playlist.user_id,
-  shortUrl: playlist.shorturl,
-  shareUrl: playlist.shareurl,
-  thumbnailId: playlist.id,
-});
-
-const getTrendingTracks = async (params = {}) => {
-  try {
-    console.log("Fetching trending tracks...");
-    const response = await api.get("/tracks", { params });
-    if (response.data && response.data.results) {
-      return { data: response.data.results.map(transformTrackData) };
-    }
-  } catch (error) {
-    console.warn("Error fetching tracks, using fallback data:", error);
-  }
-};
-
-const getAlbums = async (params = {}) => {
-  try {
-    console.log("Fetching albums...");
-    const response = await api.get("/albums", {
-      params: {
-        ...params,
-        format: "json",
-        imagesize: 500,
-      },
-    });
-
-    if (response.data?.results) {
-      return { data: response.data.results.map(transformAlbumData) };
-    }
-    throw new Error("No data received from server");
-  } catch (error) {
-    console.warn("Error fetching albums, using fallback data:", error);
-  }
-};
-
-const getTopArtists = async (params = { limit: 20 }) => {
-  try {
-    console.log("Fetching top artists...");
-    const response = await api.get("/artists", {
-      params: {
-        ...params,
-        order: "popularity_week_desc",
-      },
-    });
-
-    if (response.data?.results) {
-      return {
-        data: response.data.results.map((artist) =>
-          transformArtistData(artist)
-        ),
-      };
-    }
-    console.log("THROWING ERROR:...");
-    throw new Error("No data received from server");
-  } catch (error) {
-    console.warn(error?.message ?? "NO MESSAGE");
-    console.warn("Error fetching artists, using fallback data:", error);
   }
 };
 
@@ -358,29 +267,6 @@ const getAlbumDetails = async (albumId) => {
   } catch (error) {
     console.error("Error fetching album details:", error);
     throw error;
-  }
-};
-
-const getPlaylists = async (params = {}) => {
-  try {
-    console.log("Fetching playlists...");
-    const response = await api.get("/playlists", {
-      params: {
-        ...params,
-        format: "json",
-      },
-    });
-
-    if (response.data?.results) {
-      console.log("PLAYLISTS FETCHED:\n", response.data.results);
-      const transformedPlaylists = response.data.results.map(
-        transformPlaylistData
-      );
-      return { data: transformedPlaylists };
-    }
-    throw new Error("No data received from server");
-  } catch (error) {
-    console.warn("Error fetching playlists, using fallback data:", error);
   }
 };
 
@@ -601,13 +487,9 @@ const getSimilarArtists = async (artistId) => {
 
 export {
   getRandomImage,
-  getPlaylists,
-  getTrendingTracks,
-  getTopArtists,
   getAlbumDetails,
   getPlaylistDetails,
   getRecentTracks,
-  getAlbums,
   getArtistDetails,
   getArtistTracks,
   getArtistAlbums,
