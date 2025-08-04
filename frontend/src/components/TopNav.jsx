@@ -3,7 +3,7 @@ import { LuSearch } from "react-icons/lu";
 import MobileNavigation from "./navs/MobileNavigation";
 import { useIsMedia } from "../hooks/useIsMobile";
 
-const TopNav = () => {
+function TopNav() {
   const isMobileBreakpoint = useIsMedia(767);
   useEffect(() => {}, [isMobileBreakpoint]);
 
@@ -23,6 +23,6 @@ const TopNav = () => {
       </div>
     </div>
   );
-};
+}
 
 export default TopNav;

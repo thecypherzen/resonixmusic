@@ -28,7 +28,7 @@ function MusicCard({ variant = "default", ...props }) {
       return (
         <div
           className={cn(
-            "w-full h-full flex flex-col gap-2 items-center p-2 border-1 border-red-400 rounded-md",
+            "w-full h-full flex flex-col gap-2 items-start p-2 rounded-md",
             props.className
           )}
         >
@@ -37,13 +37,7 @@ function MusicCard({ variant = "default", ...props }) {
             style={{
               backgroundImage: `url(${props.imageUrl || "/thumbnail.png"})`,
             }}
-          >
-            {/*<img
-              src={props.imageUrl || "/thumbnail.png"}
-              className="rounded-lg h-full w-full shadow-md object-cover object-center"
-              loading="lazy"
-            />*/}
-          </div>
+          ></div>
           <div className="flex flex-col text-left">{props.children}</div>
         </div>
       );

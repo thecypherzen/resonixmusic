@@ -6,7 +6,6 @@ import SectionErrorDisplay from "./SectionErrorDisplay";
 import ActionButton from "./ActionButton";
 import HeadingText from "../HeadingText";
 import { useTheme } from "../../hooks/useTheme";
-import ImageBgOverlay from "../ImageBgOverlay";
 import MusicCard from "../MusicCard";
 
 const transformAlbum = (album) => ({

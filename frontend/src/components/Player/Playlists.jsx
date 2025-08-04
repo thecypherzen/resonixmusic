@@ -51,10 +51,10 @@ const Playlists = ({ cardsPerSet = 5 }) => {
       <div className="flex flex-row mb-4 items-center">
         <HeadingText text={"Featured playlists"} />
         <div className="ml-auto flex gap-2 items-center">
-          <ActionButton text={"Explore"} />
+          <ActionButton text={"More"} />
         </div>
       </div>
-      <div className="flex flex-row bg-transparent h-[16rem] w-full gap-4 mt-4 @container overflow-x-scroll py-4 px-2">
+      <div className="flex flex-row bg-transparent h-[16rem] md:h-[18rem] w-full gap-4 mt-4 @container overflow-x-scroll py-4 px-2">
         {dataState?.playlists
           .slice(visiblePlaylists, visiblePlaylists + cardsPerSet)
           .map((playlist) => {

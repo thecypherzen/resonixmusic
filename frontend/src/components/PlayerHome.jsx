@@ -144,7 +144,6 @@ const PlayerHome = () => {
     }
   };
   const { theme } = useTheme();
-  console.log("[PLAYER HOME] Current theme:", theme);
   // Main render
   return (
     <div
