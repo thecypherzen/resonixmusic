@@ -218,3 +218,8 @@ input[type="range"]:hover::-webkit-slider-thumb {
     @apply bg-background text-foreground w-[100vw] min-h-screen m-0 overflow-x-hidden overflow-y-auto;
   }
 }
+
+/* Custom Extra styles */
+.sticky-nav {
+  @apply sticky top-0 z-50 shadow-lg shadow-black/15 py-6;
+}

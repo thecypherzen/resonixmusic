@@ -58,8 +58,8 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
       data-theme={theme}
     >
       <div className="flex flex-row w-full mb-4 items-center">
-        <p className="text-3xl font-extrabold">Popular Artists</p>
-        <div className="ml-auto flex gap-2 items-center">
+        <p className="text-2xl md:text-3xl font-extrabold">Popular Artists</p>
+        <div className="ml-auto flex gap-1 md:gap-2 items-center text-xs">
           <button
             onClick={() => {
               window.scrollTo({ top: 0, behavior: "smooth" });

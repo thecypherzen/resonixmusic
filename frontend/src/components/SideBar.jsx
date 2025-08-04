@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, House, Library, Compass, Plus, X } from "lucide-react";
 import { FaPlay } from "react-icons/fa6";
@@ -84,6 +84,7 @@ const SideBar = () => {
   const location = useLocation();
   const { play } = usePlayer();
   const { isAuthenticated } = useAuth();
+  const [sideNav, setSideNav] = useState(null);
 
   const handleCreatePlaylistClick = () => {
     if (isAuthenticated) {
@@ -112,16 +113,43 @@ const SideBar = () => {
     }
   };
 
-  const isMobilePortrait = useIsMedia(767);
-  console.log(isMobilePortrait);
-  if (isMobilePortrait) {
+  // Function to handle sticky navigation
+  const stickyScroll = () => {
+    if (sideNav) {
+      if (sideNav.getBoundingClientRect().top <= 0) {
+        sideNav.classList.add("sticky-nav");
+      } else {
+        sideNav.classList.remove("sticky-nav");
+      }
+    }
+  };
+  // Check if the screen is mobile or not
+  const isMobileBreakpoint = useIsMedia(767);
+
+  // Add event listener for scroll if not on mobile
+  useEffect(() => {
+    setSideNav(document.getElementById("side-nav"));
+    if (!isMobileBreakpoint && sideNav) {
+      window.addEventListener("scroll", stickyScroll);
+      return () => {
+        window.removeEventListener("scroll", stickyScroll);
+      };
+    }
+  }, [isMobileBreakpoint, sideNav]);
+
+  // If on mobile, return an empty fragment to avoid rendering the sidebar
+  if (isMobileBreakpoint) {
     return <></>;
   }
+  // Return the sidebar component when not on mobile
   return (
     <>
-      <div className="p-7 flex flex-col gap-6 h-screen bg-[#212124] bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30 border-3 border-red-300">
+      <div className="py-8 flex flex-col gap-6 min-h-screen bg-[#212124] bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-30">
         {/* Navbar */}
-        <div className="flex gap-2 items-center justify-between ">
+        <div
+          id="side-nav"
+          className="px-8 flex gap-2 items-center justify-between backdrop-blur-3xl bg-opacity-50"
+        >
           {/* Profile */}
           <img
             src="/logo-grad.png"
@@ -138,7 +166,7 @@ const SideBar = () => {
         </div>
         <div id="sidebar-content" className="space-y-3 overflow-y-auto">
           {/* Navigation Links */}
-          <div className="flex flex-col gap-6 mt-2 ml-2 mt-4">
+          <div className="px-8 flex flex-col gap-6 mt-2 ml-2 mt-4">
             <Link
               to="/"
               className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${
@@ -171,7 +199,7 @@ const SideBar = () => {
           </div>
 
           {/* Playlists Section */}
-          <div className="flex flex-col gap-4 my-6 text-[0.875rem] overflow-y-auto">
+          <div className="px-8 flex flex-col gap-4 my-6 text-[0.875rem] overflow-y-auto">
             <p className="text-white opacity-40 text-xs font-400 mt-4">
               MY PLAYLISTS
             </p>
@@ -215,8 +243,6 @@ const SideBar = () => {
   );
 };
 
-export default SideBar;
-
 {
   /* Modals */
 }
@@ -232,3 +258,4 @@ export default SideBar;
 	onClose={() => setIsAuthModalOpen(false)}
 />*/
 }
+export default SideBar;
