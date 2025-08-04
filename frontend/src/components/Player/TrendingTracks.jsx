@@ -51,7 +51,7 @@ const TrendingTracks = () => {
           <ActionButton text={"Play All"} />
         </div>
       </div>
-      <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-1 transition-all duration-300 max-h-[60vh] overflow-y-auto @container">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-1 transition-all duration-300 max-h-[50vh] overflow-y-auto @container">
         {dataState.tracks
           .slice(visibleTrending, visibleTrending + trendingCardsPerPage)
           .map((song, index) => (
