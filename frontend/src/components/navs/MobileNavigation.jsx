@@ -29,7 +29,7 @@ function MobileNavigation() {
       <SheetContent
         side="left"
         data-theme={theme}
-        className="dark:bg-neutral-900 dark:text-neutral-200 flex flex-col gap-5 pt-8 pb-5 mt-0"
+        className="dark:bg-neutral-900 dark:text-neutral-200 flex flex-col gap-5 pt-8 pb-5 mt-0 border-none z-1000"
       >
         <SheetHeader className="shadow-lg shadow-black/15">
           <SheetTitle className="sr-only">Mobile Navigation Menu</SheetTitle>

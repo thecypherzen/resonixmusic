@@ -16,6 +16,7 @@ import AuthCallback from "../pages/AuthCallback";
 import LoginSuccess from "../pages/LoginSuccess";
 import ApiDocs from "../components/ApiDocs";
 import ComingSoonPage from "../pages/ComingSoonPage";
+import AppLayout from "../components/layouts/AppLayout";
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -33,16 +34,18 @@ const AppRoutes = () => {
       <Route path="/auth/success" element={<LoginSuccess />} />
 
       {/* Public routes */}
-      <Route path="/" element={<MusicPlayerLayout />}>
-        <Route index element={<MusicPlayer />} />
-        <Route path="/music" element={<MusicPlayer />} />
-        <Route path="/song/:id" element={<SongDetailsPage />} />
-        <Route path="/album/:id" element={<AlbumDetailsPage />} />
-        <Route path="/artist/:id" element={<ArtistPage />} />
-        <Route path="/playlist/:id" element={<PlaylistPage />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-        <Route path="/docs" element={<ApiDocs />} />
-        <Route path="/coming-soon" element={<ComingSoonPage />} />
+      <Route path="/" element={<AppLayout />}>
+        <Route path="/" element={<MusicPlayerLayout />}>
+          <Route index element={<MusicPlayer />} />
+          <Route path="/music" element={<MusicPlayer />} />
+          <Route path="/song/:id" element={<SongDetailsPage />} />
+          <Route path="/album/:id" element={<AlbumDetailsPage />} />
+          <Route path="/artist/:id" element={<ArtistPage />} />
+          <Route path="/playlist/:id" element={<PlaylistPage />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/docs" element={<ApiDocs />} />
+          <Route path="/coming-soon" element={<ComingSoonPage />} />
+        </Route>
       </Route>
 
       <Route

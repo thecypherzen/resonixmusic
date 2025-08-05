@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { useFetch } from "../../hooks/useFetch";
 import SectionSkeleton from "./SectionSkeleton";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ArtistCard from "../ArtistCard";
 import SectionErrorDisplay from "./SectionErrorDisplay";
 import { useTheme } from "../../hooks/useTheme";
 import HeadingText from "../HeadingText";
 import ActionButton from "./ActionButton";
+import { useNavigate } from "react-router-dom";
 
 const transformArtists = (artist) => ({
   id: artist.id,
@@ -29,6 +29,7 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
   const [visibleArtists, setVisibleArtists] = useState(0);
   const [dataState, setDataState] = useState({ artists: null, error: null });
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
   const { data, error } = useFetch({
     type: "artists",
     method: "get",
@@ -51,6 +52,7 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
     window.scrollTo(0, 0);
     navigate(`/artist/${artist.id}`);
   }, []);
+
   const { theme } = useTheme();
   return isLoading ? (
     <SectionSkeleton cardsPerset={cardsPerSet} />
@@ -78,8 +80,7 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
             <ArtistCard
               key={artist.id}
               artist={artist}
-              //onClick={handleArtistClick}
-              onClick={() => console.log("clicked")}
+              onClick={handleArtistClick}
             />
           ))}
       </div>

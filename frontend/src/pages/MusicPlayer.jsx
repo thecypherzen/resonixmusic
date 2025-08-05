@@ -15,7 +15,6 @@ const MusicPlayer = () => {
   const { theme } = useTheme();
   return (
     <div className="flex flex-col h-screen overflow-y-auto" data-theme={theme}>
-      <TopNav />
       <div className="h-full">
         <PlayerHome />
       </div>

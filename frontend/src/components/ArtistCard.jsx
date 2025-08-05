@@ -1,10 +1,4 @@
-import React from "react";
 import { FaPlay } from "react-icons/fa";
-
-const truncateTitle = (title, maxLength) => {
-  if (!title) return "";
-  return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
-};
 
 const ArtistCard = ({ artist, onClick }) => {
   return (
