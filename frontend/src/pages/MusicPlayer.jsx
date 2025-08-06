@@ -14,10 +14,11 @@ import { useTheme } from "../hooks/useTheme";
 const MusicPlayer = () => {
   const { theme } = useTheme();
   return (
-    <div className="flex flex-col h-screen overflow-y-auto" data-theme={theme}>
-      <div className="h-full">
-        <PlayerHome />
-      </div>
+    <div
+      className="flex flex-col max-h-screen overflow-y-scroll"
+      data-theme={theme}
+    >
+      <PlayerHome />
       <BottomPlayer />
     </div>
   );

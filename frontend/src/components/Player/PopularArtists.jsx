@@ -48,7 +48,7 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
     <SectionSkeleton cardsPerset={cardsPerSet} />
   ) : dataState.artists?.length ? (
     <div
-      className="flex flex-col flex-wrap mb-10 overflow-y-scroll"
+      className="flex flex-col flex-wrap mb-5 overflow-y-scroll"
       data-theme={theme}
     >
       <div className="flex flex-row w-full mb-4 items-center">
@@ -63,7 +63,7 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
           />
         </div>
       </div>
-      <div className="w-auto flex overflow-x-scroll scroll bg-transparent max-h-[24rem] gap-4 p-3 @container">
+      <div className="w-auto flex overflow-x-scroll scroll bg-transparent gap-4 p-3 @container pb-5">
         {dataState.artists
           .slice(visibleArtists, visibleArtists + cardsPerSet)
           .map((artist) => (

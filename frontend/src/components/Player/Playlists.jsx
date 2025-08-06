@@ -47,7 +47,7 @@ const Playlists = ({ cardsPerSet = 5 }) => {
   return isLoading ? (
     <SectionSkeleton cardsPerset={cardsPerSet} />
   ) : dataState?.playlists?.length ? (
-    <div className="flex flex-col mb-[10rem]">
+    <div className="flex flex-col mb-4">
       <div className="flex flex-row mb-4 items-center">
         <HeadingText text={"Featured playlists"} />
         <div className="ml-auto flex gap-2 items-center">
@@ -70,9 +70,11 @@ const Playlists = ({ cardsPerSet = 5 }) => {
       </div>
     </div>
   ) : (
-    <div>
-      <p>error</p>
-    </div>
+    <SectionErrorDisplay
+      reason={dataState.error?.reason || "An unnown reason"}
+      prefix={"Loading Artists failed due to"}
+      message={dataState.error?.message}
+    />
   );
 };
 

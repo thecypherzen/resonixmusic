@@ -147,7 +147,8 @@ const PlayerHome = () => {
   // Main render
   return (
     <div
-      className="flex flex-col mt-6 px-5 md:px-10 lg:px-16 gap-6 transition-all duration-300"
+      id="player-home"
+      className="flex flex-col px-5 md:px-10 lg:px-16 gap-10 transition-all duration-300 py-10"
       data-theme={theme}
     >
       <PopularArtists cardsPerSet={cardsPerSet} />

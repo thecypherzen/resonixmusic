@@ -45,7 +45,6 @@ export const useFetch = (options) => {
     let response;
     try {
       // Check cache first
-      console.log("FULL_CACHE_KEY:", fullCacheKey);
       const cachedData = dataCache.get(fullCacheKey);
       if (cachedData) {
         console.log(`Cache hit for ${fullCacheKey}`);

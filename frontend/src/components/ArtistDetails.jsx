@@ -193,17 +193,6 @@ const ArtistDetails = ({ id }) => {
       tracksDataState.tracks &&
       similarDataState.similar
     ) {
-      console.log("****READY FOR DISPLAY*****");
-      console.log(
-        "info:",
-        infoDataState.info,
-        "\nalbums:",
-        albumsDataState.albums,
-        "\ntracks:",
-        tracksDataState.tracks,
-        "\nsimilar:",
-        similarDataState.similar
-      );
       setIsLoading(false);
     }
   }, [
@@ -593,13 +582,6 @@ const ArtistDetails = ({ id }) => {
             </button>
           </div>
         </div>
-        {console.log(
-          "[DETAILS CARD]: ",
-          similarDataState.similar?.slice(
-            visibleArtists,
-            visibleArtists + cardsPerSet
-          )
-        )}
         <div className="flex gap-4">
           {similarDataState.similar
             ?.slice(visibleArtists, visibleArtists + cardsPerSet)

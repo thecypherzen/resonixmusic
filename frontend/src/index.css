@@ -215,7 +215,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground w-[100vw] m-0 overflow-x-hidden overflow-y-scroll;
+    @apply bg-background text-foreground w-[100vw] h-screen m-0 overflow-x-hidden overflow-y-scroll;
   }
 }
 
