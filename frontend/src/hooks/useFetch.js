@@ -3,30 +3,19 @@ import { dataCache } from "../utils/cache";
 import { CACHE_DEFAULTS } from "../constants/config";
 import api from "../services/api";
 
-const CURRENT_DATE = "2025-01-23 15:02:45";
-const CURRENT_USER = "gabrielisaacs";
-//fetchFunction,
-//cacheKey,
-//options = {
-//  retries: CACHE_DEFAULTS.max_retries,
-//  delay: CACHE_DEFAULTS.delay,
-//  cacheKeyPrefix: CACHE_DEFAULTS.key_prefix,
-//}
 const fetchDefaults = {
-  albums: {
-    url: "/albums",
+  "/albums": {
     options: { params: { limit: 20 } },
   },
-  artists: {
-    url: "/artists",
+  "/artists": {
     options: { params: { limit: 20 } },
   },
-  playlists: {
-    url: "/playlists",
+  "/artists/info": {},
+  "/artists/tracks": {},
+  "/playlists": {
     options: { params: { limit: 20 } },
   },
-  tracks: {
-    url: "/tracks",
+  "/tracks": {
     options: { params: { limit: 30 } },
   },
 };
@@ -38,32 +27,38 @@ export const useFetch = (options) => {
    *   extras: Record<string, any>
    * }
    */
+  if (!options.url) {
+    throw new Error("Data fetch failed. URL undefined");
+  }
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
 
-  const fullCacheKey = `${CACHE_DEFAULTS.key_prefix}${
-    CACHE_DEFAULTS.keys[options.type]
+  const fullCacheKey = `${CACHE_DEFAULTS.key_prefix}${options.url
+    .trim()
+    .replace(/^\/+|\/+$/g, "")
+    .replace("/", "-")}${
+    options?.params?.id?.length ? `-${options.params.id[0]}` : ""
   }`;
 
   const fetchData = useCallback(async () => {
     let response;
     try {
       // Check cache first
+      console.log("FULL_CACHE_KEY:", fullCacheKey);
       const cachedData = dataCache.get(fullCacheKey);
       if (cachedData) {
         console.log(`Cache hit for ${fullCacheKey}`);
         setData(cachedData);
       }
       // make request
-      const defaults = fetchDefaults[options.type];
-      switch (options.method.toLowerCase()) {
+      const defaults = fetchDefaults[options.url];
+      switch (options?.method?.toLowerCase() || "get") {
         case "get":
-          response = await api.get(defaults.url, {
-            ...defaults.options,
+          response = await api.get(options.url, {
+            ...defaults?.options,
             ...options?.extras,
           });
-          //console.log("\nResponse:", response);
           // handle success
           switch (response.success) {
             case true:

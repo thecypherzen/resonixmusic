@@ -27,7 +27,4 @@ export const CACHE_DEFAULTS = {
   cleanupInterval: 60 * 1000, // 1 minute
   debug: process.env.NODE_ENV === "dev",
   key_prefix: "jamendo_",
-  keys: {
-    artists: "top-artists",
-  },
 };

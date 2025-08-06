@@ -29,7 +29,7 @@ const TrendingTracks = () => {
   const [isLoading, setIsLoading] = useState(true);
   const DEFAULT_THUMBNAIL = "/thumbnail.png";
 
-  const { data, error } = useFetch({ type: "tracks", method: "get" });
+  const { data, error } = useFetch({ url: "/tracks", method: "get" });
 
   useEffect(() => {
     if (data) {

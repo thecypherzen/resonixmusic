@@ -31,7 +31,7 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { data, error } = useFetch({
-    type: "artists",
+    url: "/artists",
     method: "get",
   });
 

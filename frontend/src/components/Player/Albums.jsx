@@ -25,7 +25,7 @@ const Albums = ({ cardsPerSet = 5 }) => {
     window.scrollTo(0, 0);
     navigate(`/album/${album.id}`);
   }, []);
-  const { data, error } = useFetch({ type: "albums", method: "get" });
+  const { data, error } = useFetch({ url: "/albums", method: "get" });
   useEffect(() => {
     if (data) {
       setDataState({ error: null, albums: data.map(transformAlbum) });

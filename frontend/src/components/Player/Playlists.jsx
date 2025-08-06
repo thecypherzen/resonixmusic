@@ -32,7 +32,7 @@ const Playlists = ({ cardsPerSet = 5 }) => {
     navigate(`/playlist/${playlist.id}`);
   }, []);
 
-  const { data, error } = useFetch({ type: "playlists", method: "get" });
+  const { data, error } = useFetch({ url: "/playlists", method: "get" });
 
   useEffect(() => {
     if (data) {
