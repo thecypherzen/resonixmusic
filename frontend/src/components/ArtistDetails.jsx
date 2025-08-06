@@ -15,6 +15,7 @@ import api from "../services/api";
 import { MdErrorOutline } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 import ArtistCard from "./ArtistCard";
+import transform from "../utils/dataTransformers";
 
 const DEFAULT_THUMBNAIL = "/thumbnail.png";
 
@@ -42,10 +43,26 @@ const ArtistDetails = ({ id }) => {
   const player = usePlayer();
 
   const { handleTrackSelect, currentTrack, isPlaying } = player;
-
   const [visibleAlbums, setVisibleAlbums] = useState(0);
   const [visibleArtists, setVisibleArtists] = useState(0);
   const [showMenu, setShowMenu] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [infoDataState, setinfoDataState] = useState({
+    error: null,
+    info: null,
+  });
+  const [tracksDataState, setTracksDataState] = useState({
+    error: null,
+    tracks: null,
+  });
+  const [albumsDataState, setAlbumsDataState] = useState({
+    error: null,
+    albums: null,
+  });
+  const [similarDataState, setSimilarDataState] = useState({
+    error: null,
+    similar: null,
+  });
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [albumImages, setAlbumImages] = useState({});
   const cardsPerSet = 5;
@@ -61,51 +78,154 @@ const ArtistDetails = ({ id }) => {
   };
 
   // Fetch artist data with caching
-  const {
-    data: artist,
-    loading: loadingArtist,
-    error: artistError,
-    retry: retryArtist,
-  } = useFetch(() => api.getArtistDetails(id), `artist-${id}`, [id]);
+  const { data: infoData, error: infoError } = useFetch({
+    url: "/artists/info",
+    extras: {
+      params: {
+        id: [id],
+        format: "jsonpretty",
+      },
+    },
+  });
 
   // Fetch artist's songs
-  const {
-    data: songs,
-    loading: loadingSongs,
-    error: songsError,
-    retry: retrySongs,
-  } = useFetch(() => api.getArtistTracks(id), `artist-tracks-${id}`, [id]);
+  const { data: tracksData, error: tracksError } = useFetch({
+    url: "/artists/tracks",
+    params: {
+      id: [id],
+      audioformat: "mp31",
+    },
+  });
 
   // Fetch artist's albums
-  const {
-    data: albums,
-    loading: loadingAlbums,
-    error: albumsError,
-    retry: retryAlbums,
-  } = useFetch(() => api.getArtistAlbums(id), `artist-albums-${id}`, [id]);
+  const { data: albumsData, error: albumsError } = useFetch({
+    url: "/artists/albums",
+    extras: {
+      params: {
+        id: [id],
+      },
+    },
+  });
 
   // Fetch similar artists
-  const {
-    data: similarArtists,
-    loading: loadingSimilar,
-    error: similarError,
-    retry: retrySimilar,
-  } = useFetch(() => api.getSimilarArtists(id), `similar-artists-${id}`, [id]);
+  const { data: similarData, error: similarError } = useFetch({
+    url: "/artists/",
+    params: {
+      format: "jsonpretty",
+      limit: 15,
+      order: "popularity_total",
+    },
+  });
 
+  /**
+   * @hook
+   * Update artist info when it's received
+   */
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [id]);
+    if (infoData) {
+      setinfoDataState({ error: null, info: transform.artists(infoData)[0] });
+    } else if (infoError) {
+      console.error("artistInfoErrro:", tracksError);
+      setinfoDataState({ error: infoError, info: null });
+    }
+  }, [infoData, infoError]);
 
+  /**
+   * @hook
+   * Set artists tracks when ready
+   */
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setShowMenu(false);
-      }
-    };
+    if (!infoDataState.info) return;
+    const name = infoDataState.info.name;
+    if (tracksData) {
+      //console.log("setting tracks data for", infoDataState.info.name);
+      setTracksDataState({
+        error: null,
+        tracks: transform.tracks(tracksData, name),
+      });
+    } else if (tracksError) {
+      setTracksDataState({ error: tracksError, tracks: null });
+      console.error("tracksError:", tracksError);
+    }
+  }, [tracksData, tracksError, infoDataState.info]);
 
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
+  /**
+   * @hook
+   * Set artist's albums, if any when reeady
+   */
+  useEffect(() => {
+    if (!infoDataState.info) return;
+    const name = infoDataState.info.name;
+    if (albumsData) {
+      //console.log("setting albums data for", infoDataState.info.name);
+      setAlbumsDataState({
+        error: null,
+        albums: transform.albums(albumsData[0]?.albums ?? [], name),
+      });
+    } else if (albumsError) {
+      console.error("albumsError:", tracksError);
+      setAlbumsDataState({ error: albumsError, albums: null });
+    }
+  }, [albumsData, albumsError, infoDataState.info]);
+
+  /**
+   * @hook
+   * Seet artist similar data
+   */
+  useEffect(() => {
+    if (similarData) {
+      //console.log("setting similar data:", similarData);
+      setSimilarDataState({
+        error: null,
+        similar: transform.artists(similarData),
+      });
+    } else if (similarError) {
+      console.error("similarError", tracksError);
+      setSimilarDataState({ error: similarError });
+    }
+  }, [similarData, similarError]);
+
+  /** */
+  useEffect(() => {
+    if (
+      infoDataState.info &&
+      albumsDataState.albums &&
+      tracksDataState.tracks &&
+      similarDataState.similar
+    ) {
+      console.log("****READY FOR DISPLAY*****");
+      console.log(
+        "info:",
+        infoDataState.info,
+        "\nalbums:",
+        albumsDataState.albums,
+        "\ntracks:",
+        tracksDataState.tracks,
+        "\nsimilar:",
+        similarDataState.similar
+      );
+      setIsLoading(false);
+    }
+  }, [
+    infoDataState.info,
+    albumsDataState.albums,
+    tracksDataState.tracks,
+    similarDataState.similar,
+  ]);
+  //useEffect(() => {
+  //  window.scrollTo(0, 0);
+  //}, [id]);
+
+  //useEffect(() => {
+  //  const handleClickOutside = (event) => {
+  //    if (menuRef.current && !menuRef.current.contains(event.target)) {
+  //      setShowMenu(false);
+  //    }
+  //  };
+
+  //  document.addEventListener("click", handleClickOutside);
+  //  return () => document.removeEventListener("click", handleClickOutside);
+  //}, []);
 
   const getRandomImageForAlbum = async (albumId) => {
     if (albumImages[albumId]) return albumImages[albumId];
@@ -120,20 +240,20 @@ const ArtistDetails = ({ id }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchRandomImages = async () => {
-      if (!albums) return;
+  //useEffect(() => {
+  //  const fetchRandomImages = async () => {
+  //    if (!albums) return;
 
-      const albumsWithoutImages = albums.filter((album) => !album.image);
-      const imagePromises = albumsWithoutImages.map((album) =>
-        getRandomImageForAlbum(album.id)
-      );
+  //    const albumsWithoutImages = albums.filter((album) => !album.image);
+  //    const imagePromises = albumsWithoutImages.map((album) =>
+  //      getRandomImageForAlbum(album.id)
+  //    );
 
-      await Promise.all(imagePromises);
-    };
+  //    await Promise.all(imagePromises);
+  //  };
 
-    fetchRandomImages();
-  }, [albums]);
+  //  fetchRandomImages();
+  //}, [albums]);
 
   const handleMenuToggle = (e) => {
     e.stopPropagation();
@@ -195,10 +315,7 @@ const ArtistDetails = ({ id }) => {
       .trim();
   };
 
-  if (loadingArtist) return <LoadingState />;
-  if (artistError)
-    return <ErrorMessage message={artistError} onRetry={retryArtist} />;
-  if (!artist) return <div>Artist not found</div>;
+  if (isLoading) return <LoadingState />;
 
   return (
     <div className="flex-1 overflow-hidden w-full">
@@ -207,8 +324,8 @@ const ArtistDetails = ({ id }) => {
         {/* Background Image and Gradient */}
         <div className="absolute top-0 left-0 w-full h-[28rem]">
           <img
-            src={artist.image}
-            alt={artist.name}
+            src={infoDataState.info.image}
+            alt={infoDataState.info.name}
             className="w-full h-full object-cover opacity-15"
           />
           <div className="absolute bottom-0 w-full bg-gradient-to-b from-transparent via-[#121212] to-[#121212] h-[15rem]" />
@@ -217,7 +334,9 @@ const ArtistDetails = ({ id }) => {
         {/* Content Container*/}
         <div className="relative z-10 px-16 pt-[7rem]">
           <div className="pt-8">
-            <h1 className="text-7xl font-bold mb-6">{artist.name}</h1>
+            <h1 className="text-7xl font-bold mb-6">
+              {infoDataState.info.name}
+            </h1>
           </div>
 
           {/* Description Container*/}
@@ -229,14 +348,14 @@ const ArtistDetails = ({ id }) => {
             }`}
           >
             {/* Description Section */}
-            {artist.musicinfo?.description?.en && (
+            {infoDataState.info.musicinfo?.description?.en && (
               <div className="mb-6">
                 <div
                   className={`text-md text-white max-w-[40rem] ${
                     showFullDescription ? "" : "line-clamp-2"
                   }`}
                 >
-                  {stripHtmlTags(artist.musicinfo.description.en)}
+                  {stripHtmlTags(infoDataState.info.musicinfo.description.en)}
                 </div>
                 <button
                   onClick={() => setShowFullDescription(!showFullDescription)}
@@ -253,18 +372,19 @@ const ArtistDetails = ({ id }) => {
                 showFullDescription ? "-translate-y-4" : "translate-y-0"
               }`}
             >
-              {artist.musicinfo?.tags && artist.musicinfo.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {artist.musicinfo.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="px-4 py-1 bg-neutral-800 rounded-full text-sm text-neutral-300"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
+              {infoDataState.info.musicinfo?.tags &&
+                infoDataState.info.musicinfo.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {infoDataState.info.musicinfo.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="px-4 py-1 bg-neutral-800 rounded-full text-sm text-neutral-300"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
               {/* Action Buttons */}
               <div className="flex items-center gap-8 mb-8">
@@ -292,11 +412,11 @@ const ArtistDetails = ({ id }) => {
 
                   {showMenu && (
                     <div className="absolute left-0 mt-2 w-48 bg-[#282828] rounded-lg shadow-xl border border-neutral-600 z-50">
-                      {artist.website && (
+                      {infoDataState.info.website && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.open(artist.website, "_blank");
+                            window.open(infoDataState.info.website, "_blank");
                             setShowMenu(false);
                           }}
                           className="bg-transparent w-full text-left px-4 py-3 hover:bg-white/10 rounded-none"
@@ -308,7 +428,7 @@ const ArtistDetails = ({ id }) => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.open(artist.shareurl, "_blank");
+                            window.open(infoDataState.info.shareurl, "_blank");
                             setShowMenu(false);
                           }}
                           className="bg-transparent w-full text-left px-4 py-3 hover:bg-white/10 rounded-none"
@@ -328,23 +448,9 @@ const ArtistDetails = ({ id }) => {
       {/* Songs Section */}
       <div className="px-16 py-6">
         <h2 className="text-2xl font-bold mb-4">Songs</h2>
-        {loadingSongs ? (
-          <div className="animate-pulse grid grid-cols-3 gap-2">
-            {[...Array(12)].map((_, i) => (
-              <div key={i} className="flex gap-3 p-2">
-                <div className="h-12 w-12 bg-neutral-800 rounded-lg"></div>
-                <div className="flex-1">
-                  <div className="h-4 w-3/4 bg-neutral-800 rounded mb-2"></div>
-                  <div className="h-3 w-1/2 bg-neutral-800 rounded"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : songsError ? (
-          <ErrorMessage message={songsError} onRetry={retrySongs} />
-        ) : songs?.length > 0 ? (
+        {tracksDataState.tracks?.length ? (
           <div className="grid grid-cols-3 gap-2">
-            {songs.map((song, index) => (
+            {tracksDataState.tracks.map((song, index) => (
               <button
                 key={song.id}
                 onClick={() => handlePlayTrack(song, index)}
@@ -391,7 +497,7 @@ const ArtistDetails = ({ id }) => {
             ))}
           </div>
         ) : (
-          <p className="text-neutral-400">No songs found</p>
+          <p className="text-neutral-400"> Artist has no songs </p>
         )}
       </div>
 
@@ -399,7 +505,7 @@ const ArtistDetails = ({ id }) => {
       <div className="px-16 py-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold">Albums</h2>
-          {albums?.length > cardsPerSet && (
+          {albumsDataState.albums?.length && (
             <div className="flex gap-2">
               <button
                 onClick={() => handlePrevious(setVisibleAlbums, visibleAlbums)}
@@ -418,18 +524,7 @@ const ArtistDetails = ({ id }) => {
             </div>
           )}
         </div>
-        {loadingAlbums ? (
-          <div className="flex gap-4">
-            {[...Array(cardsPerSet)].map((_, i) => (
-              <div
-                key={i}
-                className="animate-pulse w-[11.45rem] h-[15rem] bg-neutral-800 rounded-xl"
-              />
-            ))}
-          </div>
-        ) : albumsError ? (
-          <ErrorMessage message={albumsError} onRetry={retryAlbums} />
-        ) : albums?.length > 0 ? (
+        {albumsDataState.albumslength > 0 ? (
           <div className="flex gap-4">
             {albums
               .slice(visibleAlbums, visibleAlbums + cardsPerSet)
@@ -469,7 +564,7 @@ const ArtistDetails = ({ id }) => {
               ))}
           </div>
         ) : (
-          <p className="text-neutral-400">No albums found</p>
+          <p className="text-neutral-400">Artist has no albums</p>
         )}
       </div>
 
@@ -499,7 +594,7 @@ const ArtistDetails = ({ id }) => {
           </div>
         </div>
         <div className="flex gap-4">
-          {similarArtists
+          {similarDataState.similar
             ?.slice(visibleArtists, visibleArtists + cardsPerSet)
             .map((artist) => (
               <ArtistCard

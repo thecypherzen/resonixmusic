@@ -349,78 +349,66 @@ const getPlaylistDetails = async (playlistId) => {
   }
 };
 
-const getArtistDetails = async (artistId) => {
-  try {
-    console.log("Fetching artist details for:", artistId);
-    const response = await api.get("/artists/info", {
-      params: {
-        id: [artistId],
-        format: "jsonpretty",
-      },
-    });
+//const getArtistDetails = async (artistId) => {
+//  try {
+//    console.log("Fetching artist details for:", artistId);
+//    const response = await api.get("/artists/info", {
+//      params: {
+//        id: [artistId],
+//        format: "jsonpretty",
+//      },
+//    });
 
-    if (response.data?.results?.[0]) {
-      const artistData = response.data.results[0];
-      return {
-        data: {
-          id: artistData.id,
-          name: artistData.name,
-          website: artistData.website,
-          joindate: artistData.joindate,
-          image:
-            artistData.image ||
-            `https://usercontent.jamendo.com?type=artist&id=${artistData.id}&width=500`,
-          shorturl: artistData.shorturl,
-          shareurl: artistData.shareurl,
-          musicinfo: {
-            tags: artistData.musicinfo?.tags || [],
-            description: artistData.musicinfo?.description || {},
-          },
-        },
-      };
-    }
-    throw new Error("Artist not found");
-  } catch (error) {
-    console.error("Error fetching artist details:", error);
-    throw error;
-  }
-};
+//    if (response.data?.results?.[0]) {
+//      const artistData = response.data.results[0];
+//      return {
+//        data: {
+//          id: artistData.id,
+//          name: artistData.name,
+//          website: artistData.website,
+//          joindate: artistData.joindate,
+//          image:
+//            artistData.image ||
+//            `https://usercontent.jamendo.com?type=artist&id=${artistData.id}&width=500`,
+//          shorturl: artistData.shorturl,
+//          shareurl: artistData.shareurl,
+//          musicinfo: {
+//            tags: artistData.musicinfo?.tags || [],
+//            description: artistData.musicinfo?.description || {},
+//          },
+//        },
+//      };
+//    }
+//    throw new Error("Artist not found");
+//  } catch (error) {
+//    console.error("Error fetching artist details:", error);
+//    throw error;
+//  }
+//};
 
-const getArtistTracks = async (artistId) => {
-  try {
-    console.log("Fetching artist tracks for:", artistId);
-    const response = await api.get("/artists/tracks", {
-      params: {
-        id: [artistId],
-        audioformat: "mp31",
-      },
-    });
+//const getArtistTracks = async (artistId) => {
+//  try {
+//    console.log("Fetching artist tracks for:", artistId);
+//    const response = await api.get("/artists/tracks", {
+//      params: {
+//        id: [artistId],
+//        audioformat: "mp31",
+//      },
+//    });
 
-    if (response.data?.results?.[0]?.tracks) {
-      // Access the tracks array from the nested structure
-      const tracks = response.data.results[0].tracks;
-      return {
-        data: tracks.map((track) => ({
-          id: track.id,
-          title: track.name,
-          artist: response.data.results[0].name,
-          thumbnail: track.image || track.album_image,
-          url: track.audio,
-          stream_url: track.audio,
-          duration: parseInt(track.duration || 0),
-          likes: `${Math.floor(Math.random() * 100)}k`,
-          album_name: track.album_name,
-          album_id: track.album_id,
-          releasedate: track.releasedate,
-        })),
-      };
-    }
-    throw new Error("No tracks found");
-  } catch (error) {
-    console.error("Error fetching artist tracks:", error);
-    throw error;
-  }
-};
+//    if (response.data?.results?.[0]?.tracks) {
+//      // Access the tracks array from the nested structure
+//      const tracks = response.data.results[0].tracks;
+//      return {
+//        data: {},
+//      };
+//    }
+//    throw new Error("No tracks found");
+//  } catch (error) {
+//    console.error("Error fetching artist tracks:", error);
+//    throw error;
+//  }
+//};
 
 const getArtistAlbums = async (artistId) => {
   try {
@@ -490,8 +478,6 @@ export {
   getAlbumDetails,
   getPlaylistDetails,
   getRecentTracks,
-  getArtistDetails,
-  getArtistTracks,
   getArtistAlbums,
   getSimilarArtists,
 };

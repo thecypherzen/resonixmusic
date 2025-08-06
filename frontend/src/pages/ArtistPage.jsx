@@ -1,39 +1,22 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import SideBar from '../components/SideBar';
-import TopNav from '../components/TopNav';
-import BottomPlayer from '../components/BottomPlayer';
-import ArtistDetails from '../components/ArtistDetails';
-
-const CURRENT_DATE = '2025-01-23 14:11:28';
-const CURRENT_USER = 'gabrielisaacs';
+import React from "react";
+import { useParams } from "react-router-dom";
+import TopNav from "../components/TopNav";
+import BottomPlayer from "../components/BottomPlayer";
+import ArtistDetails from "../components/ArtistDetails";
 
 const ArtistPage = () => {
   const { id } = useParams();
-
+  console.log("USERID:", id);
   return (
     <div className="flex min-h-screen w-screen bg-[#121212]">
-      {/* Sidebar */}
-      <div className="fixed left-0 top-0 h-[calc(100vh-90px)] w-[14rem] z-30">
-        <SideBar />
+      {/* Artist Content */}
+      <div className="mt-[4rem] pb-[90px] relative">
+        <ArtistDetails id={id} />
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 ml-[14rem]">
-        {/* Top Navigation */}
-        <div className="fixed top-0 right-0 left-[14rem] h-[4rem] z-20 bg-[#121212]">
-          <TopNav />
-        </div>
-
-        {/* Artist Content */}
-        <div className="mt-[4rem] pb-[90px] relative">
-          <ArtistDetails id={id} />
-        </div>
-
-        {/* Bottom Player */}
-        <div className="fixed bottom-0 left-0 right-0 h-[90px] z-50">
-          <BottomPlayer />
-        </div>
+      {/* Bottom Player */}
+      <div className="fixed bottom-0 left-0 right-0 h-[90px] z-50">
+        <BottomPlayer />
       </div>
     </div>
   );
