@@ -7,17 +7,7 @@ import { useTheme } from "../../hooks/useTheme";
 import HeadingText from "../HeadingText";
 import ActionButton from "./ActionButton";
 import { useNavigate } from "react-router-dom";
-
-const transformArtists = (artist) => ({
-  id: artist.id,
-  name: artist.name,
-  joinDate: artist.joindate || "Unknown",
-  image:
-    artist.image && artist.image.trim() !== ""
-      ? artist.image
-      : `https://usercontent.jamendo.com?type=artist&id=${artist.id}&width=300`,
-  followerCount: artist.sharecount || 0,
-});
+import transform from "../../utils/dataTransformers";
 
 /**
  * @function PopularArtists
@@ -37,7 +27,7 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
 
   useEffect(() => {
     if (data) {
-      setDataState({ error: null, artists: data.map(transformArtists) });
+      setDataState({ error: null, artists: transform.artists(data) });
       setIsLoading(false);
     } else if (error) {
       setDataState({

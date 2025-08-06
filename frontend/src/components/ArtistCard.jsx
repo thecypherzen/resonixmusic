@@ -1,6 +1,7 @@
 import { FaPlay } from "react-icons/fa";
 
 const ArtistCard = ({ artist, onClick }) => {
+  console.log("[ARTIST CARD ARTIST:", artist);
   return (
     <button
       onClick={() => onClick(artist)}
@@ -26,7 +27,7 @@ const ArtistCard = ({ artist, onClick }) => {
         <p className="font-bold text-sm text-neutral-400">
           {" "}
           <span>Since &nbsp;</span>
-          <span>{artist.joinDate.split("-")[0]}</span>
+          <span>{artist.joindate.split("-")[0]}</span>
         </p>
       </div>
     </button>

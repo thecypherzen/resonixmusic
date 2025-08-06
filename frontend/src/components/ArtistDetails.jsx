@@ -593,6 +593,13 @@ const ArtistDetails = ({ id }) => {
             </button>
           </div>
         </div>
+        {console.log(
+          "[DETAILS CARD]: ",
+          similarDataState.similar?.slice(
+            visibleArtists,
+            visibleArtists + cardsPerSet
+          )
+        )}
         <div className="flex gap-4">
           {similarDataState.similar
             ?.slice(visibleArtists, visibleArtists + cardsPerSet)
