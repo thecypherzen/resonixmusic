@@ -14,8 +14,6 @@ export class Cache {
   }
 
   set(key, value) {
-    this.log(`Setting cache for key: ${key}`);
-
     // Implement LRU by removing oldest entry if cache is full
     if (this.cache.size >= this.maxSize) {
       const oldestKey = this.cache.keys().next().value;

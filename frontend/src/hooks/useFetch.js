@@ -19,21 +19,12 @@ const fetchDefaults = {
     options: { params: { limit: 30 } },
   },
 };
-export const useFetch = (options) => {
-  /**
-   * Options signature
-   * { type: artists | tracks |,
-   *   method: "get" | "post", | "put" | "delete" | "head",
-   *   extras: Record<string, any>
-   * }
-   */
-  if (!options.url) {
-    throw new Error("Data fetch failed. URL undefined");
-  }
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-  const [retryCount, setRetryCount] = useState(0);
 
+const fetchData = async (options) => {
+  if (!options.url) {
+    throw { message: "Data fetch failed. URL undefined" };
+  }
+  // get proper cache key
   const fullCacheKey = `${CACHE_DEFAULTS.key_prefix}${options.url
     .trim()
     .replace(/^\/+|\/+$/g, "")
@@ -41,61 +32,80 @@ export const useFetch = (options) => {
     options?.params?.id?.length ? `-${options.params.id[0]}` : ""
   }`;
 
-  const fetchData = useCallback(async () => {
-    let response;
-    try {
-      // Check cache first
-      const cachedData = dataCache.get(fullCacheKey);
-      if (cachedData) {
-        console.log(`Cache hit for ${fullCacheKey}`);
-        setData(cachedData);
-      }
-      // make request
-      const defaults = fetchDefaults[options.url];
-      switch (options?.method?.toLowerCase() || "get") {
-        case "get":
-          response = await api.get(options.url, {
-            ...defaults?.options,
-            ...options?.extras,
-          });
-          // handle success
-          switch (response.success) {
-            case true:
-              setData(response.data);
-              // Cache the successful response
-              dataCache.set(fullCacheKey, response.data);
-              break;
-            default:
-              let reason,
-                message = "Try again later";
-              switch (response.data?.errno) {
-                case 1:
-                case 3:
-                  reason = "An error on our part";
-                  break;
-                case 2:
-                  reason = "A network Error";
-                  message = "Check your connection or try again later";
-                  break;
-                default:
-                  reason = "An unknown Error";
-              }
-              setError({ ...response.data, reason, message });
-          }
-          break;
-        default:
-          console.log("\nANOTHER REQUEST TYPE", options);
-          break;
-      }
-    } catch (err) {
-      console.error(`Fetch Failed`, err);
+  // default response values
+  let response;
+
+  // function main
+  try {
+    // Check cache first
+    const cachedData = dataCache.get(fullCacheKey);
+    if (cachedData) {
+      return cachedData;
     }
-  }, []);
+    // make request
+    const defaults = fetchDefaults[options.url];
+    switch (options?.method?.toLowerCase() || "get") {
+      case "get":
+        response = await api.get(options.url, {
+          ...defaults?.options,
+          ...options?.extras,
+        });
+        // handle success
+        switch (response.success) {
+          case true:
+            // Cache the successful response
+            dataCache.set(fullCacheKey, response.data);
+            return response.data;
+          default:
+            let reason,
+              message = "Try again later";
+            switch (response.data?.errno) {
+              case 1:
+              case 3:
+                reason = "An error on our part";
+                break;
+              case 2:
+                reason = "A network Error";
+                message = "Check your connection or try again later";
+                break;
+              default:
+                reason = "An unknown Error";
+            }
+            error = { ...response.data, reason, message };
+            throw error;
+        }
+      default:
+        // other request type
+        console.log("\nANOTHER REQUEST TYPE", options);
+        return [];
+    }
+  } catch (err) {
+    throw { reason: "Unknown", ...err };
+  }
+};
 
-  // fetchData is called when the component mounts
+export const useFetch = (options) => {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  /**
+   * Options signature
+   * { type: artists | tracks |,
+   *   method: "get" | "post", | "put" | "delete" | "head",
+   *   extras: Record<string, any>
+   * }
+   */
   useEffect(() => {
-    fetchData();
+    if (!options.url) {
+      setError({ message: "Data fetch failed. URL undefined" });
+      return;
+    }
+    fetchData(options)
+      .then((res) => {
+        setData(res);
+      })
+      .catch((err) => {
+        setError(err);
+      });
   }, []);
-
   return { data, error };
 };

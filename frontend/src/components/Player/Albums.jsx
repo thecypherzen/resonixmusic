@@ -8,12 +8,13 @@ import HeadingText from "../HeadingText";
 import { useTheme } from "../../hooks/useTheme";
 import MusicCard from "../MusicCard";
 
-const transformAlbum = (album) => ({
+const transformAlbums = (album) => ({
   id: album.id,
   title: album.name || album.title,
   artist: album.user_name || album.artist_name,
   thumbnail: album.image || album.thumbnail || DEFAULT_THUMBNAIL,
   trackCount: album.tracks_count || 0,
+  releasedate: album.releasedate,
 });
 
 const Albums = ({ cardsPerSet = 5 }) => {
@@ -28,7 +29,7 @@ const Albums = ({ cardsPerSet = 5 }) => {
   const { data, error } = useFetch({ url: "/albums", method: "get" });
   useEffect(() => {
     if (data) {
-      setDataState({ error: null, albums: data.map(transformAlbum) });
+      setDataState({ error: null, albums: data.map(transformAlbums) });
       setIsLoading(false);
     } else if (error) {
       setDataState({ error, albums: null });

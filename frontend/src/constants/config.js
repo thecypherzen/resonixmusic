@@ -22,9 +22,9 @@ export const API_DEFAULTS = {
 
 export const CACHE_DEFAULTS = {
   ...API_DEFAULTS,
-  ttl: 5 * 60 * 1000, // 5 minutes default TTL,
+  ttl: 10 * 60 * 1000, // 10 minutes default TTL,
   maxSize: 100, // Maximum number of items in cache
   cleanupInterval: 60 * 1000, // 1 minute
-  debug: process.env.NODE_ENV === "dev",
+  debug: import.meta.env.VITE_ENV === "dev",
   key_prefix: "jamendo_",
 };

@@ -15,6 +15,11 @@ const transformTracks = (track) => ({
   url: track.audio || track.url,
   duration: track.duration,
   likes: `${Math.floor((track.listened || 0) / 1000)}k Plays`,
+  album_name: track.album_name,
+  album_id: track.album_id,
+  releasedate: track.releasedate,
+  downloadable: track.autodownload_allowed,
+  download_url: track.audiodownload || "",
 });
 
 /**
@@ -60,11 +65,12 @@ const TrendingTracks = () => {
             <button
               key={song.id}
               //onClick={() => handlePlaySong(song, index + visibleTrending)}
-              className="w-95/100 mx-auto flex bg-transparent hover:bg-gradient-to-r from-neutral-800 to-neutral-900 active:bg-gradient-to-r from-neutral-800 to-neutral-900 px-2 py-4 rounded-xl gap-4 group text-left transition-all"
+              className="w-95/100 mx-auto flex bg-transparent hover:bg-gradient-to-r from-neutral-800 to-neutral-900 active:bg-gradient-to-r  px-2 py-4 rounded-xl gap-4 group text-left transition-all"
             >
-              <div className="w-1/5 relative">
+              {/* Image */}
+              <div className="relative">
                 <div
-                  className="flex size-[62px] aspect-ratio-square bg-cover bg-center bg-no-repeat overflow-hidden rounded-lg"
+                  className="flex size-[62px] aspect-square bg-cover bg-center bg-no-repeat overflow-hidden rounded-lg"
                   style={{
                     backgroundImage: `url(${song.thumbnail})`,
                   }}
@@ -73,6 +79,7 @@ const TrendingTracks = () => {
                   <FaPlay className="fill-white drop-shadow-lg" />
                 </div>
               </div>
+              {/* Track details */}
               <div className="flex flex-col w-4/5">
                 <p className="text-base w-9/10 truncate text-ellipsis">
                   {song.title}

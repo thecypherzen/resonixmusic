@@ -3,10 +3,10 @@ import SectionSkeleton from "./SectionSkeleton";
 import helpers from "../../utils/utilityFunctions";
 import { useFetch } from "../../hooks/useFetch";
 import PlaylistCard from "../PlaylistCard";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useCallback, useEffect, useState } from "react";
 import HeadingText from "../HeadingText";
 import ActionButton from "./ActionButton";
+import SectionErrorDisplay from "./SectionErrorDisplay";
 
 const transformPlaylists = (playlist) => {
   return {
