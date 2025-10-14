@@ -9,23 +9,16 @@ import {
   tracksRouter,
   usersRouter,
 } from "./routes/index.js";
-import { config } from "dotenv";
-
-// Load env variables
-const conf = config();
-if (!conf) {
-  console.error("ENV vars failed to load");
-} else {
-  console.log("ENV Vars loaded successfully");
-}
+import { RXBE_PORT, RXFE_PORT } from "./defaults/index.js";
 const app = express();
-const PORT = process.env.RXBE_PORT || 5001;
+const PORT = RXBE_PORT;
+const FE_PORT = RXFE_PORT;
 
 // CORS Configuration
 const corsOptions = {
   origin: [
     "http://localhost:5173",
-    "http://localhost:8082",
+    `http://localhost:${FE_PORT}`,
     "https://resonix.vercel.app",
   ],
   credentials: true,

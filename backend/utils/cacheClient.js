@@ -1,15 +1,13 @@
-import { createClient } from 'redis';
+import { createClient } from "redis";
 import {
   CACHE_EXP_SECS,
   RXCACHE_PORT as cachePort,
-} from '../defaults/index.js';
-import {
-  RequestClientError,
-} from '../utils/requestClient.js';
+} from "../defaults/index.js";
+import { RequestClientError } from "../utils/requestClient.js";
 
 class CacheClient {
-  #name = 'CacheClient';
-  
+  #name = "CacheClient";
+
   constructor() {
     this.client = null;
     this.isReady = false;
@@ -20,49 +18,47 @@ class CacheClient {
     this.disabled = false;
 
     // Initialize Redis client with configuration
-    try {
-      this.initializeClient();
-    } catch (error) {
-      console.error('Failed to initialize Redis client:', error);
-      this.disabled = true;
-    }
+    this.initializeClient();
   }
 
   initializeClient() {
     const config = {
       socket: {
-        host: 'localhost',
+        host: "localhost",
         port: cachePort,
         reconnectStrategy: (retries) => {
           if (retries > this.maxRetries) {
-            console.log('Max reconnection attempts reached. Disabling Redis.');
+            console.log("Max reconnection attempts reached. Disabling Redis.");
             this.disabled = true;
             return false;
           }
           return this.retryInterval;
-        }
-      }
+        },
+      },
     };
 
     this.clientEngine = createClient(config)
-      .on('error', (err) => {
+      .on("error", (err) => {
         if (!this.disabled) {
-          console.error(`${this.name} encountered an error:`, err.message);
+          console.error(
+            `${this.name} encountered an error:`,
+            err?.message ?? err
+          );
         }
       })
-      .on('ready', () => {
+      .on("ready", () => {
         this.isReady = true;
         this.retryCount = 0;
         console.log(`${this.name} is ready using port ${cachePort}`);
       })
-      .on('end', () => {
+      .on("end", () => {
         this.isReady = false;
         console.log(`${this.name} connection ended`);
       });
 
     // Initial connection attempt
-    this.connect().catch(err => {
-      console.warn('Initial Redis connection failed:', err.message);
+    this.connect().catch((err) => {
+      console.warn("Initial Redis connection failed:", err.message);
       this.disabled = true;
     });
   }
@@ -82,11 +78,15 @@ class CacheClient {
       this.connecting = false;
       if (this.retryCount >= this.maxRetries) {
         this.disabled = true;
-        console.log('Redis connection failed permanently. Running without cache.');
+        console.log(
+          "Redis connection failed permanently. Running without cache."
+        );
         return;
       }
       this.retryCount++;
-      console.log(`Redis connection attempt ${this.retryCount}/${this.maxRetries} failed.`);
+      console.log(
+        `Redis connection attempt ${this.retryCount}/${this.maxRetries} failed.`
+      );
     }
   }
 
@@ -109,13 +109,13 @@ class CacheClient {
     try {
       return await operation();
     } catch (error) {
-      console.error('Cache operation failed:', error.message);
+      console.error("Cache operation failed:", error.message);
       return null;
     }
   }
 
   // Redis operations with safe handling
-  async get(key, buffers = true, format = 'binary') {
+  async get(key, buffers = true, format = "binary") {
     return this.safeOperation(async () => {
       const data = await this.client.get(key);
       if (buffers && data) {
@@ -133,7 +133,7 @@ class CacheClient {
 
   async del(...keys) {
     return this.safeOperation(async () => {
-      const promises = keys.map(key => this.client.del(key));
+      const promises = keys.map((key) => this.client.del(key));
       await Promise.all(promises);
       return true;
     });
@@ -164,7 +164,7 @@ class CacheClient {
 
   async hSetMany(hash, obj, ex = CACHE_EXP_SECS) {
     return this.safeOperation(async () => {
-      const promises = Object.entries(obj).map(([field, value]) => 
+      const promises = Object.entries(obj).map(([field, value]) =>
         this.client.hSet(hash, field, value)
       );
       await Promise.all(promises);
@@ -189,7 +189,7 @@ class CacheClient {
 }
 
 class CacheClientError extends RequestClientError {
-  #name = 'CacheClientError';
+  #name = "CacheClientError";
   constructor(message, { errno = null, code = null, stack = null }) {
     super(message, { errno, code, stack });
   }
@@ -211,7 +211,7 @@ function cacheClientReady(client) {
 
     let attempts = 0;
     const maxAttempts = 5;
-    
+
     const check = setInterval(() => {
       attempts++;
       if (client.isReady) {
@@ -228,8 +228,4 @@ function cacheClientReady(client) {
 // Create singleton instance
 const cacheClient = new CacheClient();
 
-export {
-  cacheClient,
-  CacheClientError,
-  cacheClientReady
-};
+export { cacheClient, CacheClientError, cacheClientReady };

@@ -1,16 +1,16 @@
-import { Router, json } from 'express';
-import { param, query } from 'express-validator';
+import { Router, json } from "express";
+import { param, query } from "express-validator";
 import {
   downloadAlbums,
   getAlbums,
   getAlbumsInfo,
   getAlbumsTracks,
-} from '../controllers/index.js';
+} from "../controllers/index.js";
 import {
   MAX_PAGE_SIZE,
   MIN_PAGE_SIZE,
-  RESPONSE_CODES as resCodes
-} from '../defaults/index.js';
+  RESPONSE_CODES as resCodes,
+} from "../defaults/index.js";
 
 const router = Router();
 router.use(json());
@@ -141,108 +141,121 @@ router.use(json());
  *         description: some error in request parameters or path
  */
 router.get(
-  ['/'],
+  ["/"],
   [
-    query('page_size')
+    query("page_size")
       .trim()
       .default(`${MIN_PAGE_SIZE}`)
       .notEmpty()
-      .withMessage('Value cannot be empty')
-      .isInt({min: MIN_PAGE_SIZE, max: MAX_PAGE_SIZE})
-      .withMessage(`Expects an integer from ${MIN_PAGE_SIZE}`
-                  + ` to ${MAX_PAGE_SIZE}`)
+      .withMessage("Value cannot be empty")
+      .isInt({ min: MIN_PAGE_SIZE, max: MAX_PAGE_SIZE })
+      .withMessage(
+        `Expects an integer from ${MIN_PAGE_SIZE}` + ` to ${MAX_PAGE_SIZE}`
+      )
       .escape(),
-    query('page')
-      .default('1')
+    query("page")
+      .default("1")
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isInt({ min: 1 })
-      .withMessage('Expects an integer > 0')
+      .withMessage("Expects an integer > 0")
       .escape(),
-    query('format')
+    query("format")
       .optional()
       .trim()
       .notEmpty()
-      .isIn(['json', 'jsonpretty'])
-      .withMessage('Expects json or jsonpretty')
+      .isIn(["json", "jsonpretty"])
+      .withMessage("Expects json or jsonpretty")
       .escape(),
-    query(['artist_id', 'id', 'order_by'])
+    query(["artist_id", "id", "order_by"])
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isArray()
-      .withMessage('Expects an array')
+      .withMessage("Expects an array")
       .escape(),
-    query('order_by.*')
+    query("order_by.*")
       .trim()
       .notEmpty()
-      .withMessage('Values of order_by cannot be empty')
+      .withMessage("Values of order_by cannot be empty")
       .isIn([
-        'name', 'name_asc', 'name_desc',
-        'id', 'id_asc', 'id_desc',
-        'releasedate', 'releasedate_asc', 'releasedate_desc',
-        'artist_id', 'artist_id_asc', 'artist_id_desc',
-        'artist_name', 'artist_name_asc', 'artist_name_desc',
-        'popularity_total', 'popularity_total_asc',
-        'popularity_total_desc', 'popularity_month',
-        'popularity_month_asc', 'popularity_month_desc',
-        'popularity_week', 'popularity_week_asc',
-        'popularity_week_desc'
+        "name",
+        "name_asc",
+        "name_desc",
+        "id",
+        "id_asc",
+        "id_desc",
+        "releasedate",
+        "releasedate_asc",
+        "releasedate_desc",
+        "artist_id",
+        "artist_id_asc",
+        "artist_id_desc",
+        "artist_name",
+        "artist_name_asc",
+        "artist_name_desc",
+        "popularity_total",
+        "popularity_total_asc",
+        "popularity_total_desc",
+        "popularity_month",
+        "popularity_month_asc",
+        "popularity_month_desc",
+        "popularity_week",
+        "popularity_week_asc",
+        "popularity_week_desc",
       ])
-      .withMessage('Invalid value of order_by. Check docs and fix.')
+      .withMessage("Invalid value of order_by. Check docs and fix.")
       .escape(),
-    query('full_count')
+    query("full_count")
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .toBoolean()
       .isBoolean({ strict: true })
-      .withMessage('Expects boolean: true or false')
+      .withMessage("Expects boolean: true or false")
       .escape(),
-    query('id.*')
+    query("id.*")
       .trim()
       .notEmpty()
-      .withMessage('Values of id cannot be empty')
+      .withMessage("Values of id cannot be empty")
       .isInt({ min: 1 })
-      .withMessage('Expects an integer > 0')
+      .withMessage("Expects an integer > 0")
       .escape(),
-    query('artist_id.*')
+    query("artist_id.*")
       .trim()
       .notEmpty()
-      .withMessage('Values of artist_id cannot be empty')
+      .withMessage("Values of artist_id cannot be empty")
       .escape(),
-    query([
-      'artist_name', 'audio_format', 'name',
-      'date_between', 'image_size'
-    ])
+    query(["artist_name", "audio_format", "name", "date_between", "image_size"])
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .escape(),
-    query('date_between')
+    query("date_between")
       .optional()
       .matches(
-        /^([0-9]{4})-([0-9]{2})-([0-9]{2})_([0-9]{4})-([0-9]{2})-([0-9]{2})$/)
-      .withMessage('Expects format: yyyy-mm-dd_yyy-mm-dd')
+        /^([0-9]{4})-([0-9]{2})-([0-9]{2})_([0-9]{4})-([0-9]{2})-([0-9]{2})$/
+      )
+      .withMessage("Expects format: yyyy-mm-dd_yyy-mm-dd")
       .escape(),
-    query('image_size')
+    query("image_size")
       .optional()
       .isInt()
-      .withMessage('Expects an integer')
+      .withMessage("Expects an integer")
       .isIn([
-        20, 35, 50, 55, 60, 65, 70, 75, 85,
-        100, 130, 150, 200, 300, 400, 500, 600
+        20, 35, 50, 55, 60, 65, 70, 75, 85, 100, 130, 150, 200, 300, 400, 500,
+        600,
       ])
-      .withMessage('Invalid image_size. See docs on /docs route.')
+      .withMessage("Invalid image_size. See docs on /docs route.")
       .escape(),
-    query('audio_format')
+    query("audio_format")
       .optional()
-      .matches('mp3')
-      .withMessage('Only mp3 is supported'),
+      .matches("mp3")
+      .withMessage("Only mp3 is supported"),
   ],
   getAlbums
 );
@@ -296,13 +309,8 @@ router.get(
  *           No data is returned here either.
  */
 router.get(
-  ['/download', '/file'],
-  [
-    query('audio_format')
-      .escape(),
-    query('id')
-      .escape(),
-  ],
+  ["/download", "/file"],
+  [query("audio_format").escape(), query("id").escape()],
   downloadAlbums
 );
 
@@ -459,112 +467,124 @@ router.get(
  *         description: some error occured while processing request
  */
 router.get(
-  ['/info'],
+  ["/info"],
   [
-    query('page_size')
+    query("page_size")
       .trim()
       .default(`${MIN_PAGE_SIZE}`)
       .notEmpty()
-      .withMessage('Value cannot be empty')
-      .isInt({min: MIN_PAGE_SIZE, max: MAX_PAGE_SIZE})
-      .withMessage(`Expects an integer from ${MIN_PAGE_SIZE}`
-                  + ` to ${MAX_PAGE_SIZE}`)
+      .withMessage("Value cannot be empty")
+      .isInt({ min: MIN_PAGE_SIZE, max: MAX_PAGE_SIZE })
+      .withMessage(
+        `Expects an integer from ${MIN_PAGE_SIZE}` + ` to ${MAX_PAGE_SIZE}`
+      )
       .escape(),
-    query('page')
-      .default('1')
+    query("page")
+      .default("1")
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isInt({ min: 1 })
-      .withMessage('Expects an integer > 0')
+      .withMessage("Expects an integer > 0")
       .escape(),
-    query('format')
+    query("format")
       .optional()
       .trim()
       .notEmpty()
-      .isIn(['json', 'jsonpretty'])
-      .withMessage('Expects json or jsonpretty')
+      .isIn(["json", "jsonpretty"])
+      .withMessage("Expects json or jsonpretty")
       .escape(),
-    query(['artist_id', 'id', 'order_by'])
+    query(["artist_id", "id", "order_by"])
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isArray()
-      .withMessage('Expects an array')
+      .withMessage("Expects an array")
       .escape(),
-    query('order_by.*')
+    query("order_by.*")
       .trim()
       .notEmpty()
-      .withMessage('Values of order_by cannot be empty')
+      .withMessage("Values of order_by cannot be empty")
       .isIn([
-        'name', 'name_asc', 'name_desc',
-        'id', 'id_asc', 'id_desc',
-        'releasedate', 'releasedate_asc', 'releasedate_desc',
-        'artist_id', 'artist_id_asc', 'artist_id_desc',
-        'artist_name', 'artist_name_asc', 'artist_name_desc',
-        'popularity_total', 'popularity_total_asc',
-        'popularity_total_desc', 'popularity_month',
-        'popularity_month_asc', 'popularity_month_desc',
-        'popularity_week', 'popularity_week_asc',
-        'popularity_week_desc'
+        "name",
+        "name_asc",
+        "name_desc",
+        "id",
+        "id_asc",
+        "id_desc",
+        "releasedate",
+        "releasedate_asc",
+        "releasedate_desc",
+        "artist_id",
+        "artist_id_asc",
+        "artist_id_desc",
+        "artist_name",
+        "artist_name_asc",
+        "artist_name_desc",
+        "popularity_total",
+        "popularity_total_asc",
+        "popularity_total_desc",
+        "popularity_month",
+        "popularity_month_asc",
+        "popularity_month_desc",
+        "popularity_week",
+        "popularity_week_asc",
+        "popularity_week_desc",
       ])
-      .withMessage('Invalid value of order_by. Check docs and fix.')
+      .withMessage("Invalid value of order_by. Check docs and fix.")
       .escape(),
-    query('full_count')
+    query("full_count")
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .toBoolean()
       .isBoolean({ strict: true })
-      .withMessage('Expects boolean: true or false')
+      .withMessage("Expects boolean: true or false")
       .escape(),
-    query('id.*')
+    query("id.*")
       .trim()
       .notEmpty()
-      .withMessage('Values of id cannot be empty')
+      .withMessage("Values of id cannot be empty")
       .isInt({ min: 1 })
-      .withMessage('Expects an integer > 0')
+      .withMessage("Expects an integer > 0")
       .escape(),
-    query('artist_id.*')
+    query("artist_id.*")
       .trim()
       .notEmpty()
-      .withMessage('Values of artist_id cannot be empty')
+      .withMessage("Values of artist_id cannot be empty")
       .escape(),
-    query([
-      'artist_name', 'audio_format', 'name',
-      'date_between', 'image_size'
-    ])
+    query(["artist_name", "audio_format", "name", "date_between", "image_size"])
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .escape(),
-    query('date_between')
+    query("date_between")
       .optional()
       .matches(
-        /^([0-9]{4})-([0-9]{2})-([0-9]{2})_([0-9]{4})-([0-9]{2})-([0-9]{2})$/)
-      .withMessage('Expects format: yyyy-mm-dd_yyy-mm-dd')
+        /^([0-9]{4})-([0-9]{2})-([0-9]{2})_([0-9]{4})-([0-9]{2})-([0-9]{2})$/
+      )
+      .withMessage("Expects format: yyyy-mm-dd_yyy-mm-dd")
       .escape(),
-    query('image_size')
+    query("image_size")
       .optional()
       .isInt()
-      .withMessage('Expects an integer')
+      .withMessage("Expects an integer")
       .isIn([
-        20, 35, 50, 55, 60, 65, 70, 75, 85,
-        100, 130, 150, 200, 300, 400, 500, 600
+        20, 35, 50, 55, 60, 65, 70, 75, 85, 100, 130, 150, 200, 300, 400, 500,
+        600,
       ])
-      .withMessage('Invalid image_size. See docs on /docs route.')
+      .withMessage("Invalid image_size. See docs on /docs route.")
       .escape(),
-    query('audio_format')
+    query("audio_format")
       .optional()
-      .matches('mp3')
-      .withMessage('Only mp3 is supported'),
+      .matches("mp3")
+      .withMessage("Only mp3 is supported"),
   ],
   getAlbumsInfo
 );
-
 
 // tracks route
 /**
@@ -707,114 +727,137 @@ router.get(
  *         description: some error in request parameters or path
  */
 router.get(
-  '/tracks',
+  "/tracks",
   [
-    query('page_size')
+    query("page_size")
       .trim()
       .default(`${MIN_PAGE_SIZE}`)
       .notEmpty()
-      .withMessage('Value cannot be empty')
-      .isInt({min: MIN_PAGE_SIZE, max: MAX_PAGE_SIZE})
-      .withMessage(`Expects an integer from ${MIN_PAGE_SIZE}`
-                  + ` to ${MAX_PAGE_SIZE}`)
+      .withMessage("Value cannot be empty")
+      .isInt({ min: MIN_PAGE_SIZE, max: MAX_PAGE_SIZE })
+      .withMessage(
+        `Expects an integer from ${MIN_PAGE_SIZE}` + ` to ${MAX_PAGE_SIZE}`
+      )
       .escape(),
-    query('page')
-      .default('1')
+    query("page")
+      .default("1")
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isInt({ min: 1 })
-      .withMessage('Expects an integer > 0')
+      .withMessage("Expects an integer > 0")
       .escape(),
-    query('format')
+    query("format")
       .optional()
       .trim()
       .notEmpty()
-      .isIn(['json', 'jsonpretty'])
-      .withMessage('Expects json or jsonpretty')
+      .isIn(["json", "jsonpretty"])
+      .withMessage("Expects json or jsonpretty")
       .escape(),
-    query(['artist_id', 'order_by', 'track_id'])
+    query(["artist_id", "order_by", "track_id"])
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isArray()
-      .withMessage('Expects an array')
+      .withMessage("Expects an array")
       .escape(),
-    query('order_by.*')
+    query("order_by.*")
       .trim()
       .notEmpty()
-      .withMessage('Values of order_by cannot be empty')
+      .withMessage("Values of order_by cannot be empty")
       .isIn([
-        'name', 'name_asc', 'name_desc',
-        'id', 'id_asc', 'id_desc',
-        'releasedate', 'releasedate_asc', 'releasedate_desc',
-        'artist_id', 'artist_id_asc', 'artist_id_desc',
-        'artist_name', 'artist_name_asc', 'artist_name_desc',
-        'popularity_total', 'popularity_total_asc',
-        'popularity_total_desc', 'popularity_month',
-        'popularity_month_asc', 'popularity_month_desc',
-        'popularity_week', 'popularity_week_asc',
-        'popularity_week_desc',
-        'track_id', 'track_id_asc', 'track_id_desc',
-        'track_name', 'track_name_asc', 'track_name_desc',
-        'track_position', 'track_position_asc',
-        'track_position_desc',
+        "name",
+        "name_asc",
+        "name_desc",
+        "id",
+        "id_asc",
+        "id_desc",
+        "releasedate",
+        "releasedate_asc",
+        "releasedate_desc",
+        "artist_id",
+        "artist_id_asc",
+        "artist_id_desc",
+        "artist_name",
+        "artist_name_asc",
+        "artist_name_desc",
+        "popularity_total",
+        "popularity_total_asc",
+        "popularity_total_desc",
+        "popularity_month",
+        "popularity_month_asc",
+        "popularity_month_desc",
+        "popularity_week",
+        "popularity_week_asc",
+        "popularity_week_desc",
+        "track_id",
+        "track_id_asc",
+        "track_id_desc",
+        "track_name",
+        "track_name_asc",
+        "track_name_desc",
+        "track_position",
+        "track_position_asc",
+        "track_position_desc",
       ])
-      .withMessage('Invalid value of order_by. Check docs and fix.')
+      .withMessage("Invalid value of order_by. Check docs and fix.")
       .escape(),
-    query('full_count')
+    query("full_count")
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .toBoolean()
       .isBoolean({ strict: true })
-      .withMessage('Expects boolean: true or false')
+      .withMessage("Expects boolean: true or false")
       .escape(),
-    query('id')
+    query("id")
       .trim()
       .isArray()
-      .withMessage('Expects an array')
+      .withMessage("Expects an array")
       .notEmpty()
       .escape(),
-    query(['id.*', 'track_id.*', 'artist_id.*'])
+    query(["id.*", "track_id.*", "artist_id.*"])
       .trim()
       .notEmpty()
-      .withMessage('Values of id cannot be empty')
+      .withMessage("Values of id cannot be empty")
       .escape(),
-    query('id.*')
-      .isInt({ min: 1 })
-      .withMessage('Expects an integer > 0'),
+    query("id.*").isInt({ min: 1 }).withMessage("Expects an integer > 0"),
     query([
-      'artist_name', 'audio_format', 'name',
-      'date_between', 'image_size', 'track_name',
+      "artist_name",
+      "audio_format",
+      "name",
+      "date_between",
+      "image_size",
+      "track_name",
     ])
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .escape(),
-    query('date_between')
+    query("date_between")
       .optional()
       .matches(
-        /^([0-9]{4})-([0-9]{2})-([0-9]{2})_([0-9]{4})-([0-9]{2})-([0-9]{2})$/)
-      .withMessage('Expects format: yyyy-mm-dd_yyy-mm-dd')
+        /^([0-9]{4})-([0-9]{2})-([0-9]{2})_([0-9]{4})-([0-9]{2})-([0-9]{2})$/
+      )
+      .withMessage("Expects format: yyyy-mm-dd_yyy-mm-dd")
       .escape(),
-    query('image_size')
+    query("image_size")
       .optional()
       .isInt()
-      .withMessage('Expects an integer')
+      .withMessage("Expects an integer")
       .isIn([
-        20, 35, 50, 55, 60, 65, 70, 75, 85,
-        100, 130, 150, 200, 300, 400, 500, 600
+        20, 35, 50, 55, 60, 65, 70, 75, 85, 100, 130, 150, 200, 300, 400, 500,
+        600,
       ])
-      .withMessage('Invalid image_size. See docs on /docs route.')
+      .withMessage("Invalid image_size. See docs on /docs route.")
       .escape(),
-    query('audio_format')
+    query("audio_format")
       .optional()
-      .isIn(['mp31', 'mp32', 'ogg', 'flac'])
-      .withMessage('Expects mp31, mp32, ogg or flac.'),
+      .isIn(["mp31", "mp32", "ogg", "flac"])
+      .withMessage("Expects mp31, mp32, ogg or flac."),
   ],
   getAlbumsTracks
 );
@@ -822,12 +865,12 @@ router.get(
 router.use((req, res) => {
   return res.status(404).send({
     headers: {
-      status: 'failed',
+      status: "failed",
       code: resCodes[22].code,
       error_message: resCodes[22].des,
-      warning: '',
-      'x-took': '0ms'
-    }
-  })
-})
+      warning: "",
+      "x-took": "0ms",
+    },
+  });
+});
 export default router;

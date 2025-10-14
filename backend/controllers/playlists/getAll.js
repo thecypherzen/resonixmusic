@@ -43,12 +43,9 @@ async function getAll(req, res) {
   if (!queryParams?.id) {
     queryParams.id = ids;
   }
-  console.log(queryParams);
   requestClient.setQueryParams(queryParams, config);
   try {
     let response = await requestClient.make(config);
-    // const filtered = await filters.playlists.byTracks(response.data.results);
-    // console.log('filtered playlists\n', filtered);
     requestClient.setDataHeaders(response.data, {
       options: { 'x-took': response.timeTaken },
     });

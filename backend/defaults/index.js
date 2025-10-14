@@ -1,5 +1,12 @@
-import dotenv from "dotenv";
-dotenv.config();
+import { config } from "dotenv";
+
+const conf = config();
+if (!conf) {
+  console.error("❌ ENV vars failed to load");
+  process.exit(1);
+} else {
+  console.log("✅ ENV Vars loaded successfully");
+}
 
 /** global constant values
  *
@@ -158,10 +165,14 @@ const TRACKSPARAMS = {
 const APIS = { jamendo: "jamendo" },
   AUDIO_CHUNK_SIZE = Math.ceil(2 ** 20),
   CACHE_EXP_SECS = 24 * 7 * 3600,
+  ENV = process.env.NODE_ENV ?? "dev",
   MIN_PAGE_SIZE = 20,
   MAX_PAGE_SIZE = 200,
-  RXBE_PORT = process.env.RXBE_PORT || 5000,
-  RXCACHE_PORT = process.env.RXCACHE_PORT || 6379,
+  RXBE_PORT = process.env.RXBE_PORT ? parseInt(process.env.RXBE_PORT) : 5000,
+  RXFE_PORT = process.env.RXFE_PORT ? parseInt(process.env.RXFE_PORT) : 8080,
+  RXCACHE_PORT = process.env.RXCACHE_PORT
+    ? parseInt(process.env.RXCACHE_PORT)
+    : 6379,
   RX_ROOT_DIR = "/var/tmp/resonix",
   TIMEOUT = 500,
   MIN_RETRIES = 1,
@@ -175,8 +186,10 @@ const APIS = { jamendo: "jamendo" },
   };
 
 export {
+  APIS,
   AUDIO_CHUNK_SIZE,
   CACHE_EXP_SECS,
+  ENV,
   COLOURS,
   JAMENDO,
   MAX_PAGE_SIZE,
@@ -187,6 +200,7 @@ export {
   RESPONSE_CODES,
   REQPARAMS,
   RXBE_PORT,
+  RXFE_PORT,
   RXCACHE_PORT,
   RX_ROOT_DIR,
   STATUS_CODES,

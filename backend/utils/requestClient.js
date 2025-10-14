@@ -123,7 +123,6 @@ class RequestClient {
         const response = await makeRequest(config, delay);
         timeEnd = Date.now();
         this.setTimeTaken(timeStart, timeEnd, response);
-        console.log("\n\nREQUEST SUCCESS:", config.url, response);
         return response;
       } catch (error) {
         console.log("\n\nERROR:", error);
