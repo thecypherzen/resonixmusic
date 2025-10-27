@@ -1,62 +1,86 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import { FaPlay, FaPause, FaHeart, FaEllipsisH, FaClock, FaDownload } from 'react-icons/fa';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useParams } from "react-router-dom";
+import {
+  FaPlay,
+  FaPause,
+  FaHeart,
+  FaEllipsisH,
+  FaClock,
+  FaDownload,
+} from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
-import { usePlayer } from '../context/PlayerContext';
-import api from '../services/api';
-import { saveAs } from 'file-saver';
+import { usePlayer } from "../context/PlayerContext";
+import api from "../services/api";
+import { saveAs } from "file-saver";
+import { useFetch } from "../hooks/useFetch";
+import TracksList from "./TracksList";
 
 const PlaylistDetails = () => {
   const player = usePlayer();
   const { handleTrackSelect, currentTrack, isPlaying } = player;
-  const menuRef = useRef(null);
-  const [showMenu, setShowMenu] = useState(false);
-  const [playlist, setPlaylist] = useState(null);
-  const [tracks, setTracks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const { id } = useParams();
+  const [dataState, setDataState] = useState({
+    error: null,
+    playlistInfo: null,
+    playlistTracks: null,
+  });
 
   useEffect(() => {
-    const fetchPlaylistDetails = async () => {
-      if (!id) return;
-      const thumbnail = await api.getRandomImage('squarish');
-      const image = await api.getRandomImage('landscape');
-      try {
-        setLoading(true);
-        const response = await api.getPlaylistDetails(id);
-
-        if (response.data) {
-          const playlistData = response.data;
-          setPlaylist({
-            ...playlistData,
-            thumbnail,
-            image
-          });
-
-          if (playlistData.tracks) {
-            setTracks(playlistData.tracks);
-          }
-        } else {
-          throw new Error('Playlist not found');
-        }
-      } catch (err) {
-        console.error('Error fetching playlist details:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+    if (id === null || id === undefined) return;
+    const { data: playListData, error: playListDataError } = useFetch({
+      url: "/playlists",
+      method: "get",
+      params: { id: [parseInt(id)] },
+    });
+    if (error) {
+      setDataState((prev) => {
+        return { ...prev, error: playListDataError };
+      });
+    } else {
+      // fetch playlist tracks
+      const { data: tracks, error: tracksError } = useFetch({
+        url: "/playlists/tracks",
+        method: "get",
+        extras: {
+          params: {
+            id: [parseInt(id)],
+          },
+        },
+      });
+      if (tracksError) {
+        setDataState((prev) => {
+          return { ...prev, error: tracksError };
+        });
+      } else {
+        setDataState((prev) => {
+          return {
+            ...prev,
+            error: null,
+            playlistInfo: playListData[0],
+            playlistTracks: tracks,
+          };
+        });
       }
-    };
-
-    fetchPlaylistDetails();
+    }
   }, [id]);
+
+  useEffect(() => {
+    if (dataState.error) {
+      console.error("Error loading playlist:", dataState.error);
+    } else {
+      if (dataState.playlistInfo) {
+        console.log("Playlist Info:", dataState.playlistInfo);
+        console.log("Playlist Tracks:", dataState.playlistTracks);
+      }
+    }
+  }, [dataState.error, dataState.playlistInfo, dataState.playlistTracks]);
 
   const handlePlayAll = () => {
     if (!tracks.length) return;
     try {
       handleTrackSelect(tracks[0], tracks);
     } catch (error) {
-      console.error('Error playing track:', error);
+      console.error("Error playing track:", error);
     }
   };
 
@@ -64,19 +88,19 @@ const PlaylistDetails = () => {
     try {
       handleTrackSelect(track, tracks);
     } catch (error) {
-      console.error('Error playing track:', error);
+      console.error("Error playing track:", error);
     }
   };
 
   const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   const handleDownloadTrack = async (track) => {
     if (!track.audio) {
-      console.error('No download URL available');
+      console.error("No download URL available");
       return;
     }
 
@@ -85,14 +109,14 @@ const PlaylistDetails = () => {
       const blob = await response.blob();
       saveAs(blob, `${track.name}.mp3`);
     } catch (error) {
-      console.error('Download failed:', error);
+      console.error("Download failed:", error);
     }
   };
 
-  const handleDownloadPlaylist = async () => {
+  const handleDownloadPlaylist = useCallback(async () => {
     if (!tracks.length) return;
 
-    const JSZip = (await import('jszip')).default;
+    const JSZip = (await import("jszip")).default;
     const zip = new JSZip();
 
     try {
@@ -104,17 +128,12 @@ const PlaylistDetails = () => {
       });
 
       await Promise.all(downloadPromises);
-      const content = await zip.generateAsync({ type: 'blob' });
+      const content = await zip.generateAsync({ type: "blob" });
       saveAs(content, `${playlist.name}.zip`);
     } catch (error) {
-      console.error('Playlist download failed:', error);
+      console.error("Playlist download failed:", error);
     }
-  };
-
-  const truncateTitle = (title, maxLength) => {
-    if (!title) return '';
-    return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
-  };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -123,14 +142,9 @@ const PlaylistDetails = () => {
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
-
-  const handleMenuToggle = (e) => {
-    e.stopPropagation();
-    setShowMenu(!showMenu);
-  };
 
   if (loading) return <LoadingState />;
   if (error) return <ErrorMessage message={error} />;
@@ -140,34 +154,7 @@ const PlaylistDetails = () => {
     <div className="flex-1 overflow-y-auto w-full">
       <div className="flex flex-col bg-transparent px-10 -mt-16">
         {/* Playlist Header */}
-        <div className="flex items-end gap-6 p-6 h-[20rem] bg-transparent">
-          <img
-            src={playlist.thumbnail}
-            alt={playlist.title}
-            className="w-[10.75rem] h-[10.75rem] shadow-2xl rounded-lg"
-          />
-          <div className="flex flex-col gap-3">
-            <span className="text-md font-bold">Playlist</span>
-            <h1 className="text-[5rem] font-bold leading-tight">
-              {truncateTitle(playlist.title, 15)}
-            </h1>
-            <div className="flex items-center gap-2 text-md">
-              <img
-                src={playlist.thumbnail}
-                alt={playlist.user_name}
-                className="w-6 h-6 rounded-full"
-              />
-              <span className="font-bold hover:underline cursor-pointer">
-                {playlist.user_name}
-              </span>
-              <span className="text-neutral-400">
-                {new Date(playlist.creationDate).getFullYear()}
-              </span>
-              <span className="text-neutral-400">• {tracks.length} songs</span>
-            </div>
-          </div>
-        </div>
-
+        <DetailsPageHeader type="playlist" dataSet={playlist} />
         {/* Player Controls */}
         <div className="flex items-center gap-8 p-6">
           <button
@@ -186,7 +173,7 @@ const PlaylistDetails = () => {
             )}
           </button>
           <button className="bg-transparent text-white">
-            <FaHeart size={24} className='hover:fill-red-500' />
+            <FaHeart size={24} className="hover:fill-red-500" />
           </button>
           <button
             onClick={handleDownloadPlaylist}
@@ -219,84 +206,7 @@ const PlaylistDetails = () => {
         </div>
 
         {/* Tracks List */}
-        <div className="px-6 pb-36">
-          <table className="w-full">
-            <thead>
-              <tr className="text-sm text-neutral-400 border-b border-neutral-800 transition-all duration-300">
-                <th className="px-4 py-2 text-left w-12">#</th>
-                <th className="px-4 py-2 text-left">Title</th>
-                <th className="px-4 py-2 text-left">Plays</th>
-                <th className="px-4 py-2 text-center">Download</th>
-                <th className="px-4 py-2 text-right">
-                  <FaClock className="ml-auto mr-2.5" />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {tracks.map((track, index) => (
-                <tr
-                  key={track.id}
-                  className="group hover:bg-neutral-800/50 rounded-lg transition-colors cursor-pointer"
-                  onClick={() => handlePlayTrack(track, index)}
-                >
-                  <td className="px-4 py-3 text-neutral-400 w-12">
-                    <div className="relative w-4">
-                      {isPlaying && currentTrack?.id === track.id ? (
-                        <FaPause className="text-[#08B2F0]" />
-                      ) : (
-                        <>
-                          <span className="group-hover:hidden">{index + 1}</span>
-                          <FaPlay className="hidden group-hover:block absolute -top-2 text-white" />
-                        </>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="relative">
-                        <img
-                          src={track.image}
-                          alt={track.name}
-                          className={`w-10 h-10 rounded ${player.isLoading && currentTrack?.id === track.id ? 'opacity-50' : ''}`}
-                        />
-                        {player.isLoading && currentTrack?.id === track.id && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded">
-                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className={`font-normal ${currentTrack?.id === track.id ? 'text-[#08B2F0]' : ''}`}>
-                          {track.name}
-                        </span>
-                        <span className="text-sm text-neutral-400">
-                          {track.artist_name}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-neutral-400">
-                    {track.likes || 0}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDownloadTrack(track);
-                      }}
-                      className="bg-transparent text-neutral-400 hover:text-[#08B2F0] transition-colors"
-                    >
-                      <FaDownload size={16} />
-                    </button>
-                  </td>
-                  <td className="px-4 py-3 text-right text-neutral-400">
-                    {formatDuration(track.duration)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <TracksList tracks={tracks} />
       </div>
     </div>
   );
@@ -319,7 +229,7 @@ const LoadingState = () => (
 const ErrorMessage = ({ message }) => (
   <div className="flex justify-center items-center h-[75vh] w-[60rem] mx-16 fixed">
     <div className="text-neutral-600 flex flex-col items-center">
-      <MdErrorOutline size={102} className='m-auto' />
+      <MdErrorOutline size={102} className="m-auto" />
       <p className="text-2xl mb-2 font-extrabold">Unable to load content</p>
       <p className="text-sm">{message}</p>
       <button

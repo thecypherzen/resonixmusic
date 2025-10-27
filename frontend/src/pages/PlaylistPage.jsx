@@ -1,12 +1,12 @@
-import React from 'react';
-import SideBar from '../components/SideBar';
-import TopNav from '../components/TopNav';
-import BottomPlayer from '../components/BottomPlayer';
-import PlaylistDetails from '../components/PlaylistDetails';
+import React from "react";
+import SideBar from "../components/SideBar";
+import TopNav from "../components/TopNav";
+import BottomPlayer from "../components/BottomPlayer";
+import PlaylistDetails from "../components/PlaylistDetails";
 
 const PlaylistPage = () => {
   return (
-    <div className="flex min-h-screen w-screen bg-[#121212]">
+    <div className="flex min-h-screen w-screen bg-[#121212] border-2 border-orange-500">
       {/* Sidebar */}
       <div className="fixed left-0 top-0 h-[calc(100vh-7rem)] w-[15rem] z-30">
         <SideBar />

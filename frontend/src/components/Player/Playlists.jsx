@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import HeadingText from "../HeadingText";
 import ActionButton from "./ActionButton";
 import SectionErrorDisplay from "./SectionErrorDisplay";
+import { useNavigate } from "react-router-dom";
 
 const transformPlaylists = (playlist) => {
   return {
@@ -25,11 +26,11 @@ const Playlists = ({ cardsPerSet = 5 }) => {
   const [visiblePlaylists, setVisiblePlaylists] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [dataState, setDataState] = useState({ artists: null, error: null });
+  const navigate = useNavigate();
 
-  const handlePlaylistClick = useCallback((playlist) => {
-    window.scrollTo(0, 0);
-    console.log("CLICKED ON: ", playlist.id);
-    navigate(`/playlist/${playlist.id}`);
+  const handlePlaylistClick = useCallback((playlistId) => {
+    console.log("CLICKED ON: ", playlistId);
+    //navigate(`/playlist/${playlistId}`);
   }, []);
 
   const { data, error } = useFetch({ url: "/playlists", method: "get" });
@@ -62,8 +63,7 @@ const Playlists = ({ cardsPerSet = 5 }) => {
               <PlaylistCard
                 key={playlist.id}
                 playlist={playlist}
-                //onClick={handlePlaylistClick}
-                onClick={() => null}
+                onClick={() => handlePlaylistClick(playlist.id)}
               />
             );
           })}

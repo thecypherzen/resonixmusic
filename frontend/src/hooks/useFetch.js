@@ -15,6 +15,9 @@ const fetchDefaults = {
   "/playlists": {
     options: { params: { limit: 20 } },
   },
+  "/playlists/tracks": {
+    options: {},
+  },
   "/tracks": {
     options: { params: { limit: 30 } },
   },

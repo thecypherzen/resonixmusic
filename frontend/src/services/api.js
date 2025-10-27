@@ -302,7 +302,6 @@ const getPlaylistDetails = async (playlistId) => {
     });
 
     console.log("Playlist response:", playlistResponse);
-
     if (!playlistResponse.data?.results?.[0]) {
       throw new Error("Playlist not found");
     }
