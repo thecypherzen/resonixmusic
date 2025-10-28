@@ -1,6 +1,6 @@
 import TopNav from "../components/TopNav";
 import BottomPlayer from "../components/BottomPlayer";
-import PlayerHome from "../components/PlayerHome";
+import HomePage from "./HomePage";
 import { useTheme } from "../hooks/useTheme";
 
 /**
@@ -13,15 +13,7 @@ import { useTheme } from "../hooks/useTheme";
  */
 const MusicPlayer = () => {
   const { theme } = useTheme();
-  return (
-    <div
-      className="flex flex-col max-h-screen overflow-y-scroll"
-      data-theme={theme}
-    >
-      <PlayerHome />
-      <BottomPlayer />
-    </div>
-  );
+  return <div className="flex flex-col " data-theme={theme}></div>;
 };
 
 export default MusicPlayer;

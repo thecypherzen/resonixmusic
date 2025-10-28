@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaPlay, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { usePlayer } from "../context/PlayerContext";
+import { usePlayer } from "../context/PlayerContext.jsx";
 //import { useDataFetching } from "../hooks/useDataFetching";
-import api from "../services/api";
+import api from "../services/api.js";
 import { MdErrorOutline } from "react-icons/md";
-import PlaylistCard from "./PlaylistCard";
-import ArtistCard from "./ArtistCard";
-import helpers from "../utils/utilityFunctions.js";
-import PopularArtists from "./Player/PopularArtists.jsx";
-import TrendingTracks from "./Player/TrendingTracks.jsx";
-import Albums from "./Player/Albums.jsx";
-import Playlists from "./Player/Playlists.jsx";
+import PopularArtists from "../components/Player/PopularArtists.jsx";
+import TrendingTracks from "../components/Player/TrendingTracks.jsx";
+import Albums from "../components/Player/Albums.jsx";
+import Playlists from "../components/Player/Playlists.jsx";
 import { useTheme } from "../hooks/useTheme.jsx";
 
 // Constants
@@ -50,12 +47,12 @@ const ErrorMessage = ({ message, onRetry }) => (
 //};
 
 /**
- * @func PlayerHome
+ * @func HomePage
  * @description The Music Player Home Component
  * Takes in o props..at least not yet.
  * @returns {React.ReactNode} The Player Home
  */
-const PlayerHome = () => {
+const HomePage = () => {
   const { handleTrackSelect } = usePlayer();
   const navigate = useNavigate();
 
@@ -148,7 +145,7 @@ const PlayerHome = () => {
   return (
     <div
       id="player-home"
-      className="flex flex-col px-5 md:px-10 lg:px-16 gap-10 transition-all duration-300 py-10"
+      className="flex flex-col px-5 md:px-10 lg:px-16 gap-10 transition-all duration-300 py-10 max-h-screen overflow-y-scroll"
       data-theme={theme}
     >
       <PopularArtists cardsPerSet={cardsPerSet} />
@@ -159,4 +156,4 @@ const PlayerHome = () => {
   );
 };
 
-export default PlayerHome;
+export default HomePage;

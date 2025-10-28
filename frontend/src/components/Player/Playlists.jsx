@@ -1,6 +1,5 @@
 //import { useDataFetching } from "../../hooks/useDataFetching";
 import SectionSkeleton from "./SectionSkeleton";
-import helpers from "../../utils/utilityFunctions";
 import { useFetch } from "../../hooks/useFetch";
 import PlaylistCard from "../PlaylistCard";
 import { useCallback, useEffect, useState } from "react";
@@ -8,12 +7,13 @@ import HeadingText from "../HeadingText";
 import ActionButton from "./ActionButton";
 import SectionErrorDisplay from "./SectionErrorDisplay";
 import { useNavigate } from "react-router-dom";
+import { capitalize } from "../../lib/utils";
 
 const transformPlaylists = (playlist) => {
   return {
     id: playlist.id,
-    title: helpers.capitalize(playlist.name) || "",
-    artist: helpers.capitalize(playlist.user_name) || "",
+    title: capitalize(playlist.name) || "",
+    artist: capitalize(playlist.user_name) || "",
     thumbnail: `https://usercontent.jamendo.com?type=playlist&id=${playlist.id}&width=300`,
     creationDate: playlist.creationdate,
     shareUrl: playlist.shareurl,
@@ -23,7 +23,7 @@ const transformPlaylists = (playlist) => {
 };
 
 const Playlists = ({ cardsPerSet = 5 }) => {
-  const [visiblePlaylists, setVisiblePlaylists] = useState(0);
+  const [visiblePlaylists, _] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [dataState, setDataState] = useState({ artists: null, error: null });
   const navigate = useNavigate();

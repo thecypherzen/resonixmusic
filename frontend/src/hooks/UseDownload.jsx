@@ -1,4 +1,6 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
+import axios from "axios";
+import { saveAs } from "file-saver";
 
 const DownLoadContext = createContext({
   downloadTrack: () => {},
@@ -8,9 +10,70 @@ const DownLoadContext = createContext({
 });
 
 function DownloadProvider({ children }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // download single track
+  const downloadTrack = useCallback(async (track) => {
+    if (!track || !track.audio) return;
+    try {
+      const res = await axios.get(track.audio, {
+        responseType: "blob",
+      });
+
+      saveAs(res.data, `${track.name || "downloaded_file"}.mp3`);
+    } catch (err) {
+      setError({
+        message: error?.message ?? "For an unknown reason",
+        details: error,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // handle download multiple tracks as zip
+  const downloadZip = useCallback(
+    async (tracks, filename = "collection.zip") => {
+      const JSZip = await import("jszip");
+      const zip = new JSZip.default();
+      if (!tracks || !tracks.length) return;
+
+      try {
+        setIsLoading(true);
+        const downloadPromises = tracks.map(async (track, i) => {
+          if (!track.audio) return;
+          const response = await axios.get(track.audio, {
+            responseType: "blob",
+          });
+          zip.file(`${track.name || `track_${i + 1}`}.mp3`, response.data);
+        });
+
+        await Promise.all(downloadPromises);
+        const content = await zip.generateAsync({ type: "blob" });
+        saveAs(content, filename);
+      } catch (error) {
+        setError({
+          message: error?.message ?? "For an unknown reason",
+          details: error,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (isLoading) {
+      setIsLoading(false);
+      return;
+    }
+  }, [error]);
+
   return (
     <DownLoadContext.DownloadProvider
-      value={{ downloadTrack, downloadZip, error, isLoading }}
+      value={{ downloadTrack, downloadZip, isLoading, error }}
     >
       {children}
     </DownLoadContext.DownloadProvider>

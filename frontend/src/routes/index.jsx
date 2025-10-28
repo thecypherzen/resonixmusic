@@ -17,6 +17,7 @@ import LoginSuccess from "../pages/LoginSuccess";
 import ApiDocs from "../components/ApiDocs";
 import ComingSoonPage from "../pages/ComingSoonPage";
 import AppLayout from "../components/layouts/AppLayout";
+import HomePage from "../pages/HomePage";
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -36,8 +37,8 @@ const AppRoutes = () => {
       {/* Public routes */}
       <Route path="/" element={<AppLayout />}>
         <Route path="/" element={<MusicPlayerLayout />}>
-          <Route index element={<MusicPlayer />} />
-          <Route path="/music" element={<MusicPlayer />} />
+          <Route index element={<HomePage />} />
+          <Route path="/music" element={<HomePage />} />
           <Route path="/song/:id" element={<SongDetailsPage />} />
           <Route path="/album/:id" element={<AlbumDetailsPage />} />
           <Route path="/artist/:id" element={<ArtistPage />} />
