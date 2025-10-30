@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, House, Library, Compass, Plus, X } from "lucide-react";
 import { FaPlay } from "react-icons/fa6";
-import { usePlayer } from "../context/PlayerContext";
 import AuthModal from "./AuthModal";
 import authService from "../services/authService";
 import { useAuth } from "../context/AuthContext";
@@ -129,7 +128,9 @@ function SideBarContent() {
   //const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const userLogin = "gabrielisaacs";
   const initials = userLogin.substring(0, 2).toUpperCase();
-  const { play } = usePlayer();
+  const play = (args) => {
+    console.log(args);
+  };
 
   const handleCreatePlaylistClick = () => {
     if (isAuthenticated) {
@@ -161,7 +162,7 @@ function SideBarContent() {
   return (
     <div id="sidebar-content" className="space-y-3 overflow-y-auto">
       {/* Navigation Links */}
-      <div className="px-8 flex flex-col gap-6 mt-2 ml-2 mt-4">
+      <div className="px-8 flex flex-col gap-6 ml-2 mt-4">
         <Link
           to="/"
           className={`inline-flex gap-2 text-white hover:text-[#08B2F0] text-base transition-colors duration-200 ${

@@ -14,6 +14,10 @@ import { saveAs } from "file-saver";
 import { useFetch } from "../hooks/useFetch";
 import TracksList from "./TracksList";
 import UsePlayer from "../hooks/UsePlayer";
+import {
+  DetailsPageControls,
+  DetailsPageHeader,
+} from "./DetailsPageComponents";
 
 const PlaylistDetails = () => {
   const { id } = useParams();
@@ -99,55 +103,10 @@ const PlaylistDetails = () => {
         {/* Playlist Header */}
         <DetailsPageHeader type="playlist" dataSet={playlist} />
         {/* Player Controls */}
-        <div className="flex items-center gap-8 p-6">
-          <button
-            onClick={handlePlayAll}
-            className="w-42 h-12 flex items-center justify-center bg-[#08B2F0] hover:bg-opacity-80 rounded-full transition-all duration-300 text-black text-sm px-10 gap-2"
-            disabled={!tracks.length}
-          >
-            {isPlaying && currentTrack?.id === tracks[0]?.id ? (
-              <>
-                <FaPause /> Pause
-              </>
-            ) : (
-              <>
-                <FaPlay /> Play all
-              </>
-            )}
-          </button>
-          <button className="bg-transparent text-white">
-            <FaHeart size={24} className="hover:fill-red-500" />
-          </button>
-          <button
-            onClick={handleDownloadPlaylist}
-            className="bg-transparent text-white hover:text-[#08B2F0] transition-colors"
-          >
-            <FaDownload size={24} />
-          </button>
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={handleMenuToggle}
-              className="bg-transparent hover:bg-white/10 p-2 rounded-full"
-            >
-              <FaEllipsisH size={24} />
-            </button>
-            {showMenu && (
-              <div className="absolute left-0 mt-2 w-48 bg-[#282828] rounded-lg shadow-xl border border-neutral-600 z-100">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // Add share functionality here
-                    setShowMenu(false);
-                  }}
-                  className="bg-transparent w-full text-left px-4 py-3 hover:bg-white/10 rounded-none"
-                >
-                  Share
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
+        <DetailsPageControls
+          collection={dataState.playlistInfo}
+          type="playlist"
+        />
         {/* Tracks List */}
         <TracksList tracks={tracks} />
       </div>

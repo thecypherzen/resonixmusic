@@ -1,4 +1,10 @@
-import { useContext, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import axios from "axios";
 import { saveAs } from "file-saver";
 
@@ -9,7 +15,7 @@ const DownLoadContext = createContext({
   error: null,
 });
 
-function DownloadProvider({ children }) {
+export function DownloadProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -33,36 +39,33 @@ function DownloadProvider({ children }) {
   }, []);
 
   // handle download multiple tracks as zip
-  const downloadZip = useCallback(
-    async (tracks, filename = "collection.zip") => {
-      const JSZip = await import("jszip");
-      const zip = new JSZip.default();
-      if (!tracks || !tracks.length) return;
+  const downloadZip = useCallback(async (tracks, filename = "collection") => {
+    const JSZip = await import("jszip");
+    const zip = new JSZip.default();
+    if (!tracks || !tracks.length) return;
 
-      try {
-        setIsLoading(true);
-        const downloadPromises = tracks.map(async (track, i) => {
-          if (!track.audio) return;
-          const response = await axios.get(track.audio, {
-            responseType: "blob",
-          });
-          zip.file(`${track.name || `track_${i + 1}`}.mp3`, response.data);
+    try {
+      setIsLoading(true);
+      const downloadPromises = tracks.map(async (track, i) => {
+        if (!track.audio) return;
+        const response = await axios.get(track.audio, {
+          responseType: "blob",
         });
+        zip.file(`${track.name || `track_${i + 1}`}.mp3`, response.data);
+      });
 
-        await Promise.all(downloadPromises);
-        const content = await zip.generateAsync({ type: "blob" });
-        saveAs(content, filename);
-      } catch (error) {
-        setError({
-          message: error?.message ?? "For an unknown reason",
-          details: error,
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    []
-  );
+      await Promise.all(downloadPromises);
+      const content = await zip.generateAsync({ type: "blob" });
+      saveAs(content, `${filename}.zip`);
+    } catch (error) {
+      setError({
+        message: error?.message ?? "For an unknown reason",
+        details: error,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (isLoading) {
@@ -72,11 +75,11 @@ function DownloadProvider({ children }) {
   }, [error]);
 
   return (
-    <DownLoadContext.DownloadProvider
+    <DownLoadContext.Provider
       value={{ downloadTrack, downloadZip, isLoading, error }}
     >
       {children}
-    </DownLoadContext.DownloadProvider>
+    </DownLoadContext.Provider>
   );
 }
 
@@ -88,5 +91,4 @@ export function UseDownload() {
   return context;
 }
 
-export { DownloadProvider };
 export default UseDownload;

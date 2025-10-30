@@ -32,20 +32,6 @@ const ErrorMessage = ({ message, onRetry }) => (
   </div>
 );
 
-// Section component with error handling and retry capability
-//const ContentSection = ({ title, loading, error, data, onRetry, children }) => {
-//  if (loading) return <SectionLoadingMessage />;
-//  if (error) return <ErrorMessage message={error.message} onRetry={onRetry} />;
-//  if (!data?.length) return null;
-
-//  return (
-//    <div className="flex flex-col mb-10">
-//      <h2 className="text-3xl font-extrabold mb-4">{title}</h2>
-//      {children}
-//    </div>
-//  );
-//};
-
 /**
  * @func HomePage
  * @description The Music Player Home Component
@@ -53,93 +39,31 @@ const ErrorMessage = ({ message, onRetry }) => (
  * @returns {React.ReactNode} The Player Home
  */
 const HomePage = () => {
-  const { handleTrackSelect } = usePlayer();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   // Constants
   const cardsPerSet = 5;
 
-  // Navigation handlers
-  const handleNext = (setVisible, visible, totalItems) => {
-    if (visible + cardsPerSet < totalItems) {
-      setVisible(visible + cardsPerSet);
-      const section = document.getElementById("section-id");
-      if (section) {
-        section.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
+  //// Navigation handlers
+  //const handleNext = (setVisible, visible, totalItems) => {
+  //  if (visible + cardsPerSet < totalItems) {
+  //    setVisible(visible + cardsPerSet);
+  //    const section = document.getElementById("section-id");
+  //    if (section) {
+  //      section.scrollIntoView({ behavior: "smooth" });
+  //    }
+  //  }
+  //};
 
-  const handlePrevious = (setVisible, visible) => {
-    if (visible - cardsPerSet >= 0) {
-      setVisible(visible - cardsPerSet);
-      // Optional: Smooth scroll to the section
-      const section = document.getElementById("section-id");
-      if (section) {
-        section.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
+  //const handlePrevious = (setVisible, visible) => {
+  //  if (visible - cardsPerSet >= 0) {
+  //    setVisible(visible - cardsPerSet);
+  //    // Optional: Smooth scroll to the section
+  //    const section = document.getElementById("section-id");
+  //    if (section) {
+  //      section.scrollIntoView({ behavior: "smooth" });
+  //    }
+  //  }
+  //};
 
-  // Playback handlers
-  const handlePlaySong = (song, index) => {
-    const trackToPlay = {
-      id: song.id,
-      title: song.title || song.name,
-      artist: song.artist || song.artist_name,
-      artwork: song.thumbnail || song.image || DEFAULT_THUMBNAIL,
-      url: song.url || song.audio,
-      duration: song.duration,
-      stream_url: song.url || song.audio,
-    };
-
-    // Create remaining tracks array
-    const remainingTracks = transformedTrending
-      .slice(index + 1)
-      .map((track) => ({
-        id: track.id,
-        title: track.title || track.name,
-        artist: track.artist || track.artist_name,
-        artwork: track.thumbnail || track.image || DEFAULT_THUMBNAIL,
-        url: track.url || track.audio,
-        duration: track.duration,
-        stream_url: track.url || track.audio,
-      }));
-
-    handleTrackSelect(trackToPlay, remainingTracks);
-    navigate(`/song/${song.id}`);
-  };
-
-  const handlePlayAll = () => {
-    if (transformedTrending.length > 0) {
-      const firstTrack = transformedTrending[0];
-      const trackToPlay = {
-        id: firstTrack.id,
-        title: firstTrack.title || firstTrack.name,
-        artist: firstTrack.artist || firstTrack.artist_name,
-        artwork: firstTrack.thumbnail || firstTrack.image || DEFAULT_THUMBNAIL,
-        url: firstTrack.url || firstTrack.audio,
-        duration: firstTrack.duration,
-        stream_url: firstTrack.url || firstTrack.audio,
-      };
-
-      const remainingTracks = transformedTrending.slice(1).map((track) => ({
-        id: track.id,
-        title: track.title || track.name,
-        artist: track.artist || track.artist_name,
-        artwork: track.thumbnail || track.image || DEFAULT_THUMBNAIL,
-        url: track.url || track.audio,
-        duration: track.duration,
-        stream_url: track.url || track.audio,
-      }));
-
-      handleTrackSelect(trackToPlay, remainingTracks);
-    }
-  };
   const { theme } = useTheme();
   // Main render
   return (

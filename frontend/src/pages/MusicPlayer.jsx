@@ -1,6 +1,4 @@
-import TopNav from "../components/TopNav";
 import BottomPlayer from "../components/BottomPlayer";
-import HomePage from "./HomePage";
 import { useTheme } from "../hooks/useTheme";
 
 /**

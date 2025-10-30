@@ -18,13 +18,13 @@ const PlayerContext = createContext({
   playNext: () => {},
   playPrevious: () => {},
   togglePlayPause: () => {},
-  loadQueue: () => {},
+  loadNewQueue: () => {},
   addToQueue: () => {},
   removeFromQueue: () => {},
   clearQueue: () => {},
   setVoume: () => {},
   setLoopStyle: () => {},
-  loadPlayer: () => {},
+  loadNewPlayer: () => {},
 });
 
 const PlayerProvider = ({ children }) => {

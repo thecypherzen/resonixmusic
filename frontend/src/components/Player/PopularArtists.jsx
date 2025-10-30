@@ -31,6 +31,7 @@ const transormArtists = (artist) => ({
  * @returns {React.ReactNode}
  */
 const PopularArtists = ({ cardsPerSet = 5 }) => {
+  console.log("****LOADING ARTISTS....");
   const [visibleArtists, setVisibleArtists] = useState(0);
   const [dataState, setDataState] = useState({ artists: null, error: null });
   const [isLoading, setIsLoading] = useState(true);
@@ -52,6 +53,8 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
       setIsLoading(false);
     }
   }, [data, error]);
+
+  useEffect(() => {}, [dataState.error, dataState.artists]);
   // Use the custom hook for data fetching with caching and retry
   const handleArtistClick = useCallback((artist) => {
     window.scrollTo(0, 0);
@@ -62,10 +65,7 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
   return isLoading ? (
     <SectionSkeleton cardsPerset={cardsPerSet} />
   ) : dataState.artists?.length ? (
-    <div
-      className="flex flex-col flex-wrap mb-5 overflow-y-scroll"
-      data-theme={theme}
-    >
+    <div className="flex flex-col flex-wrap mb-5 w-full" data-theme={theme}>
       <div className="flex flex-row w-full mb-4 items-center">
         <HeadingText text={"Popular Artists"} />
         <div className="ml-auto flex gap-1 md:gap-2 items-center text-xs transition-all duration-300">
