@@ -11,6 +11,7 @@ const AppStateContext = createContext({
   setError: null,
   setSelectedPlaylist: null,
   setSelectedTracks: null,
+  thumbnailStore: null,
 });
 
 export function AppStateProvider({ children }) {
@@ -19,6 +20,7 @@ export function AppStateProvider({ children }) {
   const [error, setError] = useState(null);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [selectedTracks, setSelectedTracks] = useState(null);
+  const thumbnailStore = new Map();
 
   useEffect(() => {}, [
     playlists,
@@ -26,6 +28,7 @@ export function AppStateProvider({ children }) {
     error,
     selectedPlaylist,
     selectedTracks,
+    thumbnailStore,
   ]);
 
   return (
@@ -41,6 +44,7 @@ export function AppStateProvider({ children }) {
         setError,
         setSelectedPlaylist,
         setSelectedTracks,
+        thumbnailStore,
       }}
     >
       {children}

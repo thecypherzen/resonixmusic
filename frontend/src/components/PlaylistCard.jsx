@@ -1,13 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaPlay } from "react-icons/fa";
-import { usePlaylistThumbnail } from "../hooks/usePlaylistThumbnail";
 import MusicCard from "./MusicCard";
 import { useTheme } from "../hooks/useTheme";
 import { cn } from "../lib/utils";
+import { UseThumbnail } from "@/hooks/UseThumbnail";
 
 const PlaylistCard = ({ playlist, onClick }) => {
-  const thumbnail = usePlaylistThumbnail(playlist.id);
   const { theme } = useTheme();
+  const thumbnail = UseThumbnail("playlist", playlist.id);
+  useEffect(() => {
+    console.log("\n\nPLAYLISTCARD THUMBNAIL:", thumbnail);
+  }, [thumbnail]);
+
   return (
     <button
       onClick={() => onClick(playlist)}
@@ -24,7 +28,7 @@ const PlaylistCard = ({ playlist, onClick }) => {
       </div>
       <MusicCard
         variant="boxed"
-        imageUrl={thumbnail}
+        bgImageUrl={thumbnail}
         className="w-[160px]  md:w-[200px]"
       >
         <p className="font-bold text-md w-full truncate text-ellipsis dark:text-neutral-100/90 text-neutral-900">

@@ -5,17 +5,19 @@ import { useEffect } from "react";
 import { Spinner } from "./ui/spinner";
 import { AlertCircle, Share2 } from "lucide-react";
 import { capitalise } from "@/lib/utils";
+import { UseThumbnail } from "@/hooks/UseThumbnail";
 
 export function DetailsPageHeader({ type, dataSet }) {
   const { downloadZip, error, isLoading: isDownloading } = UseDownload();
   const { isPlaying } = UsePlayer();
+  const fallbackThumbnail = UseThumbnail(type, dataSet.id);
   useEffect(() => {}, [error, isDownloading]);
   return (
     <>
       {/* Banner */}
       <div className="flex items-end gap-6 p-6 h-[20rem] bg-transparent">
         <img
-          src={dataSet.thumbnail ? dataSet.thumbnail : "/default_playlist.png"}
+          src={dataSet.thumbnail ? dataSet.thumbnail : fallbackThumbnail}
           alt={dataSet.title || "Playlist Thumbnail"}
           className="w-[10.75rem] h-[10.75rem] shadow-2xl rounded-lg"
         />

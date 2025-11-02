@@ -18,6 +18,8 @@ const CURRENT_USER = "gabrielisaacs";
  */
 class RequestAPI {
   #client = null;
+  #imageClient = null;
+
   async #makeRequest(
     requestFunction,
     funcParams = [],
@@ -144,6 +146,11 @@ class RequestAPI {
       });
       RequestAPI.addMiddleWare(this.#client);
     }
+    if (!this.#imageClient) {
+      this.#imageClient = axios.create({
+        baseURL: "https://api.unsplash.com/photos/",
+      });
+    }
   }
 
   /**
@@ -156,6 +163,13 @@ class RequestAPI {
       this.#init();
     }
     return this.#client;
+  }
+
+  get imageClient() {
+    if (!this.#imageClient) {
+      this.#init();
+    }
+    return this.#imageClient;
   }
   // delete request handler
   delete() {}
@@ -191,26 +205,23 @@ class RequestAPI {
   }
   post() {}
   put() {}
-}
-
-const imageapi = axios.create({
-  baseURL: "https://api.unsplash.com/photos/",
-});
-
-const getRandomImage = async (orientation) => {
-  try {
-    const response = await imageapi.get("/random", {
-      params: {
-        query: "dark music",
-        orientation,
-        client_id: UNSPLASH_CLIENT_ID,
-      },
-    });
-    return response?.data?.urls?.full;
-  } catch (error) {
-    console.log("RANDOM IMAGE ERROR\n\t", error);
+  async randomImage(orientation) {
+    try {
+      const response = await imageapi.get("/random", {
+        params: {
+          query: "music",
+          orientation,
+          client_id: UNSPLASH_CLIENT_ID,
+        },
+      });
+      console.log("\n\n\nIMAGE RESPONSE:", response);
+      return { success: true, data: response?.data?.urls?.full };
+    } catch (error) {
+      console.error("RANDOM IMAGE ERROR\n\t", error);
+      return { success: false, data: response };
+    }
   }
-};
+}
 
 const getAlbumDetails = async (albumId) => {
   try {
@@ -223,8 +234,6 @@ const getAlbumDetails = async (albumId) => {
         audio_format: "mp32",
       },
     });
-
-    console.log("Album and tracks response:", response);
 
     if (response.data?.results?.[0]) {
       const albumData = response.data.results[0];
@@ -475,7 +484,6 @@ const getSimilarArtists = async (artistId) => {
 };
 
 export {
-  getRandomImage,
   getAlbumDetails,
   getPlaylistDetails,
   getRecentTracks,

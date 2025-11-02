@@ -40,15 +40,15 @@ const Playlists = ({ cardsPerSet = 5 }) => {
       <div className="flex flex-row bg-transparent h-[16rem] md:h-[18rem] w-full gap-4 mt-4 @container overflow-x-scroll py-4 px-2">
         {playlists
           .slice(visiblePlaylists, visiblePlaylists + cardsPerSet)
-          .map((playlist, index) => {
+          .map((playlist) => {
             return (
               <PlaylistCard
                 key={playlist.id}
                 playlist={playlist}
                 onClick={() => {
                   const t = setTimeout(() => {
-                    setSelectedPlaylist(playlists[index]);
                     navigate(`/playlists/${playlist.id}`);
+                    clearTimeout(t);
                   }, 200);
                 }}
               />

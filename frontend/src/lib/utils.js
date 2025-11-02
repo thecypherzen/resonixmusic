@@ -1,3 +1,5 @@
+import { UNSPLASH_CLIENT_ID } from "@/constants/config";
+import API from "@/services/api";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -47,4 +49,29 @@ export function transformTrack(track) {
     downloadable: track.audiodownload_allowed,
     downloadUrl: track.audiodownload || "",
   };
+}
+
+export function randomImage(orientation) {
+  const fallbackArtworks = [
+    "/artworks/artwork_1.jpg",
+    "/artworks/artwork_2.jpg",
+    "/artworks/artwork_3.webp",
+  ];
+  const len = fallbackArtworks.length;
+  return API.imageClient
+    .get("/random", {
+      params: {
+        query: "music",
+        orientation,
+        client_id: UNSPLASH_CLIENT_ID,
+      },
+    })
+    .then((res) => {
+      return res?.data?.urls?.full;
+    })
+    .catch((err) => {
+      console.error(err);
+      const index = Math.floor((Math.random() * 10) % len);
+      return fallbackArtworks[index];
+    });
 }
