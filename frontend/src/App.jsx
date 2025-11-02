@@ -6,20 +6,23 @@ import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./hooks/useTheme";
 import { DownloadProvider } from "./hooks/UseDownload";
 import { PlayerProvider } from "./hooks/UsePlayer";
+import { AppStateProvider } from "./hooks/UseAppState";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <ErrorBoundary>
-          <ThemeProvider>
-            <DownloadProvider>
-              <PlayerProvider>
-                <ScrollToTop />
-                <Routes />
-              </PlayerProvider>
-            </DownloadProvider>
-          </ThemeProvider>
+          <AppStateProvider>
+            <ThemeProvider>
+              <DownloadProvider>
+                <PlayerProvider>
+                  <ScrollToTop />
+                  <Routes />
+                </PlayerProvider>
+              </DownloadProvider>
+            </ThemeProvider>
+          </AppStateProvider>
         </ErrorBoundary>
       </AuthProvider>
     </BrowserRouter>

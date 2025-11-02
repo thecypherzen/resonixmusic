@@ -7,13 +7,14 @@ import HeadingText from "../HeadingText";
 import ActionButton from "./ActionButton";
 import SectionErrorDisplay from "./SectionErrorDisplay";
 import { useNavigate } from "react-router-dom";
-import { capitalize } from "../../lib/utils";
+import { capitalise } from "../../lib/utils";
+import { UseAppState } from "@/hooks/UseAppState";
 
 const transformPlaylists = (playlist) => {
   return {
     id: playlist.id,
-    title: capitalize(playlist.name) || "",
-    artist: capitalize(playlist.user_name) || "",
+    title: capitalise(playlist.name) || "",
+    artist: capitalise(playlist.user_name) || "",
     thumbnail: `https://usercontent.jamendo.com?type=playlist&id=${playlist.id}&width=300`,
     creationDate: playlist.creationdate,
     shareUrl: playlist.shareurl,
@@ -23,47 +24,46 @@ const transformPlaylists = (playlist) => {
 };
 
 const Playlists = ({ cardsPerSet = 5 }) => {
+  const { playlists, setPlaylists, setSelectedPlaylist } = UseAppState();
   const [visiblePlaylists, _] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [dataState, setDataState] = useState({ artists: null, error: null });
   const navigate = useNavigate();
-
-  const handlePlaylistClick = useCallback((playlistId) => {
-    console.log("CLICKED ON: ", playlistId);
-    //navigate(`/playlist/${playlistId}`);
-  }, []);
 
   const { data, error } = useFetch({ url: "/playlists", method: "get" });
 
   useEffect(() => {
     if (data) {
-      setDataState({ error: null, playlists: data.map(transformPlaylists) });
+      setPlaylists(data.map(transformPlaylists));
       setIsLoading(false);
     } else if (error) {
-      setDataState({ error, playlists: null });
       setIsLoading(false);
     }
   }, [data, error]);
 
   return isLoading ? (
     <SectionSkeleton cardsPerset={cardsPerSet} />
-  ) : dataState?.playlists?.length ? (
+  ) : playlists?.length ? (
     <div className="flex flex-col mb-4">
       <div className="flex flex-row mb-4 items-center">
-        <HeadingText text={"Featured playlists"} />
+        <HeadingText text={"Featured Playlists"} />
         <div className="ml-auto flex gap-2 items-center">
           <ActionButton text={"More"} />
         </div>
       </div>
       <div className="flex flex-row bg-transparent h-[16rem] md:h-[18rem] w-full gap-4 mt-4 @container overflow-x-scroll py-4 px-2">
-        {dataState?.playlists
+        {playlists
           .slice(visiblePlaylists, visiblePlaylists + cardsPerSet)
-          .map((playlist) => {
+          .map((playlist, index) => {
             return (
               <PlaylistCard
                 key={playlist.id}
                 playlist={playlist}
-                onClick={() => handlePlaylistClick(playlist.id)}
+                onClick={() => {
+                  const t = setTimeout(() => {
+                    setSelectedPlaylist(playlists[index]);
+                    navigate(`/playlists/${playlist.id}`);
+                  }, 200);
+                }}
               />
             );
           })}
@@ -71,9 +71,9 @@ const Playlists = ({ cardsPerSet = 5 }) => {
     </div>
   ) : (
     <SectionErrorDisplay
-      reason={dataState.error?.reason || "An unnown reason"}
+      reason={error?.reason || "An unnown reason"}
       prefix={"Loading Artists failed due to"}
-      message={dataState.error?.message}
+      message={error?.message}
     />
   );
 };

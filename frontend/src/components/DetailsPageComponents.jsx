@@ -1,9 +1,10 @@
-import { BsCollectionPlay } from "react-icons/bs";
+import { FaPlay, FaPause, FaHeart, FaDownload } from "react-icons/fa";
 import UsePlayer from "../hooks/UsePlayer";
 import UseDownload from "../hooks/UseDownload";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Spinner } from "./ui/spinner";
 import { AlertCircle, Share2 } from "lucide-react";
+import { capitalise } from "@/lib/utils";
 
 export function DetailsPageHeader({ type, dataSet }) {
   return (
@@ -44,7 +45,7 @@ export function DetailsPageHeader({ type, dataSet }) {
 // type := playlist | track | album
 export function DetailsPageControls({ collection, type }) {
   const { downloadZip, error, isLoading: isDownloading } = UseDownload();
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const { isPlaying } = UsePlayer();
 
   useEffect(() => {}, [error, isDownloading]);
 
@@ -79,7 +80,7 @@ export function DetailsPageControls({ collection, type }) {
       >
         <FaDownload size={24} /> {isDownloading && <Spinner />}
       </button>
-      <div className="relative" ref={menuRef}>
+      {/*<div className="relative" ref={menuRef}>
         <button
           onClick={() => {
             setShowMoreMenu((prev) => !prev);
@@ -106,7 +107,7 @@ export function DetailsPageControls({ collection, type }) {
             <AlertCircle /> <span>{error.message}</span>
           </span>
         )}
-      </div>
+      </div>*/}
     </div>
   );
 }

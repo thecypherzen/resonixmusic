@@ -31,7 +31,6 @@ const transormArtists = (artist) => ({
  * @returns {React.ReactNode}
  */
 const PopularArtists = ({ cardsPerSet = 5 }) => {
-  console.log("****LOADING ARTISTS....");
   const [visibleArtists, setVisibleArtists] = useState(0);
   const [dataState, setDataState] = useState({ artists: null, error: null });
   const [isLoading, setIsLoading] = useState(true);

@@ -53,6 +53,9 @@ const fetchData = async (options) => {
           ...defaults?.options,
           ...options?.extras,
         });
+        if (options.url === "/playlists") {
+          console.log(response);
+        }
         // handle success
         switch (response.success) {
           case true:
@@ -60,6 +63,7 @@ const fetchData = async (options) => {
             dataCache.set(fullCacheKey, response.data);
             return response.data;
           default:
+            console.error(response);
             let reason,
               message = "Try again later";
             switch (response.data?.errno) {

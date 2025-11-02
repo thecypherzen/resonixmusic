@@ -1,4 +1,10 @@
+import UsePlayer from "@/hooks/UsePlayer";
+import { formatDuration } from "@/lib/utils";
+import { FaPlay, FaPause, FaDownload, FaClock } from "react-icons/fa";
+
 export default function TracksList({ tracks = null }) {
+  const { isPlaying, currentTrack, isLoading } = UsePlayer();
+
   if (!tracks || tracks.length === 0) {
     return <p className="text-center">No tracks available.</p>;
   }
@@ -20,7 +26,7 @@ export default function TracksList({ tracks = null }) {
           <tr
             key={track.id}
             className="group hover:bg-neutral-800/50 rounded-lg transition-colors cursor-pointer"
-            onClick={() => handlePlayTrack(track, index)}
+            onClick={() => {}}
           >
             <td className="px-4 py-3 text-neutral-400 w-12">
               <div className="relative w-4">
@@ -41,12 +47,12 @@ export default function TracksList({ tracks = null }) {
                     src={track.image}
                     alt={track.name}
                     className={`w-10 h-10 rounded ${
-                      player.isLoading && currentTrack?.id === track.id
+                      isLoading && currentTrack?.id === track.id
                         ? "opacity-50"
                         : ""
                     }`}
                   />
-                  {player.isLoading && currentTrack?.id === track.id && (
+                  {isLoading && currentTrack?.id === track.id && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded">
                       <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
                     </div>

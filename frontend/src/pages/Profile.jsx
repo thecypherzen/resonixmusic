@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { fetchUserProfile } from '../services/userService';
-import { Edit2, Mail, Calendar } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { fetchUserProfile } from "../services/userService";
+import { Edit2, Mail, Calendar } from "lucide-react";
 
 const Profile = () => {
   const { user } = useAuth();
@@ -60,7 +60,7 @@ const Profile = () => {
                 />
               ) : (
                 <div className="w-[12rem] h-[12rem] rounded-full bg-[#282828] flex items-center justify-center text-5xl font-bold shadow-2xl">
-                  {profile?.dispname?.substring(0, 2).toUpperCase() || 'U'}
+                  {profile?.dispname?.substring(0, 2).toUpperCase() || "U"}
                 </div>
               )}
               <button className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
@@ -70,16 +70,22 @@ const Profile = () => {
 
             {/* Profile Info */}
             <div className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-neutral-400">Profile</span>
-              <h1 className="text-6xl font-bold">{profile?.dispname || 'User'}</h1>
+              <span className="text-sm font-medium text-neutral-400">
+                Profile
+              </span>
+              <h1 className="text-6xl font-bold">
+                {profile?.dispname || "User"}
+              </h1>
               <div className="flex items-center gap-6 mt-4">
                 <div className="flex items-center gap-2 text-sm text-neutral-400">
                   <Mail size={16} />
-                  {profile?.name || 'email@example.com'}
+                  {profile?.name || "email@example.com"}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-neutral-400">
                   <Calendar size={16} />
-                  Joined {profile?.creationdate?.split('-')[0] || new Date().getFullYear()}
+                  Joined{" "}
+                  {profile?.creationdate?.split("-")[0] ||
+                    new Date().getFullYear()}
                 </div>
               </div>
             </div>
@@ -100,7 +106,9 @@ const Profile = () => {
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-sm text-neutral-400">Language</span>
-                <span className="text-white">{profile?.lang?.toUpperCase()}</span>
+                <span className="text-white">
+                  {profile?.lang?.toUpperCase()}
+                </span>
               </div>
             </div>
           </div>

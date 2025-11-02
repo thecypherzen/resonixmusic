@@ -6,7 +6,6 @@ import ForgotPassword from "../pages/ForgotPassword";
 import MusicPlayer from "../pages/MusicPlayer";
 import MusicPlayerLayout from "../components/layouts/MusicPlayerLayout";
 import SongDetailsPage from "../pages/SongDetailsPage";
-import PlaylistPage from "../pages/PlaylistPage";
 import AlbumDetailsPage from "../pages/AlbumDetailsPage";
 import ArtistPage from "../pages/ArtistPage";
 import Profile from "../pages/Profile";
@@ -18,6 +17,7 @@ import ApiDocs from "../components/ApiDocs";
 import ComingSoonPage from "../pages/ComingSoonPage";
 import AppLayout from "../components/layouts/AppLayout";
 import HomePage from "../pages/HomePage";
+import SinglePlaylistPage from "@/pages/SinglePlaylistPage";
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -40,9 +40,9 @@ const AppRoutes = () => {
           <Route index element={<HomePage />} />
           <Route path="/music" element={<HomePage />} />
           <Route path="/song/:id" element={<SongDetailsPage />} />
-          <Route path="/album/:id" element={<AlbumDetailsPage />} />
-          <Route path="/artist/:id" element={<ArtistPage />} />
-          <Route path="/playlist/:id" element={<PlaylistPage />} />
+          <Route path="/albums/:id" element={<AlbumDetailsPage />} />
+          <Route path="/artists/:id" element={<ArtistPage />} />
+          <Route path="/playlists/:id" element={<SinglePlaylistPage />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/docs" element={<ApiDocs />} />
           <Route path="/coming-soon" element={<ComingSoonPage />} />
