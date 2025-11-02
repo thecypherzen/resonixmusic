@@ -172,6 +172,7 @@ class RequestAPI {
     const requestOptions = {
       ...options,
     };
+    //console.log("request Options:", options);
     if (!requestOptions.order) {
       requestOptions.order = "popularity_week_desc";
     }
@@ -180,6 +181,7 @@ class RequestAPI {
       url,
       requestOptions,
     ]);
+    //console.log("\n\nGet Request Response", response);
     switch (response.success) {
       case true:
         return { success: true, data: response.data?.data?.results || [] };

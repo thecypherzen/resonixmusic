@@ -7,21 +7,8 @@ import HeadingText from "../HeadingText";
 import ActionButton from "./ActionButton";
 import SectionErrorDisplay from "./SectionErrorDisplay";
 import { useNavigate } from "react-router-dom";
-import { capitalise } from "../../lib/utils";
 import { UseAppState } from "@/hooks/UseAppState";
-
-const transformPlaylists = (playlist) => {
-  return {
-    id: playlist.id,
-    title: capitalise(playlist.name) || "",
-    artist: capitalise(playlist.user_name) || "",
-    thumbnail: `https://usercontent.jamendo.com?type=playlist&id=${playlist.id}&width=300`,
-    creationDate: playlist.creationdate,
-    shareUrl: playlist.shareurl,
-    shortUrl: playlist.shorturl,
-    userId: playlist.user_d,
-  };
-};
+import { transformPlaylist } from "@/lib/utils";
 
 const Playlists = ({ cardsPerSet = 5 }) => {
   const { playlists, setPlaylists, setSelectedPlaylist } = UseAppState();
@@ -33,7 +20,7 @@ const Playlists = ({ cardsPerSet = 5 }) => {
 
   useEffect(() => {
     if (data) {
-      setPlaylists(data.map(transformPlaylists));
+      setPlaylists(data.map(transformPlaylist));
       setIsLoading(false);
     } else if (error) {
       setIsLoading(false);

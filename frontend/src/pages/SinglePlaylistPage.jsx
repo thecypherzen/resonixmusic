@@ -8,68 +8,45 @@ import { saveAs } from "file-saver";
 import { useFetch } from "../hooks/useFetch";
 import TracksList from "../components/TracksList";
 import UsePlayer from "../hooks/UsePlayer";
-import {
-  DetailsPageControls,
-  DetailsPageHeader,
-} from "../components/DetailsPageComponents";
+import { DetailsPageHeader } from "../components/DetailsPageHeader";
 import { UseAppState } from "@/hooks/UseAppState";
+import { transformPlaylist, transformTrack } from "@/lib/utils";
 
 const SinglePlaylistPage = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
-  const { selectedPlaylist, setTracks, setSelectedPlaylist } = UseAppState();
+  const { selectedPlaylist, setSelectedPlaylist, setSelectedTracks } =
+    UseAppState();
   const {} = UsePlayer();
 
-  const { data: playlistData, error: playlistError } = !selectedPlaylist
-    ? useFetch({
-        url: `/playlists`,
-        method: "get",
-        extras: { params: { id: [id] } },
-      })
-    : { data: null, error: null };
-
-  const { data: tracks, error: tracksError } = selectedPlaylist
-    ? useFetch({
-        url: `/playlists/${selectedPlaylist?.id}/tracks`,
-        method: "get",
-      })
-    : { data: null, error: null };
+  const { data: playlist, error } = useFetch({
+    url: `/playlists/tracks`,
+    method: "get",
+    extras: { params: { id: [id] } },
+  });
 
   useEffect(() => {
     if (id === null || id === undefined) return;
-
-    if (playlistError) {
-      console.error("Playlist fetch error:", playlistError);
+    if (error) {
       setIsLoading(false);
       return;
     }
-    if (playlistData && !selectedPlaylist) {
-      console.log("freshly selected playlist:", playlistData);
-      setSelectedPlaylist(playlistData);
-    }
-    if (tracksError) {
-      console.error("Tracks fetch error:", tracksError);
-      setIsLoading(false);
-      return;
-    }
-    if (tracks) {
-      setTracks(tracks);
+    if (playlist && isLoading) {
+      const pl = transformPlaylist(playlist[0]);
+      setSelectedPlaylist(pl);
+      setSelectedTracks(pl.tracks);
       setIsLoading(false);
     }
-  }, [id, playlistData, tracks, tracksError, playlistError, isLoading]);
+  }, [id, isLoading, playlist, error]);
 
   if (isLoading) return <LoadingState />;
   if (!isLoading && !selectedPlaylist) return <div>Playlist not found</div>;
 
   return (
-    <div className="flex-1 overflow-y-auto w-full border-1 border-orange-500">
+    <div className="flex-1 w-full min-h-[calc(100vh-3.5rem-26px)]">
       <div className="flex flex-col bg-transparent px-10 -mt-16">
-        {/* Playlist Header */}
         <DetailsPageHeader type="playlist" dataSet={selectedPlaylist} />
-        {/* Player Controls */}
-        <DetailsPageControls collection={selectedPlaylist} type="playlist" />
-        {/* Tracks List */}
-        <TracksList tracks={tracks} />
+        <TracksList tracks={selectedPlaylist.tracks.map(transformTrack)} />
       </div>
     </div>
   );

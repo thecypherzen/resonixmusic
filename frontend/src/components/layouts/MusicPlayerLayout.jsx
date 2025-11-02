@@ -1,4 +1,3 @@
-import SideBar from "@/components/SideBar";
 import { useTheme } from "@/hooks/useTheme";
 import { Outlet } from "react-router-dom";
 import TopNav from "../TopNav";

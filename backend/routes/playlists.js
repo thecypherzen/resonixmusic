@@ -1,14 +1,11 @@
-import { Router, json } from 'express';
-import { param, query } from 'express-validator';
-import {
-  getPlaylists,
-  getPlaylistTracks,
-} from '../controllers/index.js';
+import { Router, json } from "express";
+import { query } from "express-validator";
+import { getPlaylists, getPlaylistTracks } from "../controllers/index.js";
 import {
   MAX_PAGE_SIZE,
   MIN_PAGE_SIZE,
-  RESPONSE_CODES as resCodes
-} from '../defaults/index.js';
+  RESPONSE_CODES as resCodes,
+} from "../defaults/index.js";
 
 const router = Router();
 router.use(json());
@@ -153,108 +150,122 @@ router.use(json());
  *             type: string
  */
 router.get(
-  '/tracks',
+  "/tracks",
   [
-    query([
-      'access_token', 'name', 'name_search', 'user_name'
-    ])
+    query(["access_token", "name", "name_search", "user_name"])
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .escape(),
-    query('audio_format')
+    query("audio_format")
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
-      .isIn(['mp31', 'mp32', 'ogg', 'flac'])
-      .withMessage('Expects mp31, mp32, ogg or flac')
+      .withMessage("Value cannot be empty")
+      .isIn(["mp31", "mp32", "ogg", "flac"])
+      .withMessage("Expects mp31, mp32, ogg or flac")
       .escape(),
-    query('date_between')
+    query("date_between")
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .matches(
         /^([0-9]{4})-([0-9]{2})-([0-9]{2})_([0-9]{4})-([0-9]{2})-([0-9]{2})$/
       )
       .escape(),
-    query('format')
+    query("format")
       .optional()
       .trim()
-      .isIn(['json', 'jsonpretty'])
-      .withMessage('Expects json or jsonpretty')
+      .isIn(["json", "jsonpretty"])
+      .withMessage("Expects json or jsonpretty")
       .escape(),
-    query('full_count')
+    query("full_count")
       .optional()
       .trim()
       .toBoolean()
       .isBoolean({ strict: true })
-      .withMessage('Expects true/false')
+      .withMessage("Expects true/false")
       .escape(),
-    query(['id', 'user_id', 'track_type'])
+    query(["id", "user_id", "track_type"])
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isArray()
-      .withMessage('Expects an array')
+      .withMessage("Expects an array")
       .escape(),
-    query(['id.*', 'user_id.*'])
+    query(["id.*", "user_id.*"])
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isInt({ min: 1 })
-      .withMessage('Expects an integer > 0')
+      .withMessage("Expects an integer > 0")
       .escape(),
-    query('order_by')
+    query("order_by")
       .optional()
-      .default('creationdate_desc')
+      .default("creationdate_desc")
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isIn([
-        'creationdate', 'creationdate_asc', 'creationdate_desc',
-        'id', 'id_asc', 'id_desc', 'name', 'name_asc', 'name_desc',
-        'track_added_date', 'track_added_date_asc',
-        'track_added_date_desc', 'track_id', 'track_id_asc',
-        'track_id_desc', 'track_name','track_name_asc',
-        'track_name_desc', 'track_position', 'track_position_asc',
-        'track_position_desc'
+        "creationdate",
+        "creationdate_asc",
+        "creationdate_desc",
+        "id",
+        "id_asc",
+        "id_desc",
+        "name",
+        "name_asc",
+        "name_desc",
+        "track_added_date",
+        "track_added_date_asc",
+        "track_added_date_desc",
+        "track_id",
+        "track_id_asc",
+        "track_id_desc",
+        "track_name",
+        "track_name_asc",
+        "track_name_desc",
+        "track_position",
+        "track_position_asc",
+        "track_position_desc",
       ])
       .escape(),
-    query('page')
-      .default('1')
+    query("page")
+      .default("1")
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isInt({ min: 1 })
-      .withMessage('Expects an integer > 0')
+      .withMessage("Expects an integer > 0")
       .escape(),
-    query('page_size')
+    query("page_size")
       .default(`${MIN_PAGE_SIZE}`)
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isInt({ min: MIN_PAGE_SIZE, max: MAX_PAGE_SIZE })
-      .withMessage(`Expects an integer from ${MIN_PAGE_SIZE}`
-                  + ` to ${MAX_PAGE_SIZE}`)
+      .withMessage(
+        `Expects an integer from ${MIN_PAGE_SIZE}` + ` to ${MAX_PAGE_SIZE}`
+      )
       .escape(),
-    query('position_between')
+    query("position_between")
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .matches(/^([0-9]+)_([0-9]+)$/)
-      .withMessage('Expects format from_to')
+      .withMessage("Expects format from_to")
       .escape(),
-    query('track_type.*')
+    query("track_type.*")
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
-      .isIn(['single', 'albumtrack'])
+      .withMessage("Value cannot be empty")
+      .isIn(["single", "albumtrack"])
       .escape(),
   ],
-  getPlaylistTracks);
+  getPlaylistTracks
+);
 
 /**
  * @openapi
@@ -375,101 +386,105 @@ router.get(
  *             type: string
  */
 router.get(
-  '/',
+  "/",
   [
-    query([
-      'access_token', 'name', 'name_search', 'user_name'
-    ])
+    query(["access_token", "name", "name_search", "user_name"])
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .escape(),
-    query('audio_format')
+    query("audio_format")
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
-      .matches('mp32')
-      .withMessage('Expects mp32')
+      .withMessage("Value cannot be empty")
+      .matches("mp32")
+      .withMessage("Expects mp32")
       .escape(),
-    query('date_between')
+    query("date_between")
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .matches(
         /^([0-9]{4})-([0-9]{2})-([0-9]{2})_([0-9]{4})-([0-9]{2})-([0-9]{2})$/
       )
       .escape(),
-    query('format')
+    query("format")
       .optional()
       .trim()
-      .isIn(['json', 'jsonpretty'])
-      .withMessage('Expects json or jsonpretty')
+      .isIn(["json", "jsonpretty"])
+      .withMessage("Expects json or jsonpretty")
       .escape(),
-    query('full_count')
+    query("full_count")
       .optional()
       .trim()
       .toBoolean()
       .isBoolean({ strict: true })
-      .withMessage('Expects true/false')
+      .withMessage("Expects true/false")
       .escape(),
-    query(['id', 'user_id'])
+    query(["id", "user_id"])
       .optional()
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isArray()
-      .withMessage('Expects an array')
+      .withMessage("Expects an array")
       .escape(),
-    query(['id.*', 'user_id.*'])
+    query(["id.*", "user_id.*"])
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isInt({ min: 1 })
-      .withMessage('Expects an integer > 0')
+      .withMessage("Expects an integer > 0")
       .escape(),
-    query('order_by')
+    query("order_by")
       .optional()
-      .default('creationdate_desc')
+      .default("creationdate_desc")
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isIn([
-        'creationdate', 'creationdate_asc', 'creationdate_desc',
-        'id', 'id_asc', 'id_desc', 'name', 'name_asc', 'name_desc',
+        "creationdate",
+        "creationdate_asc",
+        "creationdate_desc",
+        "id",
+        "id_asc",
+        "id_desc",
+        "name",
+        "name_asc",
+        "name_desc",
       ])
       .escape(),
-    query('page')
-      .default('1')
+    query("page")
+      .default("1")
       .trim()
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isInt({ min: 1 })
-      .withMessage('Expects an integer > 0')
+      .withMessage("Expects an integer > 0")
       .escape(),
-    query('page_size')
-      .default('50')
+    query("page_size")
+      .default("50")
       .notEmpty()
-      .withMessage('Value cannot be empty')
+      .withMessage("Value cannot be empty")
       .isInt({ min: 10, max: MAX_PAGE_SIZE })
-      .withMessage(`Expects an integer from ${10}`
-                  + ` to ${MAX_PAGE_SIZE}`)
+      .withMessage(`Expects an integer from ${10}` + ` to ${MAX_PAGE_SIZE}`)
       .escape(),
   ],
   getPlaylists
-)
+);
 
 router.use((req, res) => {
   return res.status(404).send({
     headers: {
-      status: 'failed',
+      status: "failed",
       code: resCodes[22].code,
       error_message: resCodes[22].des,
-      warning: '',
-      'x-took': '0ms'
-    }
-  })
+      warning: "",
+      "x-took": "0ms",
+    },
+  });
 });
 
 export default router;

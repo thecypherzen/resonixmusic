@@ -53,7 +53,7 @@ const fetchData = async (options) => {
           ...defaults?.options,
           ...options?.extras,
         });
-        if (options.url === "/playlists") {
+        if (options.url.startsWith("/playlists")) {
           console.log(response);
         }
         // handle success
@@ -101,6 +101,7 @@ export const useFetch = (options) => {
    *   extras: Record<string, any>
    * }
    */
+
   useEffect(() => {
     if (!options.url) {
       setError({ message: "Data fetch failed. URL undefined" });
@@ -113,6 +114,6 @@ export const useFetch = (options) => {
       .catch((err) => {
         setError(err);
       });
-  }, []);
+  }, [options.url, JSON.stringify(options.extras)]);
   return { data, error };
 };
