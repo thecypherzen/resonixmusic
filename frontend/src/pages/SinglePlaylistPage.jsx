@@ -18,7 +18,7 @@ const SinglePlaylistPage = () => {
   const { selectedPlaylist, setSelectedPlaylist, setSelectedTracks } =
     UseAppState();
   const {} = UsePlayer();
-
+  console.log("\nID:", id);
   const { data: playlist, error } = useFetch({
     url: `/playlists/tracks`,
     method: "get",
@@ -27,24 +27,38 @@ const SinglePlaylistPage = () => {
 
   useEffect(() => {
     if (id === null || id === undefined) return;
+
+    setIsLoading(true); // Reset loading state when ID changes
+
     if (error) {
+      console.error("Error loading playlist:", error);
       setIsLoading(false);
       return;
     }
-    if (playlist && isLoading) {
+
+    if (playlist) {
+      console.log("New playlist data received:", playlist[0]);
       const pl = transformPlaylist(playlist[0]);
       setSelectedPlaylist(pl);
       setSelectedTracks(pl.tracks);
       setIsLoading(false);
     }
-  }, [id, isLoading, playlist, error]);
+  }, [id, playlist, error]); // Remove selectedPlaylist and isLoading from dependencies
+  useEffect(() => {
+    console.log(
+      "----> selectedPlaylist.id: ",
+      selectedPlaylist?.id,
+      "URL Id:",
+      id
+    );
+  }, [selectedPlaylist]);
 
   if (isLoading) return <LoadingState />;
   if (!isLoading && !selectedPlaylist) return <div>Playlist not found</div>;
 
   return (
     <div className="flex-1 w-full min-h-[calc(100vh-3.5rem-26px)]">
-      <div className="flex flex-col bg-transparent px-10 -mt-16">
+      <div className="flex flex-col">
         <DetailsPageHeader type="playlist" dataSet={selectedPlaylist} />
         <TracksList tracks={selectedPlaylist.tracks.map(transformTrack)} />
       </div>

@@ -32,7 +32,7 @@ const fetchData = async (options) => {
     .trim()
     .replace(/^\/+|\/+$/g, "")
     .replace("/", "-")}${
-    options?.params?.id?.length ? `-${options.params.id[0]}` : ""
+    options?.extras?.params?.id?.length ? `-${options.extras.params.id[0]}` : ""
   }`;
 
   // default response values

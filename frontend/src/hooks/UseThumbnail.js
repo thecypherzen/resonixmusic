@@ -12,6 +12,7 @@ export const UseThumbnail = (namespace, id) => {
     if (!namespace || !id) return;
 
     const key = `${namespace}-${id}`;
+    console.log("key ==", key);
     if (!tnStore.has(key)) {
       randomImage("square").then((v) => {
         tnStore.set(key, v);

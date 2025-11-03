@@ -26,5 +26,5 @@ export const CACHE_DEFAULTS = {
   maxSize: 100, // Maximum number of items in cache
   cleanupInterval: 60 * 1000, // 1 minute
   debug: import.meta.env.VITE_ENV === "dev",
-  key_prefix: "jamendo_",
+  key_prefix: "jmd_",
 };

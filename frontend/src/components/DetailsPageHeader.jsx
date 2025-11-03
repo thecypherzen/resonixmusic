@@ -6,16 +6,46 @@ import { Spinner } from "./ui/spinner";
 import { AlertCircle, Share2 } from "lucide-react";
 import { capitalise } from "@/lib/utils";
 import { UseThumbnail } from "@/hooks/UseThumbnail";
+import { useTheme } from "@/hooks/useTheme";
+import { UseAppState } from "@/hooks/UseAppState";
 
 export function DetailsPageHeader({ type, dataSet }) {
   const { downloadZip, error, isLoading: isDownloading } = UseDownload();
   const { isPlaying } = UsePlayer();
   const fallbackThumbnail = UseThumbnail(type, dataSet.id);
-  useEffect(() => {}, [error, isDownloading]);
+  const { selectedPlaylist } = UseAppState();
+  const { theme } = useTheme();
+  useEffect(() => {
+    console.log(
+      "-----> fallbackThumbnail:",
+      fallbackThumbnail,
+      "\ndAtaset ID:",
+      dataSet.id,
+      "selectedPlaylist Id:",
+      selectedPlaylist?.id
+    );
+  }, [error, isDownloading, dataSet.id, selectedPlaylist]);
   return (
     <>
       {/* Banner */}
-      <div className="flex items-end gap-6 p-6 h-[20rem] bg-transparent">
+      <div
+        className="flex items-end gap-6 p-6 h-[20rem] relative z-0"
+        data-theme={theme}
+      >
+        <div
+          className="absolute inset-0 w-full h-full opacity-80 -z-10"
+          style={{
+            backgroundImage: `url(${fallbackThumbnail})`,
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center center",
+          }}
+          data-theme={theme}
+        ></div>
+        <div
+          className="absolute inset-0 w-full h-full -z-9 backdrop-blur-[0.5px] bg-gradient-to-t from-background from-20% to-transparent to-200% bg-blend-color-burn"
+          data-theme={theme}
+        ></div>
         <img
           src={dataSet.thumbnail ? dataSet.thumbnail : fallbackThumbnail}
           alt={dataSet.title || "Playlist Thumbnail"}
@@ -28,7 +58,7 @@ export function DetailsPageHeader({ type, dataSet }) {
           </h1>
           <div className="flex items-center gap-2 text-md">
             <img
-              src={dataSet.thumbnail}
+              src={dataSet.thumbnail ? dataSet.thumbnail : fallbackThumbnail}
               alt={dataSet.title}
               className="w-6 h-6 rounded-full"
             />
@@ -51,7 +81,7 @@ export function DetailsPageHeader({ type, dataSet }) {
       <div className="flex items-center gap-8 p-6">
         <button
           onClick={() => {}}
-          className="font-medium w-42 h-12 flex items-center justify-center bg-[#08B2F0] hover:scale-[1.05] hover:shadow-neutral-950 rounded-full transition-all duration-300 text-white/90 text-sm px-10 gap-2"
+          className="font-medium flex items-center justify-center bg-[#08B2F0] hover:scale-[1.05] rounded-full transition-all duration-300 text-md px-10 py-3 gap-2 text-foreground dark:text-background"
           disabled={!dataSet.length}
         >
           {isPlaying ? (
@@ -65,7 +95,7 @@ export function DetailsPageHeader({ type, dataSet }) {
           )}
         </button>
         <button
-          className="bg-transparent text-white"
+          className="bg-transparent text-foreground"
           onClick={() => {
             console.log("like", type);
           }}
@@ -74,7 +104,7 @@ export function DetailsPageHeader({ type, dataSet }) {
         </button>
         <button
           onClick={() => downloadZip(dataSet, dataSet.name)}
-          className="bg-transparent text-white hover:text-[#08B2F0] transition-colors flex items-center gap-2"
+          className="bg-transparent text-foreground hover:text-[#08B2F0] transition-colors flex items-center gap-2"
         >
           <FaDownload size={24} />{" "}
           {isDownloading && (

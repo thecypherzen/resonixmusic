@@ -3,7 +3,7 @@ import { cn } from "../lib/utils";
 
 function MusicCard({ variant = "default", bgImageUrl, children, className }) {
   useEffect(() => {
-    console.log("\n\n\nBGIMAGEURL:", bgImageUrl);
+    console.log("\n\nBGIMAGEURL:", bgImageUrl);
   }, [bgImageUrl]);
   switch (variant) {
     case "default":

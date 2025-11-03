@@ -22,14 +22,13 @@ export function AppStateProvider({ children }) {
   const [selectedTracks, setSelectedTracks] = useState(null);
   const thumbnailStore = new Map();
 
-  useEffect(() => {}, [
-    playlists,
-    tracks,
-    error,
-    selectedPlaylist,
-    selectedTracks,
-    thumbnailStore,
-  ]);
+  useEffect(() => {
+    console.log('AppState Updated:', {
+      selectedPlaylist,
+      selectedTracks,
+      error
+    });
+  }, [selectedPlaylist, selectedTracks, error]);
 
   return (
     <AppStateContext.Provider

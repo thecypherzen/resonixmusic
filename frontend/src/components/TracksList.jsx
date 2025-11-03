@@ -43,7 +43,7 @@ export default function TracksList({ tracks = null }) {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="relative">
+                    <div className="relative size-10">
                       <img
                         src={track.thumbnail}
                         alt={track.title}
@@ -60,16 +60,16 @@ export default function TracksList({ tracks = null }) {
                       )}
                     </div>
                     <div className="flex flex-col">
-                      <span
-                        className={`font-normal ${
+                      <div
+                        className={`font-normal line-clamp-2  ${
                           currentTrack?.id === track.id ? "text-[#08B2F0]" : ""
                         }`}
                       >
                         {track.title}
-                      </span>
-                      <span className="text-sm text-neutral-400">
+                      </div>
+                      <div className="text-sm text-neutral-400">
                         {track.artist}
-                      </span>
+                      </div>
                     </div>
                   </div>
                 </td>

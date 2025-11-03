@@ -37,13 +37,13 @@ export function transformPlaylist(playlist) {
 export function transformTrack(track) {
   return {
     id: track.id,
-    title: track.name,
+    title: capitalise(track.name),
     artist: capitalise(track.artist_name) || "Unknown Artist",
     thumbnail: track.image || track.album_image,
     streamUrl: track.audio,
     duration: parseInt(track.duration || 0),
     likes: `${Math.floor(Math.random() * 100)}k`,
-    albumName: track.album_name,
+    albumName: capitalise(track.album_name),
     albumId: track.album_id,
     releaseDate: track.releasedate,
     downloadable: track.audiodownload_allowed,
