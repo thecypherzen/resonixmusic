@@ -1,5 +1,7 @@
 import { createContext, useState, useContext, useEffect } from "react";
 
+const imagesStore = new Map();
+
 const AppStateContext = createContext({
   playlists: null,
   tracks: null,
@@ -11,7 +13,7 @@ const AppStateContext = createContext({
   setError: null,
   setSelectedPlaylist: null,
   setSelectedTracks: null,
-  thumbnailStore: null,
+  imagesStore: null,
 });
 
 export function AppStateProvider({ children }) {
@@ -20,13 +22,12 @@ export function AppStateProvider({ children }) {
   const [error, setError] = useState(null);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [selectedTracks, setSelectedTracks] = useState(null);
-  const thumbnailStore = new Map();
 
   useEffect(() => {
-    console.log('AppState Updated:', {
+    console.log("AppState Updated:", {
       selectedPlaylist,
       selectedTracks,
-      error
+      error,
     });
   }, [selectedPlaylist, selectedTracks, error]);
 
@@ -43,7 +44,7 @@ export function AppStateProvider({ children }) {
         setError,
         setSelectedPlaylist,
         setSelectedTracks,
-        thumbnailStore,
+        imagesStore,
       }}
     >
       {children}

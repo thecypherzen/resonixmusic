@@ -51,27 +51,55 @@ export function transformTrack(track) {
   };
 }
 
-export function randomImage(orientation) {
-  const fallbackArtworks = [
-    "/artworks/artwork_1.jpg",
-    "/artworks/artwork_2.jpg",
-    "/artworks/artwork_3.webp",
-  ];
-  const len = fallbackArtworks.length;
+const fallbackArtworks = [
+  "/artworks/artwork_1.jpg",
+  "/artworks/artwork_2.jpg",
+  "/artworks/artwork_3.webp",
+  "/artworks/artwork_4.jpeg",
+  "/artworks/artwork_5.webp",
+  "/artworks/artwork_6.jpeg",
+  "/artworks/artwork_7.jpeg",
+  "/artworks/artwork_8.jpg",
+  "/artworks/artwork_9.jpeg",
+  "/artworks/artwork_10.jpg",
+];
+
+export function generatorFromArray(arr) {
+  let div = 1;
+  const len = arr.length;
+  while (Math.floor(len / div) > 0) div *= 10;
+  let i = Math.floor(Math.random() * div) % len;
+
+  return {
+    next() {
+      if (i < len) {
+        return { value: arr[i++], done: false };
+      }
+      i = 0;
+      return { value: arr[i++], done: false };
+    },
+  };
+}
+
+export function getRandomImages(orientation = "landscape", type = "raw") {
+  /*
+   * Orientation values: landscape, portrait, squarish
+   * Type values: raw, full, regular, small, thumb
+   */
   return API.imageClient
     .get("/random", {
       params: {
         query: "music",
         orientation,
         client_id: UNSPLASH_CLIENT_ID,
+        count: 20,
       },
     })
     .then((res) => {
-      return res?.data?.urls?.full;
+      return res?.data?.map((m) => m.urls?.[type]);
     })
     .catch((err) => {
       console.error(err);
-      const index = Math.floor((Math.random() * 10) % len);
-      return fallbackArtworks[index];
+      return fallbackArtworks;
     });
 }

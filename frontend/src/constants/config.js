@@ -4,7 +4,8 @@ export const API_BASE_URL = inDevMode
   ? import.meta.env.VITE_DEV_BE_BASE_URL
   : import.meta.env.VITE_PROD_BE_BASE_URL;
 
-export const UNSPLASH_CLIENT_ID = import.meta.env.VITE_UNSPLASH_CLIENT_ID;
+export const UNSPLASH_CLIENT_ID = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+
 export const AUTH_ENDPOINTS = {
   LOGIN: "/auth/login",
   REGISTER: "/auth/register",

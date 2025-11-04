@@ -5,6 +5,7 @@ function MusicCard({ variant = "default", bgImageUrl, children, className }) {
   useEffect(() => {
     console.log("\n\nBGIMAGEURL:", bgImageUrl);
   }, [bgImageUrl]);
+
   switch (variant) {
     case "default":
     case "overlay":
@@ -16,9 +17,13 @@ function MusicCard({ variant = "default", bgImageUrl, children, className }) {
           )}
         >
           <div
-            className="h-full w-full absolute inset-0 bg-cover bg-center bg-no-repeat group-hover:scale-105 transition-transform duration-300 ease-in"
+            className="h-full w-full absolute inset-0 bg-cover bg-center bg-no-repeat group-hover:scale-105 transition-transform duration-300 ease-in border-1"
             style={{
-              backgroundImage: `url(${bgImageUrl || "/thumbnail.png"})`,
+              backgroundImage: bgImageUrl
+                ? bgImageUrl.startsWith("/")
+                  ? `url(${bgImageUrl})`
+                  : `url(${bgImageUrl}&w=500&dpr=2)`
+                : "/thumbnail.png",
             }}
           >
             <div className="absolute inset-0 bg-neutral-600/80 mix-blend-multiply"></div>
@@ -39,7 +44,11 @@ function MusicCard({ variant = "default", bgImageUrl, children, className }) {
           <div
             className="img-container overflow-hidden rounded-lg bg-cover bg-center bg-no-repeat w-full h-2/3"
             style={{
-              backgroundImage: `url(${bgImageUrl || "/thumbnail.png"})`,
+              backgroundImage: bgImageUrl
+                ? bgImageUrl.startsWith("/")
+                  ? `url(${bgImageUrl})`
+                  : `url(${bgImageUrl}&w=400&dpr=2)`
+                : "/thumbnail.png",
             }}
           ></div>
           <div className="flex flex-col text-left">{children}</div>

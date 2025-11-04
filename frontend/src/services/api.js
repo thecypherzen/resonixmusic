@@ -1,9 +1,5 @@
 import axios from "axios";
-import {
-  API_BASE_URL,
-  API_DEFAULTS,
-  UNSPLASH_CLIENT_ID,
-} from "../constants/config";
+import { API_BASE_URL, API_DEFAULTS } from "../constants/config";
 
 const CURRENT_DATE = "2025-01-17 20:36:43";
 const CURRENT_USER = "gabrielisaacs";
@@ -205,22 +201,6 @@ class RequestAPI {
   }
   post() {}
   put() {}
-  async randomImage(orientation) {
-    try {
-      const response = await imageapi.get("/random", {
-        params: {
-          query: "music",
-          orientation,
-          client_id: UNSPLASH_CLIENT_ID,
-        },
-      });
-      console.log("\n\n\nIMAGE RESPONSE:", response);
-      return { success: true, data: response?.data?.urls?.full };
-    } catch (error) {
-      console.error("RANDOM IMAGE ERROR\n\t", error);
-      return { success: false, data: response };
-    }
-  }
 }
 
 const getAlbumDetails = async (albumId) => {

@@ -3,18 +3,18 @@ import { FaPlay } from "react-icons/fa";
 import MusicCard from "./MusicCard";
 import { useTheme } from "../hooks/useTheme";
 import { cn } from "../lib/utils";
-import { UseThumbnail } from "@/hooks/UseThumbnail";
+import { UseRandomImages } from "@/hooks/UseRandomImages";
 
 const PlaylistCard = ({ playlist, onClick }) => {
   const { theme } = useTheme();
-  const thumbnail = UseThumbnail("playlist", playlist.id);
+  const imageUrl = UseRandomImages("playlist", playlist.id);
   useEffect(() => {
-    console.log("\n\nPLAYLISTCARD THUMBNAIL:", thumbnail);
-  }, [thumbnail]);
+    console.log("IMAGE URL:", imageUrl);
+  }, [imageUrl]);
 
   return (
     <button
-      onClick={() => onClick(playlist)}
+      onClick={onClick}
       className={cn(
         "flex flex-col bg-opacity-[2%] rounded-xl h-full gap-4 hover:border-none transition-all relative group hover:bg-opacity-5",
         theme === "dark"
@@ -28,7 +28,7 @@ const PlaylistCard = ({ playlist, onClick }) => {
       </div>
       <MusicCard
         variant="boxed"
-        bgImageUrl={thumbnail}
+        bgImageUrl={imageUrl}
         className="w-[160px]  md:w-[200px]"
       >
         <p className="font-bold text-md w-full truncate text-ellipsis dark:text-neutral-100/90 text-neutral-900">
