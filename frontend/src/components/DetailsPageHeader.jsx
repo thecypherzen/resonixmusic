@@ -17,18 +17,13 @@ export function DetailsPageHeader({ type, dataSet }) {
   const { theme } = useTheme();
   console.log("dataset:", dataSet, "type:", type);
   const getArtistThumbnail = async () => {};
-  useEffect(() => {
-    //console.log(
-    //  "-----> bg Image:",
-    //  bgImageUrl,
-    //  "\ndAtaset ID:",
-    //  dataSet.id,
-    //  "selectedPlaylist Id:",
-    //  selectedPlaylist?.id,
-    //  "dataset thumbnail:",
-    //  dataSet.thumbnail
-    //);
-  }, [error, isDownloading, dataSet.id, selectedPlaylist, bgImageUrl]);
+  useEffect(() => {}, [
+    error,
+    isDownloading,
+    dataSet.id,
+    selectedPlaylist,
+    bgImageUrl,
+  ]);
   return (
     <>
       <div

@@ -7,6 +7,7 @@ import ActionButton from "./ActionButton";
 import HeadingText from "../HeadingText";
 import { useTheme } from "../../hooks/useTheme";
 import MusicCard from "../MusicCard";
+import { useNavigate } from "react-router-dom";
 
 const transformAlbums = (album) => ({
   id: album.id,
@@ -14,17 +15,18 @@ const transformAlbums = (album) => ({
   artist: album.user_name || album.artist_name,
   thumbnail: album.image || album.thumbnail || DEFAULT_THUMBNAIL,
   trackCount: album.tracks_count || 0,
-  releasedate: album.releasedate,
+  releaseDate: album.releasedate,
 });
 
 const Albums = ({ cardsPerSet = 5 }) => {
-  const [visibleAlbums, setVisibleAlbums] = useState(0);
+  const [visibleAlbums] = useState(0);
   const [dataState, setDataState] = useState({ albums: null, error: null });
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
   const { theme } = useTheme();
   const handleAlbumClick = useCallback((album) => {
     window.scrollTo(0, 0);
-    navigate(`/album/${album.id}`);
+    navigate(`/albums/${album.id}`);
   }, []);
   const { data, error } = useFetch({ url: "/albums", method: "get" });
   useEffect(() => {
@@ -36,7 +38,9 @@ const Albums = ({ cardsPerSet = 5 }) => {
       setIsLoading(false);
     }
   }, [data, error]);
-
+  useEffect(() => {
+    console.log("ALBUMS:\n", dataState.albums);
+  }, [dataState.albums]);
   return isLoading ? (
     <SectionSkeleton cardsPerset={cardsPerSet} />
   ) : dataState.albums?.length ? (
@@ -64,8 +68,8 @@ const Albums = ({ cardsPerSet = 5 }) => {
               </div>
               <MusicCard
                 variant="overlay"
-                className="rounded-lg w-[160px] md:[200px]"
-                imageUrl={album.thumbnail || "/thumbnail.png"}
+                className="rounded-lg w-[160px] md:[200px] "
+                bgImageUrl={album.thumbnail || "/thumbnail.png"}
               >
                 <div className="flex flex-col text-left w-full">
                   <p className="font-bold text-md w-95/100 truncate text-ellipsis dark:text-neutral-100/90 text-neutral-900">
