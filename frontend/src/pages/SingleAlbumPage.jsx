@@ -1,11 +1,11 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import SideBar from '../components/SideBar';
-import TopNav from '../components/TopNav';
-import BottomPlayer from '../components/BottomPlayer';
-import AlbumDetails from '../components/AlbumDetails';
+import React from "react";
+import { useParams } from "react-router-dom";
+import SideBar from "../components/SideBar";
+import TopNav from "../components/TopNav";
+import BottomPlayer from "../components/BottomPlayer";
+import AlbumDetails from "../components/AlbumDetails";
 
-const AlbumDetailsPage = () => {
+const SingleAlbumPage = () => {
   const { id } = useParams();
 
   return (
@@ -36,4 +36,4 @@ const AlbumDetailsPage = () => {
   );
 };
 
-export default AlbumDetailsPage;
+export default SingleAlbumPage;
