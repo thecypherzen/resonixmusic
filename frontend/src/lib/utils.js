@@ -22,32 +22,47 @@ export function formatDuration(seconds) {
 
 export function transformPlaylist(playlist) {
   return {
-    creationDate: playlist.creationdate,
+    releaseDate: playlist.creationdate,
     id: playlist.id,
     title: capitalise(playlist.name) || "",
     artist: capitalise(playlist.user_name) || "",
     shareUrl: playlist.shareurl,
     shortUrl: playlist.shorturl,
     userId: playlist.user_id,
-    tracks: playlist.tracks,
+    tracks: playlist?.tracks,
     zip: playlist.zip,
   };
 }
 
 export function transformTrack(track) {
   return {
-    id: track.id,
-    title: capitalise(track.name),
-    artist: capitalise(track.artist_name) || "Unknown Artist",
-    thumbnail: track.image || track.album_image,
-    streamUrl: track.audio,
-    duration: parseInt(track.duration || 0),
-    likes: `${Math.floor(Math.random() * 100)}k`,
-    albumName: capitalise(track.album_name),
-    albumId: track.album_id,
-    releaseDate: track.releasedate,
-    downloadable: track.audiodownload_allowed,
-    downloadUrl: track.audiodownload || "",
+    albumId: track.album_id, // playlist: Y album:
+    albumThumbnail: track.album_image, // playlist: Y album:
+    artistId: track.artist_id, // playlist: Y album: Y
+    artist: capitalise(track.artist_name) || "Unknown Artist", // playlist: Y album: Y
+    streamUrl: track.audio, // playlist: Y album:
+    downloadUrl: track.audiodownload || "", // playlist: Y album:
+    downloadable: track.audiodownload_allowed, // playlist: Y album:
+    duration: parseInt(track.duration || 0), // playlist: Y album:
+    id: track.id, // playlist: Y album: Y
+    thumbnail: track.image, // playlist: Y album: Y
+    title: capitalise(track.name), // playlist: Y album: Y
+    position: parseInt(track.position), // playlist: Y album:
+    releaseDate: track.releasedate || track.playlistadddate, // playlist: N album: Y
+    likes: `${Math.floor(Math.random() * 100)}k`, // playlist: y album:
+  };
+}
+
+export function transformAlbum(album) {
+  return {
+    id: album.id,
+    title: album.name,
+    artist: album.artist_name,
+    artistId: album.artist_id,
+    thumbnail: album.image,
+    artistThumbnail: `https://usercontent.jamendo.com?type=artist&id=${album.artist_id}&width=300`, // Add artist_image
+    releaseDate: album.releasedate,
+    tracks: album.tracks,
   };
 }
 
@@ -81,7 +96,11 @@ export function generatorFromArray(arr) {
   };
 }
 
-export function getRandomImages(orientation = "landscape", type = "raw") {
+export function getRandomImages(
+  orientation = "landscape",
+  type = "raw",
+  count = 30
+) {
   /*
    * Orientation values: landscape, portrait, squarish
    * Type values: raw, full, regular, small, thumb
@@ -92,7 +111,7 @@ export function getRandomImages(orientation = "landscape", type = "raw") {
         query: "music",
         orientation,
         client_id: UNSPLASH_CLIENT_ID,
-        count: 20,
+        count,
       },
     })
     .then((res) => {

@@ -8,6 +8,7 @@ import HeadingText from "../HeadingText";
 import { useTheme } from "../../hooks/useTheme";
 import MusicCard from "../MusicCard";
 import { useNavigate } from "react-router-dom";
+import { UseAppState } from "@/hooks/UseAppState";
 
 const transformAlbums = (album) => ({
   id: album.id,
@@ -20,33 +21,27 @@ const transformAlbums = (album) => ({
 
 const Albums = ({ cardsPerSet = 5 }) => {
   const [visibleAlbums] = useState(0);
-  const [dataState, setDataState] = useState({ albums: null, error: null });
+  const { albums, setAlbums } = UseAppState();
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const handleAlbumClick = useCallback((album) => {
-    window.scrollTo(0, 0);
-    navigate(`/albums/${album.id}`);
-  }, []);
   const { data, error } = useFetch({ url: "/albums", method: "get" });
+
   useEffect(() => {
     if (data) {
-      setDataState({ error: null, albums: data.map(transformAlbums) });
+      setAlbums(data.map(transformAlbums));
       setIsLoading(false);
     } else if (error) {
-      setDataState({ error, albums: null });
       setIsLoading(false);
     }
   }, [data, error]);
-  useEffect(() => {
-    console.log("ALBUMS:\n", dataState.albums);
-  }, [dataState.albums]);
+
   return isLoading ? (
     <SectionSkeleton cardsPerset={cardsPerSet} />
-  ) : dataState.albums?.length ? (
+  ) : albums?.length ? (
     <div className="flex flex-col mb-10">
       <div className="flex flex-row mb-4 items-center">
-        <HeadingText text={"Featured Albums"} />
+        <HeadingText text={"Albums For You"} />
         <div className="ml-auto flex gap-2 items-center">
           <ActionButton text={"More"} />
         </div>
@@ -55,12 +50,17 @@ const Albums = ({ cardsPerSet = 5 }) => {
         className="flex flex-row bg-transparent h-[16rem] w-full gap-4 mt-4 @container overflow-x-scroll py-4 px-2"
         data-theme={theme}
       >
-        {dataState?.albums
+        {albums
           .slice(visibleAlbums, visibleAlbums + cardsPerSet)
           .map((album) => (
             <button
               key={album.id}
-              onClick={() => handleAlbumClick(album)}
+              onClick={() => {
+                const t = setTimeout(() => {
+                  navigate(`/albums/${album.id}`);
+                  clearTimeout(t);
+                }, 200);
+              }}
               className="flex flex-col bg-gradient-neutral-tb bg-opacity-[2%] rounded-xl h-full gap-4 transition-all relative group hover:bg-opacity-5 over-flow-hidden"
             >
               <div className="opacity-0 group-hover:opacity-100 group-active:opacity-100 flex bg-gradient-to-b from-purple-300  to-blue-600 size-10 rounded-full shadow-2xl absolute right-6 top-[7.5rem] hover:scale-110 active:scale-110 transition-all duration-300 z-100 !text-white">
@@ -86,9 +86,9 @@ const Albums = ({ cardsPerSet = 5 }) => {
     </div>
   ) : (
     <SectionErrorDisplay
-      reason={dataState?.error?.reason || "An unknown reason"}
+      reason={error?.reason || "An unknown reason"}
       prefix={"Loading Albums failed due to"}
-      message={dataState?.error?.message}
+      message={error?.message}
     />
   );
 };

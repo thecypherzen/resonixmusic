@@ -1,36 +1,59 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import SideBar from "../components/SideBar";
-import TopNav from "../components/TopNav";
-import BottomPlayer from "../components/BottomPlayer";
-import AlbumDetails from "../components/AlbumDetails";
+import { LoadingState } from "./SinglePlaylistPage";
+import { UseAppState } from "@/hooks/UseAppState";
+import UsePlayer from "@/hooks/UsePlayer";
+import { useFetch } from "@/hooks/useFetch";
+import { transformAlbum, transformTrack } from "@/lib/utils";
+import { DetailsPageHeader } from "@/components/DetailsPageHeader";
+import TracksList from "@/components/TracksList";
 
 const SingleAlbumPage = () => {
   const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
+  const { selectedAlbum, setSelectedAlbum, setSelectedTracks } = UseAppState();
+  const {} = UsePlayer();
+  console.log("\nID:", id);
+  const { data: album, error } = useFetch({
+    url: `/albums/tracks`,
+    method: "get",
+    extras: {
+      params: {
+        id: [id],
+        image_size: 400,
+        audio_format: "mp32",
+      },
+    },
+  });
 
+  useEffect(() => {
+    if (id === null || id === undefined) return;
+
+    setIsLoading(true); // Reset loading state when ID changes
+
+    if (error) {
+      console.error("Error loading album:", error);
+      setIsLoading(false);
+      return;
+    }
+    if (album) {
+      console.log("New Album data received:", album[0]);
+      const tab = transformAlbum(album[0]);
+      setSelectedAlbum(tab);
+      setSelectedTracks(tab.tracks);
+      setIsLoading(false);
+    }
+  }, [id, album, error]);
+  useEffect(() => {
+    console.log("----> selectedAlbum.id: ", selectedAlbum?.id, "URL Id:", id);
+  }, [selectedAlbum]);
+  if (isLoading) return <LoadingState />;
+  if (!isLoading && !selectedAlbum) return <div>Album not found</div>;
   return (
-    <div className="flex min-h-screen w-screen bg-[#121212] relative">
-      {/* Sidebar */}
-      <div className="fixed left-0 top-0 h-[calc(100vh-90px)] w-[14rem] z-30">
-        <SideBar />
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 ml-[14rem] relative">
-        {/* Top Navigation - Fixed position */}
-        <div className="fixed top-0 right-0 left-[14rem] h-[4rem] z-20 bg-[#121212]">
-          <TopNav />
-        </div>
-
-        {/* Main Content Area */}
-        <div className="mt-[4rem] pb-[90px]">
-          <AlbumDetails id={id} />
-        </div>
-
-        {/* Bottom Player */}
-        <div className="fixed bottom-0 left-0 right-0 h-[90px] z-50">
-          <BottomPlayer />
-        </div>
+    <div className="flex-1 w-full min-h-[calc(100vh-3.5rem-26px)]">
+      <div className="flex flex-col">
+        <DetailsPageHeader type="album" dataSet={selectedAlbum} />
+        <TracksList tracks={selectedAlbum.tracks.map(transformTrack)} />
       </div>
     </div>
   );

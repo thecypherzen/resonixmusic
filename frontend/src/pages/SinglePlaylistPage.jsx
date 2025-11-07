@@ -18,7 +18,7 @@ const SinglePlaylistPage = () => {
   const { selectedPlaylist, setSelectedPlaylist, setSelectedTracks } =
     UseAppState();
   const {} = UsePlayer();
-  console.log("\nID:", id);
+
   const { data: playlist, error } = useFetch({
     url: `/playlists/tracks`,
     method: "get",
@@ -43,7 +43,7 @@ const SinglePlaylistPage = () => {
       setSelectedTracks(pl.tracks);
       setIsLoading(false);
     }
-  }, [id, playlist, error]); // Remove selectedPlaylist and isLoading from dependencies
+  }, [id, playlist, error]);
   useEffect(() => {
     console.log(
       "----> selectedPlaylist.id: ",
@@ -66,7 +66,7 @@ const SinglePlaylistPage = () => {
   );
 };
 
-const LoadingState = () => (
+export const LoadingState = () => (
   <div className="flex flex-col min-h-screen bg-neutral-900 p-6 animate-pulse">
     <div className="flex-1 overflow-y-auto">
       <div className="flex flex-col bg-neutral-900 p-6 animate-pulse">

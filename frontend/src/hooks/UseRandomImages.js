@@ -33,5 +33,5 @@ export const UseRandomImages = (namespace, id) => {
     });
   }, [namespace, id, randomImages, randomImage, imageGenerator, imagesStore]);
 
-  return randomImage;
+  return { image: randomImage, imageGenerator };
 };

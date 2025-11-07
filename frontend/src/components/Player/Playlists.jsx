@@ -12,7 +12,7 @@ import { transformPlaylist } from "@/lib/utils";
 
 const Playlists = ({ cardsPerSet = 5 }) => {
   const { playlists, setPlaylists } = UseAppState();
-  const [visiblePlaylists, _] = useState(0);
+  const [visiblePlaylists] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 

@@ -31,7 +31,7 @@ const transormArtists = (artist) => ({
  * @returns {React.ReactNode}
  */
 const PopularArtists = ({ cardsPerSet = 5 }) => {
-  const [visibleArtists, setVisibleArtists] = useState(0);
+  const [visibleArtists] = useState(0);
   const [dataState, setDataState] = useState({ artists: null, error: null });
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -42,6 +42,7 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
 
   useEffect(() => {
     if (data) {
+      console.log("POPULAR ARTIST", data[0]);
       setDataState({ error: null, artists: data.map(transormArtists) });
       setIsLoading(false);
     } else if (error) {

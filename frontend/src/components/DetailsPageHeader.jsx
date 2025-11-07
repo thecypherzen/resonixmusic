@@ -10,20 +10,15 @@ import { useTheme } from "@/hooks/useTheme";
 import { UseAppState } from "@/hooks/UseAppState";
 
 export function DetailsPageHeader({ type, dataSet }) {
-  const { downloadZip, error, isLoading: isDownloading } = UseDownload();
+  const { downloadZip, isLoading: isDownloading } = UseDownload();
   const { isPlaying } = UsePlayer();
-  const bgImageUrl = UseRandomImages(type, dataSet.id);
-  const { selectedPlaylist } = UseAppState();
+  const { image: bgImageUrl, imageGenerator } = UseRandomImages(
+    type,
+    dataSet.id
+  );
   const { theme } = useTheme();
   console.log("dataset:", dataSet, "type:", type);
-  const getArtistThumbnail = async () => {};
-  useEffect(() => {}, [
-    error,
-    isDownloading,
-    dataSet.id,
-    selectedPlaylist,
-    bgImageUrl,
-  ]);
+  useEffect(() => {}, [imageGenerator]);
   return (
     <>
       <div
@@ -35,7 +30,7 @@ export function DetailsPageHeader({ type, dataSet }) {
           className="absolute inset-0 w-full h-full opacity-80 -z-10 "
           style={{
             backgroundImage: dataSet.thumbnail
-              ? dataSet.thumbnail
+              ? `url(${dataSet.thumbnail})`
               : bgImageUrl?.startsWith("/")
               ? `url(${bgImageUrl})`
               : `url(${bgImageUrl}&w=800&dpr=2)`,
@@ -55,7 +50,7 @@ export function DetailsPageHeader({ type, dataSet }) {
           className="w-[10.75rem] h-[10.75rem] shadow-2xl rounded-lg"
           style={{
             backgroundImage: dataSet.thumbnail
-              ? dataSet.thumbnail
+              ? `url(${dataSet.thumbnail})`
               : bgImageUrl?.startsWith("/")
               ? `url(${bgImageUrl})`
               : `url(${bgImageUrl}&w=300&dpr=2)`,
@@ -70,13 +65,25 @@ export function DetailsPageHeader({ type, dataSet }) {
           <h1 className="text-[5rem] font-bold leading-tight truncate max-w-full overflow-hidden whitespace-nowrap">
             {capitalise(dataSet.title)}
           </h1>
+          {/* Artist Info */}
           <div className="flex items-center gap-2 text-md">
-            <span>By</span>
+            <div
+              className="width-64 aspect-square"
+              style={{
+                backgroundImage: dataSet.artistThumbnail
+                  ? `url(${dataSet.artistThumbnail})`
+                  : `url(${imageGenerator?.next().value}&w=300&dpr=2)`,
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center center",
+              }}
+            ></div>
+            {}
             <span className="font-bold hover:underline cursor-pointer">
               {dataSet.artist}
             </span>
             <span className="text-neutral-400">
-              •&nbsp; {new Date(dataSet.creationDate).getFullYear()}
+              •&nbsp; {new Date(dataSet.releaseDate).getFullYear()}
             </span>
             {dataSet && dataSet.tracks && (
               <span className="text-neutral-400">

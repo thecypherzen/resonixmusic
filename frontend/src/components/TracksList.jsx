@@ -23,6 +23,9 @@ export default function TracksList({ tracks = null }) {
         </thead>
         <tbody>
           {tracks.map((track, index) => {
+            if (!index) {
+              console.log(track);
+            }
             return (
               <tr
                 key={track.id}

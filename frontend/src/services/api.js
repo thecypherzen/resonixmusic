@@ -203,63 +203,63 @@ class RequestAPI {
   put() {}
 }
 
-const getAlbumDetails = async (albumId) => {
-  try {
-    console.log("Fetching album details for:", albumId);
+//const getAlbumDetails = async (albumId) => {
+//  try {
+//    console.log("Fetching album details for:", albumId);
 
-    const response = await api.get("/albums/tracks", {
-      params: {
-        id: [albumId],
-        image_size: 400,
-        audio_format: "mp32",
-      },
-    });
+//    const response = await api.get("/albums/tracks", {
+//      params: {
+//        id: [albumId],
+//        image_size: 400,
+//        audio_format: "mp32",
+//      },
+//    });
 
-    if (response.data?.results?.[0]) {
-      const albumData = response.data.results[0];
-      const tracks = albumData.tracks || [];
+//    if (response.data?.results?.[0]) {
+//      const albumData = response.data.results[0];
+//      const tracks = albumData.tracks || [];
 
-      // Transform the album data
-      const transformedAlbum = {
-        id: albumData.id,
-        title: albumData.name,
-        artist: albumData.artist_name,
-        artist_id: albumData.artist_id, // Add artist_id
-        thumbnail: albumData.image,
-        artist_image: `https://usercontent.jamendo.com?type=artist&id=${albumData.artist_id}&width=300`, // Add artist_image
-        releaseDate: albumData.releasedate,
-        // Transform tracks
-        tracks: tracks.map((track) => ({
-          id: track.id,
-          title: track.name,
-          artist: albumData.artist_name,
-          thumbnail: track.image || track.album_image || albumData.image,
-          url: track.audio,
-          duration: parseInt(track.duration),
-          position: parseInt(track.position),
-          likes: `${Math.floor(Math.random() * 100)}k`,
-          download_url: track.audiodownload,
-          download_allowed: track.audiodownload_allowed,
-        })),
-      };
+//      // Transform the album data
+//      const transformedAlbum = {
+//        id: albumData.id,
+//        title: albumData.name,
+//        artist: albumData.artist_name,
+//        artist_id: albumData.artist_id, // Add artist_id
+//        thumbnail: albumData.image,
+//        artist_image: `https://usercontent.jamendo.com?type=artist&id=${albumData.artist_id}&width=300`, // Add artist_image
+//        releaseDate: albumData.releasedate,
+//        // Transform tracks
+//        tracks: tracks.map((track) => ({
+//          id: track.id,
+//          title: track.name,
+//          artist: albumData.artist_name,
+//          thumbnail: track.image || track.album_image || albumData.image,
+//          url: track.audio,
+//          duration: parseInt(track.duration),
+//          position: parseInt(track.position),
+//          likes: `${Math.floor(Math.random() * 100)}k`,
+//          download_url: track.audiodownload,
+//          download_allowed: track.audiodownload_allowed,
+//        })),
+//      };
 
-      // Sort tracks by position
-      transformedAlbum.tracks.sort((a, b) => a.position - b.position);
+//      // Sort tracks by position
+//      transformedAlbum.tracks.sort((a, b) => a.position - b.position);
 
-      return {
-        data: {
-          album: transformedAlbum,
-          tracks: transformedAlbum.tracks,
-        },
-      };
-    }
+//      return {
+//        data: {
+//          album: transformedAlbum,
+//          tracks: transformedAlbum.tracks,
+//        },
+//      };
+//    }
 
-    throw new Error("Album not found");
-  } catch (error) {
-    console.error("Error fetching album details:", error);
-    throw error;
-  }
-};
+//    throw new Error("Album not found");
+//  } catch (error) {
+//    console.error("Error fetching album details:", error);
+//    throw error;
+//  }
+//};
 
 const getRecentTracks = async (params = {}) => {
   try {
@@ -282,62 +282,62 @@ const getRecentTracks = async (params = {}) => {
   }
 };
 
-const getPlaylistDetails = async (playlistId) => {
-  try {
-    console.log("Fetching playlist details for:", playlistId);
-    // First, get the playlist details
-    const playlistResponse = await api.get(`/playlists`, {
-      params: {
-        id: [parseInt(playlistId)],
-      },
-    });
+//const getPlaylistDetails = async (playlistId) => {
+//  try {
+//    console.log("Fetching playlist details for:", playlistId);
+//    // First, get the playlist details
+//    const playlistResponse = await api.get(`/playlists`, {
+//      params: {
+//        id: [parseInt(playlistId)],
+//      },
+//    });
 
-    console.log("Playlist response:", playlistResponse);
-    if (!playlistResponse.data?.results?.[0]) {
-      throw new Error("Playlist not found");
-    }
+//    console.log("Playlist response:", playlistResponse);
+//    if (!playlistResponse.data?.results?.[0]) {
+//      throw new Error("Playlist not found");
+//    }
 
-    // Transform the playlist data
-    const playlistData = transformPlaylistData(
-      playlistResponse.data.results[0]
-    );
-    console.log("TRANSFORMED PLAYLIST DATA\n", playlistData);
-    // Then, get the tracks for this playlist
-    const tracksResponse = await api.get(`/playlists/tracks`, {
-      params: {
-        id: [playlistId],
-        format: "jsonpretty",
-      },
-    });
+//    // Transform the playlist data
+//    const playlistData = transformPlaylistData(
+//      playlistResponse.data.results[0]
+//    );
+//    console.log("TRANSFORMED PLAYLIST DATA\n", playlistData);
+//    // Then, get the tracks for this playlist
+//    const tracksResponse = await api.get(`/playlists/tracks`, {
+//      params: {
+//        id: [playlistId],
+//        format: "jsonpretty",
+//      },
+//    });
 
-    console.log("Playlist tracks response:", tracksResponse);
+//    console.log("Playlist tracks response:", tracksResponse);
 
-    let tracks = [];
-    if (tracksResponse.data?.results?.length) {
-      tracks = tracksResponse.data.results[0].tracks.map((track) => ({
-        id: track.id,
-        name: track.name,
-        artist_name: track.artist_name,
-        image:
-          track.image ||
-          `https://usercontent.jamendo.com?type=album&id=${track.album_id}&width=300`,
-        audio: track.audio,
-        duration: parseInt(track.duration) || 0,
-        listened: track.listened || 0,
-      }));
-    }
+//    let tracks = [];
+//    if (tracksResponse.data?.results?.length) {
+//      tracks = tracksResponse.data.results[0].tracks.map((track) => ({
+//        id: track.id,
+//        name: track.name,
+//        artist_name: track.artist_name,
+//        image:
+//          track.image ||
+//          `https://usercontent.jamendo.com?type=album&id=${track.album_id}&width=300`,
+//        audio: track.audio,
+//        duration: parseInt(track.duration) || 0,
+//        listened: track.listened || 0,
+//      }));
+//    }
 
-    return {
-      data: {
-        ...playlistData,
-        tracks,
-      },
-    };
-  } catch (error) {
-    console.error("Error fetching playlist details:", error);
-    throw error;
-  }
-};
+//    return {
+//      data: {
+//        ...playlistData,
+//        tracks,
+//      },
+//    };
+//  } catch (error) {
+//    console.error("Error fetching playlist details:", error);
+//    throw error;
+//  }
+//};
 
 //const getArtistDetails = async (artistId) => {
 //  try {
@@ -463,13 +463,7 @@ const getSimilarArtists = async (artistId) => {
   }
 };
 
-export {
-  getAlbumDetails,
-  getPlaylistDetails,
-  getRecentTracks,
-  getArtistAlbums,
-  getSimilarArtists,
-};
+export { getRecentTracks, getArtistAlbums, getSimilarArtists };
 
 const API = new RequestAPI();
 export default API;

@@ -7,7 +7,7 @@ import { UseRandomImages } from "@/hooks/UseRandomImages";
 
 const PlaylistCard = ({ playlist, onClick }) => {
   const { theme } = useTheme();
-  const imageUrl = UseRandomImages("playlist", playlist.id);
+  const { image: imageUrl } = UseRandomImages("playlist", playlist.id);
   useEffect(() => {
     console.log("IMAGE URL:", imageUrl);
   }, [imageUrl]);
