@@ -19,7 +19,7 @@ export function DetailsPageHeader({ type, dataSet, tracksCount }) {
   const { isPlaying } = UsePlayer();
   const { image: bgImageUrl, imageGenerator } = UseRandomImages(
     type,
-    dataSet.id
+    dataSet?.id
   );
   const { theme } = useTheme();
   console.log("dataset:", dataSet, "type:", type);
