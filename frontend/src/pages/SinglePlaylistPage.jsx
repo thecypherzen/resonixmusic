@@ -15,52 +15,76 @@ import { transformPlaylist, transformTrack } from "@/lib/utils";
 const SinglePlaylistPage = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
-  const { selectedPlaylist, setSelectedPlaylist, setSelectedTracks } =
-    UseAppState();
-  const {} = UsePlayer();
+  const [error, setError] = useState(null);
+  const {
+    selectedPlaylist,
+    setSelectedPlaylist,
+    selectedTracks: playlistTracks,
+    setSelectedTracks: setPlaylistTracks,
+  } = UseAppState();
 
-  const { data: playlist, error } = useFetch({
-    url: `/playlists/tracks`,
+  const { data: playlistWithTracks, error: playlistWithTracksErr } = useFetch({
+    url: "/playlists/tracks",
     method: "get",
     extras: { params: { id: [id] } },
   });
-
+  const { data: tracks, tracksError } = useFetch(
+    {
+      url: `/tracks`,
+      method: "get",
+      extras: { params: { id: selectedPlaylist?.tracks } },
+    },
+    !!!selectedPlaylist,
+    [selectedPlaylist]
+  );
   useEffect(() => {
     if (id === null || id === undefined) return;
-
-    setIsLoading(true); // Reset loading state when ID changes
-
-    if (error) {
-      console.error("Error loading playlist:", error);
-      setIsLoading(false);
+    if (playlistWithTracksErr) {
+      console.error(
+        "Failed to fetch playlist with tracks:",
+        playlistWithTracksErr
+      );
+      setError(playlistWithTracksErr);
       return;
     }
+    if (playlistWithTracks) {
+      //console.log("----> playlist with tracks: ", playlistWithTracks);
+      setSelectedPlaylist(transformPlaylist(playlistWithTracks[0]));
+    }
+  }, [playlistWithTracks]);
 
-    if (playlist) {
-      console.log("New playlist data received:", playlist[0]);
-      const pl = transformPlaylist(playlist[0]);
-      setSelectedPlaylist(pl);
-      setSelectedTracks(pl.tracks);
+  useEffect(() => {
+    if (selectedPlaylist) {
+      //console.log("----> selected playlist: ", selectedPlaylist);
+      if (tracksError) {
+        setError(tracksError);
+        return;
+      }
+      if (tracks) {
+        //console.log("----> playlist tracks: ", tracks);
+        setPlaylistTracks(tracks.map(transformTrack));
+      }
+    }
+  }, [selectedPlaylist, tracks]);
+
+  useEffect(() => {
+    if (playlistTracks || error) {
       setIsLoading(false);
     }
-  }, [id, playlist, error]);
-  useEffect(() => {
-    console.log(
-      "----> selectedPlaylist.id: ",
-      selectedPlaylist?.id,
-      "URL Id:",
-      id
-    );
-  }, [selectedPlaylist]);
+  }, [playlistTracks]);
 
   if (isLoading) return <LoadingState />;
-  if (!isLoading && !selectedPlaylist) return <div>Playlist not found</div>;
+  if (error) return <div>{error?.message ?? "A loading error occured"}</div>;
 
   return (
     <div className="flex-1 w-full min-h-[calc(100vh-3.5rem-26px)]">
       <div className="flex flex-col">
-        <DetailsPageHeader type="playlist" dataSet={selectedPlaylist} />
-        <TracksList tracks={selectedPlaylist.tracks.map(transformTrack)} />
+        <DetailsPageHeader
+          type="playlist"
+          dataSet={selectedPlaylist}
+          tracksCount={playlistTracks.length ?? 0}
+        />
+        <TracksList tracks={playlistTracks} />
       </div>
     </div>
   );

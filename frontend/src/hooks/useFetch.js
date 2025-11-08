@@ -69,7 +69,15 @@ const fetchData = async (options) => {
             switch (response.data?.errno) {
               case 1:
               case 3:
-                reason = "An error on our part";
+                console.error("=> errno 3");
+                switch (response.data?.details?.code) {
+                  case "ECONNABORTED":
+                    console.error("==> ECONABORTED");
+                    reason = "Timed out request";
+                    break;
+                  default:
+                    reason = "An error on our part";
+                }
                 break;
               case 2:
                 reason = "A network Error";
@@ -91,7 +99,7 @@ const fetchData = async (options) => {
   }
 };
 
-export const useFetch = (options) => {
+export const useFetch = (options, cancel = false, deps = []) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   /**
@@ -103,6 +111,11 @@ export const useFetch = (options) => {
    */
 
   useEffect(() => {
+    if (cancel) {
+      console.log("USE EFFECT CANCELLING!!!! for:", options.url);
+      return;
+    }
+    console.log("USE EFFECT GOING THROUGHG for:", options.url);
     if (!options.url) {
       setError({ message: "Data fetch failed. URL undefined" });
       return;
@@ -112,8 +125,9 @@ export const useFetch = (options) => {
         setData(res);
       })
       .catch((err) => {
+        console.error("--> useFetch error:", err);
         setError(err);
       });
-  }, [options.url, JSON.stringify(options.extras)]);
+  }, [options.url, JSON.stringify(options.extras), ...deps]);
   return { data, error };
 };

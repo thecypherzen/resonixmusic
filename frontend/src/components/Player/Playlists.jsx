@@ -27,6 +27,11 @@ const Playlists = ({ cardsPerSet = 5 }) => {
     }
   }, [data, error]);
 
+  useEffect(() => {
+    if (playlists) {
+      console.log("PLAYLISTS:", playlists[0]);
+    }
+  }, [playlists]);
   return isLoading ? (
     <SectionSkeleton cardsPerset={cardsPerSet} />
   ) : playlists?.length ? (

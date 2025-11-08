@@ -30,9 +30,10 @@ export function AppStateProvider({ children }) {
     console.log("AppState Updated:", {
       selectedPlaylist,
       selectedTracks,
+      playlists,
       error,
     });
-  }, [selectedPlaylist, selectedTracks, error]);
+  }, [selectedPlaylist, selectedTracks, playlists, error]);
 
   return (
     <AppStateContext.Provider

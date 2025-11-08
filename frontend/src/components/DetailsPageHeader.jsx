@@ -9,7 +9,7 @@ import { UseRandomImages } from "@/hooks/UseRandomImages";
 import { useTheme } from "@/hooks/useTheme";
 import { UseAppState } from "@/hooks/UseAppState";
 
-export function DetailsPageHeader({ type, dataSet }) {
+export function DetailsPageHeader({ type, dataSet, tracksCount }) {
   const { downloadZip, isLoading: isDownloading } = UseDownload();
   const { isPlaying } = UsePlayer();
   const { image: bgImageUrl, imageGenerator } = UseRandomImages(
@@ -80,16 +80,12 @@ export function DetailsPageHeader({ type, dataSet }) {
             ></div>
             {}
             <span className="font-bold hover:underline cursor-pointer">
-              {dataSet.artist}
+              {type === "playlist" ? dataSet.userName : dataSet.artist}
             </span>
             <span className="text-neutral-400">
               •&nbsp; {new Date(dataSet.releaseDate).getFullYear()}
             </span>
-            {dataSet && dataSet.tracks && (
-              <span className="text-neutral-400">
-                • {dataSet.tracks.length} songs
-              </span>
-            )}
+            <span className="text-neutral-400">• {tracksCount} songs</span>
           </div>
         </div>
       </div>
@@ -99,7 +95,7 @@ export function DetailsPageHeader({ type, dataSet }) {
         <button
           onClick={() => {}}
           className="font-medium flex items-center justify-center bg-[#08B2F0] hover:scale-[1.05] rounded-full transition-all duration-300 text-md px-10 py-3 gap-2 text-foreground dark:text-background"
-          disabled={!dataSet.length}
+          disabled={!dataSet.length || !tracksCount}
         >
           {isPlaying ? (
             <>

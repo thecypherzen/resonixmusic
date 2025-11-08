@@ -20,17 +20,29 @@ export function formatDuration(seconds) {
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
 
+/**
+	"
+			id":"218277",
+      "name":"some cool stuff",
+      "creationdate":"2012-01-04",
+      "user_id":"1293438",
+      "user_name":"hywayace",
+      "zip":"https:\/\/storage.jamendo.com\/download\/p218277\/mp32\/",
+      "shorturl":"https:\/\/jamen.do\/l\/p218277",
+      "shareurl":"https:\/\/www.jamendo.com\/list\/p218277"
+ *
+ */
 export function transformPlaylist(playlist) {
   return {
-    releaseDate: playlist.creationdate,
     id: playlist.id,
-    title: capitalise(playlist.name) || "",
-    artist: capitalise(playlist.user_name) || "",
+    title: capitalise(playlist.name),
+    releaseDate: playlist.creationdate,
+    userId: playlist.user_id,
+    userName: capitalise(playlist.user_name),
+    zip: playlist.zip,
     shareUrl: playlist.shareurl,
     shortUrl: playlist.shorturl,
-    userId: playlist.user_id,
-    tracks: playlist?.tracks,
-    zip: playlist.zip,
+    tracks: playlist?.tracks?.map((track) => track.id) ?? null,
   };
 }
 
@@ -62,7 +74,7 @@ export function transformAlbum(album) {
     thumbnail: album.image,
     artistThumbnail: `https://usercontent.jamendo.com?type=artist&id=${album.artist_id}&width=300`, // Add artist_image
     releaseDate: album.releasedate,
-    tracks: album.tracks,
+    tracks: album?.tracks?.map((track) => track.id) ?? [],
   };
 }
 
