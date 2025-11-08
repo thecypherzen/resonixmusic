@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import MusicCard from "./MusicCard";
 import { useTheme } from "../hooks/useTheme";
@@ -6,12 +6,18 @@ import { cn } from "../lib/utils";
 import { UseRandomImages } from "@/hooks/UseRandomImages";
 
 const PlaylistCard = ({ playlist, onClick }) => {
+  const [bgImageUrl, setBgImageUrl] = useState(null);
   const { theme } = useTheme();
   const { image: imageUrl } = UseRandomImages("playlist", playlist.id);
   useEffect(() => {
-    console.log("IMAGE URL:", imageUrl);
+    if (imageUrl) {
+      setBgImageUrl(
+        imageUrl.startsWith("/") ? imageUrl : `${imageUrl}&w=400&dpr=2`
+      );
+    }
   }, [imageUrl]);
 
+  useEffect(() => {}, [bgImageUrl]);
   return (
     <button
       onClick={onClick}
@@ -28,8 +34,8 @@ const PlaylistCard = ({ playlist, onClick }) => {
       </div>
       <MusicCard
         variant="boxed"
-        bgImageUrl={imageUrl}
-        className="w-[160px]  md:w-[200px]"
+        bgImageUrl={bgImageUrl}
+        className="w-[160px] md:w-[200px]"
       >
         <p className="font-bold text-md w-full truncate text-ellipsis dark:text-neutral-100/90 text-neutral-900">
           {playlist.title}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useFetch } from "../../hooks/useFetch";
 import SectionSkeleton from "./SectionSkeleton";
 import ArtistCard from "../ArtistCard";
@@ -7,22 +7,8 @@ import { useTheme } from "../../hooks/useTheme";
 import HeadingText from "../HeadingText";
 import ActionButton from "./ActionButton";
 import { useNavigate } from "react-router-dom";
-
-const transormArtists = (artist) => ({
-  id: artist.id,
-  name: artist.name,
-  website: artist.website,
-  joindate: artist.joindate,
-  image:
-    artist.image ||
-    `https://usercontent.jamendo.com?type=artist&id=${artist.id}&width=500`,
-  shorturl: artist.shorturl,
-  shareurl: artist.shareurl,
-  musicinfo: {
-    tags: artist.musicinfo?.tags || [],
-    description: artist.musicinfo?.description || {},
-  },
-});
+import { UseAppState } from "@/hooks/UseAppState";
+import { transformArtist } from "@/lib/utils";
 
 /**
  * @function PopularArtists
@@ -32,18 +18,25 @@ const transormArtists = (artist) => ({
  */
 const PopularArtists = ({ cardsPerSet = 5 }) => {
   const [visibleArtists] = useState(0);
-  const [dataState, setDataState] = useState({ artists: null, error: null });
+  const { artists, setArtists } = UseAppState();
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const { theme } = useTheme();
+
+  // Fetch artists
   const { data, error } = useFetch({
     url: "/artists",
     method: "get",
+    extras: {
+      params: {
+        order: ["popularity_total"],
+      },
+    },
   });
 
   useEffect(() => {
     if (data) {
-      console.log("POPULAR ARTIST", data[0]);
-      setDataState({ error: null, artists: data.map(transormArtists) });
+      setArtists(data.map(transformArtist));
       setIsLoading(false);
     } else if (error) {
       setDataState({
@@ -54,47 +47,38 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
     }
   }, [data, error]);
 
-  useEffect(() => {}, [dataState.error, dataState.artists]);
-  // Use the custom hook for data fetching with caching and retry
-  const handleArtistClick = useCallback((artist) => {
-    window.scrollTo(0, 0);
-    navigate(`/artist/${artist.id}`);
-  }, []);
-
-  const { theme } = useTheme();
   return isLoading ? (
     <SectionSkeleton cardsPerset={cardsPerSet} />
-  ) : dataState.artists?.length ? (
+  ) : artists?.length ? (
     <div className="flex flex-col flex-wrap mb-5 w-full" data-theme={theme}>
       <div className="flex flex-row w-full mb-4 items-center">
         <HeadingText text={"Popular Artists"} />
         <div className="ml-auto flex gap-1 md:gap-2 items-center text-xs transition-all duration-300">
-          <ActionButton
-            onClick={() => {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-              navigate("/artists");
-            }}
-            text={"More"}
-          />
+          <ActionButton text={"More"} />
         </div>
       </div>
-      <div className="w-auto flex overflow-x-scroll scroll bg-transparent gap-4 p-3 @container pb-5">
-        {dataState.artists
+      <div className="flex flex-row bg-transparent h-[16rem] md:h-[18rem] w-full gap-4 mt-4 @container overflow-x-scroll py-4 px-2">
+        {artists
           .slice(visibleArtists, visibleArtists + cardsPerSet)
           .map((artist) => (
             <ArtistCard
               key={artist.id}
               artist={artist}
-              onClick={handleArtistClick}
+              onClick={() => {
+                const t = setTimeout(() => {
+                  navigate(`/artists/${artist.id}`);
+                  clearTimeout(t);
+                }, 200);
+              }}
             />
           ))}
       </div>
     </div>
   ) : (
     <SectionErrorDisplay
-      reason={dataState.error?.reason || "An unnown reason"}
+      reason={error?.reason || "An unknown reason"}
       prefix={"Loading Artists failed due to"}
-      message={dataState.error?.message}
+      message={error?.message}
     />
   );
 };

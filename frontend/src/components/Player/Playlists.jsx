@@ -2,7 +2,7 @@
 import SectionSkeleton from "./SectionSkeleton";
 import { useFetch } from "../../hooks/useFetch";
 import PlaylistCard from "../PlaylistCard";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import HeadingText from "../HeadingText";
 import ActionButton from "./ActionButton";
 import SectionErrorDisplay from "./SectionErrorDisplay";
@@ -63,7 +63,7 @@ const Playlists = ({ cardsPerSet = 5 }) => {
     </div>
   ) : (
     <SectionErrorDisplay
-      reason={error?.reason || "An unnown reason"}
+      reason={error?.reason || "An unknown reason"}
       prefix={"Loading Artists failed due to"}
       message={error?.message}
     />

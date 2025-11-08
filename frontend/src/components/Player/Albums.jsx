@@ -9,15 +9,7 @@ import { useTheme } from "../../hooks/useTheme";
 import MusicCard from "../MusicCard";
 import { useNavigate } from "react-router-dom";
 import { UseAppState } from "@/hooks/UseAppState";
-
-const transformAlbums = (album) => ({
-  id: album.id,
-  title: album.name || album.title,
-  artist: album.user_name || album.artist_name,
-  thumbnail: album.image || album.thumbnail || DEFAULT_THUMBNAIL,
-  trackCount: album.tracks_count || 0,
-  releaseDate: album.releasedate,
-});
+import { transformAlbum } from "@/lib/utils";
 
 const Albums = ({ cardsPerSet = 5 }) => {
   const [visibleAlbums] = useState(0);
@@ -29,7 +21,7 @@ const Albums = ({ cardsPerSet = 5 }) => {
 
   useEffect(() => {
     if (data) {
-      setAlbums(data.map(transformAlbums));
+      setAlbums(data.map(transformAlbum));
       setIsLoading(false);
     } else if (error) {
       setIsLoading(false);

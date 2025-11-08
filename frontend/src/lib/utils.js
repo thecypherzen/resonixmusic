@@ -20,18 +20,19 @@ export function formatDuration(seconds) {
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
 
-/**
-	"
-			id":"218277",
-      "name":"some cool stuff",
-      "creationdate":"2012-01-04",
-      "user_id":"1293438",
-      "user_name":"hywayace",
-      "zip":"https:\/\/storage.jamendo.com\/download\/p218277\/mp32\/",
-      "shorturl":"https:\/\/jamen.do\/l\/p218277",
-      "shareurl":"https:\/\/www.jamendo.com\/list\/p218277"
- *
- */
+export function transformArtist(artist) {
+  return {
+    id: artist.id,
+    name: artist.name,
+    website: artist.website,
+    joinDate: artist.joindate,
+    thumbnail: artist.image,
+    shortUrl: artist.shorturl,
+    shareUrl: artist.shareurl,
+    tracks: artist?.tracks?.map((t) => t.id) ?? null,
+  };
+}
+
 export function transformPlaylist(playlist) {
   return {
     id: playlist.id,
@@ -43,6 +44,7 @@ export function transformPlaylist(playlist) {
     shareUrl: playlist.shareurl,
     shortUrl: playlist.shorturl,
     tracks: playlist?.tracks?.map((track) => track.id) ?? null,
+    ownerThumbnail: `https://usercontent.jamendo.com?type=user&id=${playlist.user_id}&width=400`,
   };
 }
 
@@ -72,7 +74,7 @@ export function transformAlbum(album) {
     artist: album.artist_name,
     artistId: album.artist_id,
     thumbnail: album.image,
-    artistThumbnail: `https://usercontent.jamendo.com?type=artist&id=${album.artist_id}&width=300`, // Add artist_image
+    ownerThumbnail: `https://usercontent.jamendo.com?type=artist&id=${album.artist_id}&width=400`, // Add artist_image
     releaseDate: album.releasedate,
     tracks: album?.tracks?.map((track) => track.id) ?? [],
   };

@@ -80,8 +80,8 @@ export function DetailsPageHeader({ type, dataSet, tracksCount }) {
             <div
               className="w-7 aspect-square border-1 border-white/50 rounded-full"
               style={{
-                backgroundImage: dataSet.artistThumbnail
-                  ? `url(${dataSet.artistThumbnail})`
+                backgroundImage: dataSet.ownerThumbnail
+                  ? `url(${dataSet.ownerThumbnail})`
                   : `url(${ownerThumbnail}&w=300&dpr=2)`,
                 backgroundSize: "cover",
                 backgroundRepeat: "no-repeat",
