@@ -77,16 +77,19 @@ const fetchData = async (options) => {
                     break;
                   default:
                     reason = "An error on our part";
+                    break;
                 }
                 break;
               case 2:
+                console.log("case 2");
                 reason = "A network Error";
                 message = "Check your connection or try again later";
                 break;
               default:
+                console.log("using default");
                 reason = "An unknown Error";
             }
-            error = { ...response.data, reason, message };
+            const error = { ...response.data, reason, message };
             throw error;
         }
       default:
@@ -95,6 +98,7 @@ const fetchData = async (options) => {
         return [];
     }
   } catch (err) {
+    console.error(err);
     throw { reason: "Unknown", ...err };
   }
 };

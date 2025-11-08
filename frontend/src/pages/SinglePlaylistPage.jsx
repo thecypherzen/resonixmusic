@@ -28,7 +28,7 @@ const SinglePlaylistPage = () => {
     method: "get",
     extras: { params: { id: [id] } },
   });
-  const { data: tracks, tracksError } = useFetch(
+  const { data: tracks, error: tracksError } = useFetch(
     {
       url: `/tracks`,
       method: "get",

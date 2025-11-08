@@ -28,12 +28,21 @@ export function AppStateProvider({ children }) {
 
   useEffect(() => {
     console.log("AppState Updated:", {
+      albums,
+      selectedAlbum,
       selectedPlaylist,
       selectedTracks,
       playlists,
       error,
     });
-  }, [selectedPlaylist, selectedTracks, playlists, error]);
+  }, [
+    selectedAlbum,
+    selectedPlaylist,
+    selectedTracks,
+    albums,
+    playlists,
+    error,
+  ]);
 
   return (
     <AppStateContext.Provider

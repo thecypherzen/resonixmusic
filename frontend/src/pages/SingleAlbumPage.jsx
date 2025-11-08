@@ -11,49 +11,76 @@ import TracksList from "@/components/TracksList";
 const SingleAlbumPage = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
-  const { selectedAlbum, setSelectedAlbum, setSelectedTracks } = UseAppState();
+  const [error, setError] = useState(null);
+  const {
+    selectedAlbum,
+    setSelectedAlbum,
+    selectedTracks: albumTracks,
+    setSelectedTracks: setAlbumTracks,
+  } = UseAppState();
   const {} = UsePlayer();
-  console.log("\nID:", id);
-  const { data: album, error } = useFetch({
+
+  const { data: albumWithTracks, albumWithTracksErr } = useFetch({
     url: `/albums/tracks`,
     method: "get",
     extras: {
       params: {
         id: [id],
-        image_size: 400,
-        audio_format: "mp32",
       },
     },
   });
 
+  const { data: tracks, error: tracksError } = useFetch(
+    {
+      url: "/tracks",
+      method: "get",
+      extras: { params: { id: selectedAlbum?.tracks } },
+    },
+    !!!selectedAlbum,
+    [selectedAlbum]
+  );
+
   useEffect(() => {
     if (id === null || id === undefined) return;
-
-    setIsLoading(true); // Reset loading state when ID changes
-
-    if (error) {
-      console.error("Error loading album:", error);
-      setIsLoading(false);
+    if (albumWithTracksErr) {
+      console.error("Failed to fetch album with tracks:", albumWithTracksErr);
+      setError(albumWithTracksErr);
       return;
     }
-    if (album) {
-      console.log("New Album data received:", album[0]);
-      const tab = transformAlbum(album[0]);
-      setSelectedAlbum(tab);
-      setSelectedTracks(tab.tracks);
+    if (albumWithTracks) {
+      setSelectedAlbum(transformAlbum(albumWithTracks[0]));
+    }
+  }, [albumWithTracks]);
+
+  useEffect(() => {
+    if (selectedAlbum) {
+      if (tracksError) {
+        setError(tracksError);
+        return;
+      }
+      if (tracks) {
+        setAlbumTracks(tracks.map(transformTrack));
+      }
+    }
+  }, [selectedAlbum, tracks]);
+
+  useEffect(() => {
+    if (albumTracks || error) {
       setIsLoading(false);
     }
-  }, [id, album, error]);
-  useEffect(() => {
-    console.log("----> selectedAlbum.id: ", selectedAlbum?.id, "URL Id:", id);
-  }, [selectedAlbum]);
+  }, [albumTracks]);
+
   if (isLoading) return <LoadingState />;
-  if (!isLoading && !selectedAlbum) return <div>Album not found</div>;
+  if (error) return <div>{error?.message ?? "A loading error occured"}</div>;
   return (
     <div className="flex-1 w-full min-h-[calc(100vh-3.5rem-26px)]">
       <div className="flex flex-col">
-        <DetailsPageHeader type="album" dataSet={selectedAlbum} />
-        <TracksList tracks={selectedAlbum.tracks.map(transformTrack)} />
+        <DetailsPageHeader
+          type="album"
+          dataSet={selectedAlbum}
+          tracksCount={albumTracks.length ?? 0}
+        />
+        <TracksList tracks={albumTracks} />
       </div>
     </div>
   );
