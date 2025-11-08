@@ -7,9 +7,14 @@ import { AlertCircle, Share2 } from "lucide-react";
 import { capitalise } from "@/lib/utils";
 import { UseRandomImages } from "@/hooks/UseRandomImages";
 import { useTheme } from "@/hooks/useTheme";
-import { UseAppState } from "@/hooks/UseAppState";
 
+/**
+ * Todo:
+ * - Fetch dataset owner's thumbnail and set ownerThumbnail
+ * with it.
+ */
 export function DetailsPageHeader({ type, dataSet, tracksCount }) {
+  const [ownerThumbnail, setOwnerThumbnail] = useState(null);
   const { downloadZip, isLoading: isDownloading } = UseDownload();
   const { isPlaying } = UsePlayer();
   const { image: bgImageUrl, imageGenerator } = UseRandomImages(
@@ -18,7 +23,12 @@ export function DetailsPageHeader({ type, dataSet, tracksCount }) {
   );
   const { theme } = useTheme();
   console.log("dataset:", dataSet, "type:", type);
-  useEffect(() => {}, [imageGenerator]);
+  useEffect(() => {
+    if (imageGenerator) {
+      setOwnerThumbnail(imageGenerator.next().value);
+    }
+  }, [imageGenerator]);
+
   return (
     <>
       <div
@@ -68,18 +78,18 @@ export function DetailsPageHeader({ type, dataSet, tracksCount }) {
           {/* Artist Info */}
           <div className="flex items-center gap-2 text-md">
             <div
-              className="width-64 aspect-square"
+              className="w-7 aspect-square border-1 border-white/50 rounded-full"
               style={{
                 backgroundImage: dataSet.artistThumbnail
                   ? `url(${dataSet.artistThumbnail})`
-                  : `url(${imageGenerator?.next().value}&w=300&dpr=2)`,
+                  : `url(${ownerThumbnail}&w=300&dpr=2)`,
                 backgroundSize: "cover",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center center",
               }}
             ></div>
             {}
-            <span className="font-bold hover:underline cursor-pointer">
+            <span className="font-bold">
               {type === "playlist" ? dataSet.userName : dataSet.artist}
             </span>
             <span className="text-neutral-400">

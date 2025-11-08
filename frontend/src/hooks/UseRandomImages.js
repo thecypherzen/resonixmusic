@@ -11,6 +11,15 @@ export const UseRandomImages = (namespace, id) => {
   const [imageGenerator, setImageGenerator] = useState(null);
 
   useEffect(() => {
+    if (!randomImages) {
+      getRandomImages().then((res) => {
+        setImageGenerator(generatorFromArray(res));
+        setRandomImages(res);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
     if (!namespace || !id) return;
 
     const key = `${namespace}-${id}`;
