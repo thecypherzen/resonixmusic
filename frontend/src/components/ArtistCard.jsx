@@ -10,10 +10,10 @@ const ArtistCard = ({ artist, onClick }) => {
   const { imageGenerator } = UseRandomImages();
   useEffect(() => {}, [imageGenerator]);
   return (
-    <button
+    <div
       onClick={() => onClick(artist)}
       className={cn(
-        "flex flex-col bg-opacity-[2%] rounded-xl h-full gap-4 hover:border-none transition-all relative group hover:bg-opacity-5",
+        "flex flex-col bg-opacity-[2%] rounded-xl min-h-[16rem] gap-4 hover:border-none transition-all relative group hover:bg-opacity-5  w-full",
         theme === "dark"
           ? "bg-neutral-400/10"
           : "bg-gradient-to-b from-neutral-800 to-neutral-900"
@@ -31,10 +31,10 @@ const ArtistCard = ({ artist, onClick }) => {
             ? artist.thumbnail
             : imageGenerator && imageGenerator.next().value
         }
-        className="w-[160px] md:w-[200px]"
+        className="w-full"
       >
-        <div className="flex flex-col gap-2 justify-end">
-          <p className="line-clamp-2 text-ellipsis w-full leading-tight font-medium text-lg">
+        <div className="flex flex-col gap-1 justify-end">
+          <p className="line-clamp-2 text-ellipsis w-full leading-tight font-medium text-lg mt-3">
             {artist.name}
           </p>
           <p className="text-sm text-neutral-400">
@@ -43,7 +43,7 @@ const ArtistCard = ({ artist, onClick }) => {
           </p>
         </div>
       </MusicCard>
-    </button>
+    </div>
   );
 };
 

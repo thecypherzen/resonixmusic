@@ -16,7 +16,7 @@ import { transformArtist } from "@/lib/utils";
  * @param props.cardsSet default number of cards to first render
  * @returns {React.ReactNode}
  */
-const PopularArtists = ({ cardsPerSet = 5 }) => {
+const PopularArtists = ({ cardsPerSet = 12 }) => {
   const [visibleArtists] = useState(0);
   const { artists, setArtists } = UseAppState();
   const [isLoading, setIsLoading] = useState(true);
@@ -51,13 +51,13 @@ const PopularArtists = ({ cardsPerSet = 5 }) => {
     <SectionSkeleton cardsPerset={cardsPerSet} />
   ) : artists?.length ? (
     <div className="flex flex-col flex-wrap mb-5 w-full" data-theme={theme}>
-      <div className="flex flex-row w-full mb-4 items-center">
+      <div className="flex flex-row w-full mb-4 items-center ">
         <HeadingText text={"Popular Artists"} />
         <div className="ml-auto flex gap-1 md:gap-2 items-center text-xs transition-all duration-300">
           <ActionButton text={"More"} />
         </div>
       </div>
-      <div className="flex flex-row bg-transparent h-[16rem] md:h-[18rem] w-full gap-4 mt-4 @container overflow-x-scroll py-4 px-2">
+      <div className="grid grid-rows-2 auto-cols-[minmax(220px,1fr)] grid-flow-col  bg-transparent w-full gap-4 mt-4 @container overflow-x-scroll overflow-y-hidden py-4 px-2">
         {artists
           .slice(visibleArtists, visibleArtists + cardsPerSet)
           .map((artist) => (

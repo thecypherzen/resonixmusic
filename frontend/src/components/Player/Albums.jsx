@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { UseAppState } from "@/hooks/UseAppState";
 import { transformAlbum } from "@/lib/utils";
 
-const Albums = ({ cardsPerSet = 5 }) => {
+const Albums = ({ cardsPerSet = 6 }) => {
   const [visibleAlbums] = useState(0);
   const { albums, setAlbums } = UseAppState();
   const [isLoading, setIsLoading] = useState(true);

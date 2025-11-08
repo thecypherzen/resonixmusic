@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { UseAppState } from "@/hooks/UseAppState";
 import { transformPlaylist } from "@/lib/utils";
 
-const Playlists = ({ cardsPerSet = 5 }) => {
+const Playlists = ({ cardsPerSet = 6 }) => {
   const { playlists, setPlaylists } = UseAppState();
   const [visiblePlaylists] = useState(0);
   const [isLoading, setIsLoading] = useState(true);

@@ -40,29 +40,7 @@ const ErrorMessage = ({ message, onRetry }) => (
  */
 const HomePage = () => {
   // Constants
-  const cardsPerSet = 5;
-
-  //// Navigation handlers
-  //const handleNext = (setVisible, visible, totalItems) => {
-  //  if (visible + cardsPerSet < totalItems) {
-  //    setVisible(visible + cardsPerSet);
-  //    const section = document.getElementById("section-id");
-  //    if (section) {
-  //      section.scrollIntoView({ behavior: "smooth" });
-  //    }
-  //  }
-  //};
-
-  //const handlePrevious = (setVisible, visible) => {
-  //  if (visible - cardsPerSet >= 0) {
-  //    setVisible(visible - cardsPerSet);
-  //    // Optional: Smooth scroll to the section
-  //    const section = document.getElementById("section-id");
-  //    if (section) {
-  //      section.scrollIntoView({ behavior: "smooth" });
-  //    }
-  //  }
-  //};
+  const cardsPerSet = 12;
 
   const { theme } = useTheme();
   // Main render
@@ -72,10 +50,10 @@ const HomePage = () => {
       className="flex flex-col px-5 md:px-10 lg:px-16 gap-10 transition-all duration-300 py-10 max-h-screen overflow-y-scroll"
       data-theme={theme}
     >
-      <PopularArtists cardsPerSet={cardsPerSet} />
+      <PopularArtists />
       <TrendingTracks />
-      <Albums cardsPerSet={cardsPerSet} />
-      <Playlists cardsPerSet={cardsPerSet} />
+      <Albums />
+      <Playlists />
     </div>
   );
 };
