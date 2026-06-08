@@ -14,6 +14,7 @@ import ArtistCard from "./ArtistCard";
 import UsePlayer from "@/hooks/UsePlayer";
 import { transformArtist, transformTrack, transformAlbum } from "@/lib/utils";
 import { UseRandomImages } from "@/hooks/UseRandomImages";
+import { ThumbsUp } from "lucide-react";
 
 const DEFAULT_THUMBNAIL = "/thumbnail.png";
 
@@ -114,7 +115,7 @@ const ArtistDetails = ({ id }) => {
       order: "popularity_total",
     },
   });
-  console.log("\n\nRendering ArtistDetails:\n\n");
+
   /**
    * @hook
    * Update artist info when it's received
@@ -139,12 +140,12 @@ const ArtistDetails = ({ id }) => {
     if (!infoDataState.info) return;
     const name = infoDataState.info.name;
     if (tracksData) {
-      //console.log("setting tracks data for", infoDataState.info.name);
-      setTracksDataState({
+      const artistTracks = setTracksDataState({
         error: null,
-        tracks: tracksData.map(transformTrack),
+        tracks: tracksData
+          .filter((art) => art.id === id)[0]
+          .tracks.map(transformTrack),
       });
-      //console.log("tracksData:", tracksData);
     } else if (tracksError) {
       setTracksDataState({ error: tracksError, tracks: null });
       console.error("tracksError:", tracksError);
@@ -159,12 +160,10 @@ const ArtistDetails = ({ id }) => {
     if (!infoDataState.info) return;
     const name = infoDataState.info.name;
     if (albumsData) {
-      console.log("infoDataState", infoDataState.info);
       setAlbumsDataState({
         error: null,
         albums: albumsData.map(transformAlbum),
       });
-      //console.log("albumsData:", albumsData);
     } else if (albumsError) {
       console.error("albumsError:", albumsError);
       setAlbumsDataState({ error: albumsError, albums: null });
@@ -177,12 +176,10 @@ const ArtistDetails = ({ id }) => {
    */
   useEffect(() => {
     if (similarData) {
-      //console.log("setting similar data:", similarData);
       setSimilarDataState({
         error: null,
         similar: similarData.map(transformArtist),
       });
-      console.log("similarData:", similarData);
     } else if (similarError) {
       console.error("similarError", similarError);
       setSimilarDataState({ error: similarError });
@@ -270,7 +267,7 @@ const ArtistDetails = ({ id }) => {
   return (
     <div className="flex-1 overflow-hidden w-full">
       {/* Artist Header */}
-      <div className="relative min-h-[28rem] mb-20">
+      <div className="relative">
         {/* Background Image and Gradient */}
         <div className="inset-0 absolute top-0 left-0">
           <img
@@ -284,12 +281,10 @@ const ArtistDetails = ({ id }) => {
         </div>
 
         {/* Content Container*/}
-        <div className="relative z-10 px-16 pt-[7rem]">
-          <div className="pt-8">
-            <h1 className="text-4xl md:text-7xl font-bold mb-6">
-              {infoDataState.info.name}
-            </h1>
-          </div>
+        <div className="relative z-10 px-5 md:px-16 pt-[6rem] pb-[1rem]">
+          <h1 className="text-4xl md:text-7xl font-bold mb-6">
+            {infoDataState.info.name}
+          </h1>
 
           {/* Description Container*/}
           <div
@@ -398,10 +393,10 @@ const ArtistDetails = ({ id }) => {
       </div>
 
       {/* Songs Section */}
-      <div className="px-16 py-6">
-        <h2 className="text-3xl font-bold mb-6">Songs</h2>
+      <div className="px-5 md:px-16 mt-10 ">
+        <h2 className="text-3xl font-bold mb-6">{`Songs by ${infoDataState.info.name}`}</h2>
         {tracksDataState.tracks?.length ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2">
             {tracksDataState.tracks.map((song, index) => (
               <button
                 key={song.id}
@@ -443,21 +438,29 @@ const ArtistDetails = ({ id }) => {
                         <span className="h-1.5 w-1.5 bg-white opacity-45 rounded-full flex-shrink-0"></span>
                       </>
                     )}
-                    <p className="text-sm opacity-45 truncate">{song.likes}</p>
+                    <p className="text-sm opacity-45 truncate flex gap-1">
+                      {song.likes}&nbsp;
+                      <span>
+                        <ThumbsUp size={16} />
+                      </span>
+                    </p>
                   </div>
                 </div>
               </button>
             ))}
           </div>
         ) : (
-          <p className="text-muted"> Artist has no songs </p>
+          <p className="text-muted">
+            {" "}
+            {infoDataState.info.name}&nbsp;has no songs{" "}
+          </p>
         )}
       </div>
 
       {/* Albums Section */}
-      <div className="px-16 py-6">
+      <div className="px-5 md:px-16 py-6 mt-10">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-3xl font-bold mb-6">Albums</h2>
+          <h2 className="text-3xl font-bold mb-6">{`${infoDataState.info.name}'s Albums`}</h2>
           {albumsDataState.albums?.length && (
             <div className="flex gap-2">
               <button
@@ -509,12 +512,14 @@ const ArtistDetails = ({ id }) => {
               ))}
           </div>
         ) : (
-          <p className="text-neutral-400">Artist has no albums</p>
+          <p className="text-neutral-400">
+            {infoDataState.info.name}&nbsp;has no albums
+          </p>
         )}
       </div>
 
       {/* Similar Artists Section */}
-      <div className="px-16 py-6 mb-24">
+      <div className="px-5 md:px-16 py-6 mt-10">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-bold mb-6">Artists you may like</h2>
           <div className="flex gap-2">

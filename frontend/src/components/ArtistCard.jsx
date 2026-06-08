@@ -5,13 +5,10 @@ import { useTheme } from "@/hooks/useTheme";
 import { useEffect } from "react";
 import { UseRandomImages } from "@/hooks/UseRandomImages";
 
-const ArtistCard = ({ artist, onClick, namespace = artists }) => {
+const ArtistCard = ({ artist, onClick, namespace = "artists" }) => {
   const { theme } = useTheme();
   const { imageGenerator, fetchRandomImage } = UseRandomImages();
   useEffect(() => {}, [imageGenerator]);
-  useEffect(() => {
-    console.log("ARTIST CARD FOR:\n\n", artist);
-  }, []);
 
   return (
     <div
