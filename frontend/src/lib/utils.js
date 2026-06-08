@@ -29,6 +29,7 @@ export function transformArtist(artist) {
     thumbnail: artist.image,
     shortUrl: artist.shorturl,
     shareUrl: artist.shareurl,
+    musicInfo: artist?.musicinfo ?? null,
     tracks: artist?.tracks?.map((t) => t.id) ?? null,
   };
 }
@@ -64,6 +65,7 @@ export function transformTrack(track) {
     position: parseInt(track.position), // playlist: Y album:
     releaseDate: track.releasedate || track.playlistadddate, // playlist: N album: Y
     likes: `${Math.floor(Math.random() * 100)}k`, // playlist: y album:
+    albumName: track.album_name, // playlist: N album: Y
   };
 }
 
@@ -113,7 +115,7 @@ export function generatorFromArray(arr) {
 export function getRandomImages(
   orientation = "landscape",
   type = "raw",
-  count = 30
+  count = 30,
 ) {
   /*
    * Orientation values: landscape, portrait, squarish

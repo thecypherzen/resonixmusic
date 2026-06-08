@@ -6,16 +6,14 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaHeart,
-  FaShare,
   FaEllipsisH,
 } from "react-icons/fa";
-import { usePlayer } from "../context/PlayerContext";
 import { useFetch } from "../hooks/useFetch";
-import api from "../services/api";
 import { MdErrorOutline } from "react-icons/md";
-import { IoMdClose } from "react-icons/io";
 import ArtistCard from "./ArtistCard";
-import transform from "../utils/dataTransformers";
+import UsePlayer from "@/hooks/UsePlayer";
+import { transformArtist, transformTrack, transformAlbum } from "@/lib/utils";
+import { UseRandomImages } from "@/hooks/UseRandomImages";
 
 const DEFAULT_THUMBNAIL = "/thumbnail.png";
 
@@ -40,9 +38,10 @@ const stripHtmlTags = (html) => {
 const ArtistDetails = ({ id }) => {
   const navigate = useNavigate();
   const menuRef = useRef(null);
-  const player = usePlayer();
+  const player = UsePlayer();
 
   const { handleTrackSelect, currentTrack, isPlaying } = player;
+  const { fetchRandomImage } = UseRandomImages();
   const [visibleAlbums, setVisibleAlbums] = useState(0);
   const [visibleArtists, setVisibleArtists] = useState(0);
   const [showMenu, setShowMenu] = useState(false);
@@ -64,7 +63,6 @@ const ArtistDetails = ({ id }) => {
     similar: null,
   });
   const [showFullDescription, setShowFullDescription] = useState(false);
-  const [albumImages, setAlbumImages] = useState({});
   const cardsPerSet = 5;
 
   const formatDuration = (seconds) => {
@@ -116,16 +114,19 @@ const ArtistDetails = ({ id }) => {
       order: "popularity_total",
     },
   });
-
+  console.log("\n\nRendering ArtistDetails:\n\n");
   /**
    * @hook
    * Update artist info when it's received
    */
   useEffect(() => {
     if (infoData) {
-      setinfoDataState({ error: null, info: transform.artists(infoData)[0] });
+      setinfoDataState({
+        error: null,
+        info: transformArtist(infoData[0]),
+      });
     } else if (infoError) {
-      console.error("artistInfoErrro:", tracksError);
+      console.error("artistInfoError:", infoError);
       setinfoDataState({ error: infoError, info: null });
     }
   }, [infoData, infoError]);
@@ -141,8 +142,9 @@ const ArtistDetails = ({ id }) => {
       //console.log("setting tracks data for", infoDataState.info.name);
       setTracksDataState({
         error: null,
-        tracks: transform.tracks(tracksData, name),
+        tracks: tracksData.map(transformTrack),
       });
+      //console.log("tracksData:", tracksData);
     } else if (tracksError) {
       setTracksDataState({ error: tracksError, tracks: null });
       console.error("tracksError:", tracksError);
@@ -151,36 +153,38 @@ const ArtistDetails = ({ id }) => {
 
   /**
    * @hook
-   * Set artist's albums, if any when reeady
+   * Set artist's albums, if any when ready
    */
   useEffect(() => {
     if (!infoDataState.info) return;
     const name = infoDataState.info.name;
     if (albumsData) {
-      //console.log("setting albums data for", infoDataState.info.name);
+      console.log("infoDataState", infoDataState.info);
       setAlbumsDataState({
         error: null,
-        albums: transform.albums(albumsData[0]?.albums ?? [], name),
+        albums: albumsData.map(transformAlbum),
       });
+      //console.log("albumsData:", albumsData);
     } else if (albumsError) {
-      console.error("albumsError:", tracksError);
+      console.error("albumsError:", albumsError);
       setAlbumsDataState({ error: albumsError, albums: null });
     }
   }, [albumsData, albumsError, infoDataState.info]);
 
   /**
    * @hook
-   * Seet artist similar data
+   * Set artist similar data
    */
   useEffect(() => {
     if (similarData) {
       //console.log("setting similar data:", similarData);
       setSimilarDataState({
         error: null,
-        similar: transform.artists(similarData),
+        similar: similarData.map(transformArtist),
       });
+      console.log("similarData:", similarData);
     } else if (similarError) {
-      console.error("similarError", tracksError);
+      console.error("similarError", similarError);
       setSimilarDataState({ error: similarError });
     }
   }, [similarData, similarError]);
@@ -201,53 +205,6 @@ const ArtistDetails = ({ id }) => {
     tracksDataState.tracks,
     similarDataState.similar,
   ]);
-  //useEffect(() => {
-  //  window.scrollTo(0, 0);
-  //}, [id]);
-
-  //useEffect(() => {
-  //  const handleClickOutside = (event) => {
-  //    if (menuRef.current && !menuRef.current.contains(event.target)) {
-  //      setShowMenu(false);
-  //    }
-  //  };
-
-  //  document.addEventListener("click", handleClickOutside);
-  //  return () => document.removeEventListener("click", handleClickOutside);
-  //}, []);
-
-  const getRandomImageForAlbum = async (albumId) => {
-    if (albumImages[albumId]) return albumImages[albumId];
-
-    try {
-      const thumbnail = await api.getRandomImage("squarish");
-      setAlbumImages((prev) => ({ ...prev, [albumId]: thumbnail }));
-      return thumbnail;
-    } catch (error) {
-      console.error("Error getting random image:", error);
-      return DEFAULT_THUMBNAIL;
-    }
-  };
-
-  //useEffect(() => {
-  //  const fetchRandomImages = async () => {
-  //    if (!albums) return;
-
-  //    const albumsWithoutImages = albums.filter((album) => !album.image);
-  //    const imagePromises = albumsWithoutImages.map((album) =>
-  //      getRandomImageForAlbum(album.id)
-  //    );
-
-  //    await Promise.all(imagePromises);
-  //  };
-
-  //  fetchRandomImages();
-  //}, [albums]);
-
-  const handleMenuToggle = (e) => {
-    e.stopPropagation();
-    setShowMenu(!showMenu);
-  };
 
   const handlePlayAll = () => {
     if (!songs?.length) return;
@@ -304,6 +261,10 @@ const ArtistDetails = ({ id }) => {
       .trim();
   };
 
+  const handleMenuToggle = () => {
+    setShowMenu((prev) => !prev);
+  };
+
   if (isLoading) return <LoadingState />;
 
   return (
@@ -311,19 +272,21 @@ const ArtistDetails = ({ id }) => {
       {/* Artist Header */}
       <div className="relative min-h-[28rem] mb-20">
         {/* Background Image and Gradient */}
-        <div className="absolute top-0 left-0 w-full h-[28rem]">
+        <div className="inset-0 absolute top-0 left-0">
           <img
-            src={infoDataState.info.image}
+            src={
+              infoDataState.info.thumbnail || fetchRandomImage("artists", id)
+            }
             alt={infoDataState.info.name}
             className="w-full h-full object-cover opacity-15"
           />
-          <div className="absolute bottom-0 w-full bg-gradient-to-b from-transparent via-[#121212] to-[#121212] h-[15rem]" />
+          <div className="absolute bottom-0 w-full bg-gradient-to-b from-transparent via-background h-[15rem]" />
         </div>
 
         {/* Content Container*/}
         <div className="relative z-10 px-16 pt-[7rem]">
           <div className="pt-8">
-            <h1 className="text-7xl font-bold mb-6">
+            <h1 className="text-4xl md:text-7xl font-bold mb-6">
               {infoDataState.info.name}
             </h1>
           </div>
@@ -337,14 +300,14 @@ const ArtistDetails = ({ id }) => {
             }`}
           >
             {/* Description Section */}
-            {infoDataState.info.musicinfo?.description?.en && (
+            {infoDataState.info.musicInfo?.description?.en && (
               <div className="mb-6">
                 <div
                   className={`text-md text-white max-w-[40rem] ${
                     showFullDescription ? "" : "line-clamp-2"
                   }`}
                 >
-                  {stripHtmlTags(infoDataState.info.musicinfo.description.en)}
+                  {stripHtmlTags(infoDataState.info.musicInfo.description.en)}
                 </div>
                 <button
                   onClick={() => setShowFullDescription(!showFullDescription)}
@@ -355,16 +318,16 @@ const ArtistDetails = ({ id }) => {
               </div>
             )}
 
-            {/* Tags Section */}
+            {/* Tags and btn actions Section */}
             <div
               className={`transition-all duration-300 ease-in-out transform ${
                 showFullDescription ? "-translate-y-4" : "translate-y-0"
               }`}
             >
-              {infoDataState.info.musicinfo?.tags &&
-                infoDataState.info.musicinfo.tags.length > 0 && (
+              {infoDataState.info.musicInfo?.tags &&
+                infoDataState.info.musicInfo.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-6">
-                    {infoDataState.info.musicinfo.tags.map((tag, index) => (
+                    {infoDataState.info.musicInfo.tags.map((tag, index) => (
                       <span
                         key={index}
                         className="px-4 py-1 bg-neutral-800 rounded-full text-sm text-neutral-300"
@@ -379,7 +342,7 @@ const ArtistDetails = ({ id }) => {
               <div className="flex items-center gap-8 mb-8">
                 <button
                   onClick={handlePlayAll}
-                  className="px-8 py-2 bg-[#08B2F0] text-black rounded-full hover:bg-opacity-85 transition-all flex items-center gap-2"
+                  className="px-5 md:px-8 py-1 md:py-2 bg-highlight text-highlight-foreground rounded-full hover:bg-highlight-dark transition-all flex items-center gap-2"
                 >
                   <FaPlay /> Play all
                 </button>
@@ -401,7 +364,7 @@ const ArtistDetails = ({ id }) => {
 
                   {showMenu && (
                     <div className="absolute left-0 mt-2 w-48 bg-[#282828] rounded-lg shadow-xl border border-neutral-600 z-50">
-                      {infoDataState.info.website && (
+                      {infoDataState.info?.website && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -413,11 +376,11 @@ const ArtistDetails = ({ id }) => {
                           Website
                         </button>
                       )}
-                      {artist.shareurl && (
+                      {infoDataState.info?.shareUrl && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.open(infoDataState.info.shareurl, "_blank");
+                            window.open(infoDataState.info.shareUrl, "_blank");
                             setShowMenu(false);
                           }}
                           className="bg-transparent w-full text-left px-4 py-3 hover:bg-white/10 rounded-none"
@@ -436,14 +399,14 @@ const ArtistDetails = ({ id }) => {
 
       {/* Songs Section */}
       <div className="px-16 py-6">
-        <h2 className="text-2xl font-bold mb-4">Songs</h2>
+        <h2 className="text-3xl font-bold mb-6">Songs</h2>
         {tracksDataState.tracks?.length ? (
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
             {tracksDataState.tracks.map((song, index) => (
               <button
                 key={song.id}
                 onClick={() => handlePlayTrack(song, index)}
-                className="flex flex-row bg-transparent hover:bg-white hover:bg-opacity-[2%] p-2 rounded-xl gap-3 group text-left transition-all"
+                className="flex flex-row bg-transparent hover:bg-white/10 p-2 rounded-xl gap-3 group text-left transition-all"
               >
                 <div className="flex relative">
                   <img
@@ -453,6 +416,7 @@ const ArtistDetails = ({ id }) => {
                     onError={(e) => {
                       e.target.src = DEFAULT_THUMBNAIL;
                     }}
+                    style={{ fontSize: "0.75rem" }}
                   />
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 rounded-lg transition-opacity">
                     {isTrackPlaying(song, currentTrack) ? (
@@ -465,7 +429,7 @@ const ArtistDetails = ({ id }) => {
                 <div className="flex flex-col flex-1 min-w-0">
                   <p
                     className={`text-base truncate ${
-                      isTrackPlaying(song, currentTrack) ? "text-[#08B2F0]" : ""
+                      isTrackPlaying(song, currentTrack) ? "text-highlight" : ""
                     }`}
                   >
                     {song.title}
@@ -486,19 +450,19 @@ const ArtistDetails = ({ id }) => {
             ))}
           </div>
         ) : (
-          <p className="text-neutral-400"> Artist has no songs </p>
+          <p className="text-muted"> Artist has no songs </p>
         )}
       </div>
 
       {/* Albums Section */}
       <div className="px-16 py-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Albums</h2>
+          <h2 className="text-3xl font-bold mb-6">Albums</h2>
           {albumsDataState.albums?.length && (
             <div className="flex gap-2">
               <button
                 onClick={() => handlePrevious(setVisibleAlbums, visibleAlbums)}
-                className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800"
+                className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-background/80"
               >
                 <FaChevronLeft />
               </button>
@@ -524,21 +488,13 @@ const ArtistDetails = ({ id }) => {
                   className="flex flex-col bg-white bg-opacity-[2%] rounded-xl w-[11.45rem] h-full p-3 gap-4 hover:border-none transition-all relative group hover:bg-opacity-5"
                 >
                   <div className="opacity-0 group-hover:opacity-100 flex bg-white w-10 h-10 rounded-full shadow-2xl absolute right-6 top-[7.5rem] hover:scale-110 transition-all duration-300">
-                    <FaPlay className="m-auto shadow-lg fill-black" />
+                    <FaPlay className="m-auto shadow-lg fill-background" />
                   </div>
                   <div className="aspect-w-1 aspect-h-1 w-full">
                     <img
-                      src={
-                        album.image || albumImages[album.id] || "/thumbnail.png"
-                      }
+                      src={album.image || fetchRandomImage("albums", album.id)}
                       className="rounded-xl w-full h-full object-cover"
                       alt={album.title}
-                      onError={async (e) => {
-                        const randomImage = await getRandomImageForAlbum(
-                          album.id
-                        );
-                        e.target.src = randomImage;
-                      }}
                     />
                   </div>
                   <div className="flex flex-col text-left">
@@ -560,7 +516,7 @@ const ArtistDetails = ({ id }) => {
       {/* Similar Artists Section */}
       <div className="px-16 py-6 mb-24">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Artists you may like</h2>
+          <h2 className="text-3xl font-bold mb-6">Artists you may like</h2>
           <div className="flex gap-2">
             <button
               onClick={() => handlePrevious(setVisibleArtists, visibleArtists)}
@@ -573,7 +529,7 @@ const ArtistDetails = ({ id }) => {
                 handleNext(
                   setVisibleArtists,
                   visibleArtists,
-                  similarArtists?.length
+                  similarArtists?.length,
                 )
               }
               className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800"
@@ -582,7 +538,7 @@ const ArtistDetails = ({ id }) => {
             </button>
           </div>
         </div>
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {similarDataState.similar
             ?.slice(visibleArtists, visibleArtists + cardsPerSet)
             .map((artist) => (
@@ -590,6 +546,7 @@ const ArtistDetails = ({ id }) => {
                 key={artist.id}
                 artist={artist}
                 onClick={handleArtistClick}
+                namespace="artists"
               />
             ))}
         </div>

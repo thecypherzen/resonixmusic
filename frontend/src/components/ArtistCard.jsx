@@ -5,10 +5,14 @@ import { useTheme } from "@/hooks/useTheme";
 import { useEffect } from "react";
 import { UseRandomImages } from "@/hooks/UseRandomImages";
 
-const ArtistCard = ({ artist, onClick }) => {
+const ArtistCard = ({ artist, onClick, namespace = artists }) => {
   const { theme } = useTheme();
-  const { imageGenerator } = UseRandomImages();
+  const { imageGenerator, fetchRandomImage } = UseRandomImages();
   useEffect(() => {}, [imageGenerator]);
+  useEffect(() => {
+    console.log("ARTIST CARD FOR:\n\n", artist);
+  }, []);
+
   return (
     <div
       onClick={() => onClick(artist)}
@@ -16,7 +20,7 @@ const ArtistCard = ({ artist, onClick }) => {
         "flex flex-col bg-opacity-[2%] rounded-xl min-h-[16rem] gap-4 hover:border-none transition-all relative group hover:bg-opacity-5  w-full",
         theme === "dark"
           ? "bg-neutral-400/10"
-          : "bg-gradient-to-b from-neutral-800 to-neutral-900"
+          : "bg-gradient-to-b from-neutral-800 to-neutral-900",
       )}
       data-theme={theme}
     >
@@ -24,12 +28,13 @@ const ArtistCard = ({ artist, onClick }) => {
       <div className="opacity-0 group-hover:opacity-100 group-active:opacity-100 flex bg-linear-to-r from-blue-500 to-purple-600 shadow-xl shadow-black/40 size-10 rounded-full absolute right-6 top-[7.5rem] hover:scale-110 active:scale-110 transition-all duration-300">
         <FaPlay className="m-auto fill-foreground" />
       </div>
+
       <MusicCard
         variant="boxed"
         bgImageUrl={
           artist.thumbnail
             ? artist.thumbnail
-            : imageGenerator && imageGenerator.next().value
+            : fetchRandomImage(namespace, artist.id)
         }
         className="w-full"
       >

@@ -4,7 +4,7 @@ import WelcomeScreen from "../pages/WelcomeScreen";
 import Login from "../pages/Login";
 import ForgotPassword from "../pages/ForgotPassword";
 import MusicPlayerLayout from "../components/layouts/MusicPlayerLayout";
-import SongDetailsPage from "../pages/SongDetailsPage";
+//import SongDetailsPage from "../pages/SongDetailsPage";
 import ArtistPage from "../pages/ArtistPage";
 import Profile from "../pages/Profile";
 import ProtectedRoute from "../components/ProtectedRoute";
@@ -37,7 +37,7 @@ const AppRoutes = () => {
         <Route path="/" element={<MusicPlayerLayout />}>
           <Route index element={<HomePage />} />
           <Route path="/music" element={<HomePage />} />
-          <Route path="/song/:id" element={<SongDetailsPage />} />
+          {/*<Route path="/song/:id" element={<SongDetailsPage />} />*/}
           <Route path="/albums/:id" element={<SingleAlbumPage />} />
           <Route path="/artists/:id" element={<ArtistPage />} />
           <Route path="/playlists/:id" element={<SinglePlaylistPage />} />

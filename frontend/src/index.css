@@ -115,6 +115,9 @@ input[type="range"]:hover::-webkit-slider-thumb {
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
+  --color-highlight-dark: var(--highlight-dark);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -150,6 +153,9 @@ input[type="range"]:hover::-webkit-slider-thumb {
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
+  --highlight: oklch(65.033% 0.14166 237.091);
+  --highlight-foreground: oklch(0.985 0 0);
+  --highlight-dark: oklch(54.803% 0.11208 232.531);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
