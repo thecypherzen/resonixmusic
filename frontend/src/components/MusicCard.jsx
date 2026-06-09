@@ -3,19 +3,18 @@ import { cn } from "../lib/utils";
 
 function MusicCard({ variant = "default", bgImageUrl, children, className }) {
   useEffect(() => {}, [bgImageUrl]);
-
   switch (variant) {
     case "default":
     case "overlay":
       return (
         <div
           className={cn(
-            "relative h-full w-full overflow-hidden p-3 group",
-            className
+            "relative h-full w-full overflow-hidden p-3 group rounded-lg",
+            className,
           )}
         >
           <div
-            className="h-full w-full absolute inset-0 bg-cover bg-center bg-no-repeat group-hover:scale-105 transition-transform duration-300 ease-in"
+            className="h-full w-full absolute inset-0 bg-cover bg-center bg-no-repeat group-hover:scale-105 transition-transform duration-300 ease-in overfow-hidden rounded-lg"
             style={{
               backgroundImage: bgImageUrl
                 ? `url(${bgImageUrl})`
@@ -34,7 +33,7 @@ function MusicCard({ variant = "default", bgImageUrl, children, className }) {
         <div
           className={cn(
             "w-full h-full flex flex-col gap-2 items-start p-2 rounded-md",
-            className
+            className,
           )}
         >
           <div

@@ -15,6 +15,7 @@ import UsePlayer from "@/hooks/UsePlayer";
 import { transformArtist, transformTrack, transformAlbum } from "@/lib/utils";
 import { UseRandomImages } from "@/hooks/UseRandomImages";
 import { ThumbsUp } from "lucide-react";
+import MusicCard from "./MusicCard";
 
 const DEFAULT_THUMBNAIL = "/thumbnail.png";
 
@@ -162,7 +163,7 @@ const ArtistDetails = ({ id }) => {
     if (albumsData) {
       setAlbumsDataState({
         error: null,
-        albums: albumsData.map(transformAlbum),
+        albums: albumsData[0]?.albums?.map(transformAlbum),
       });
     } else if (albumsError) {
       console.error("albumsError:", albumsError);
@@ -265,7 +266,7 @@ const ArtistDetails = ({ id }) => {
   if (isLoading) return <LoadingState />;
 
   return (
-    <div className="flex-1 overflow-hidden w-full">
+    <div className="flex-1 overflow-hidden w-full @container">
       {/* Artist Header */}
       <div className="relative">
         {/* Background Image and Gradient */}
@@ -458,10 +459,10 @@ const ArtistDetails = ({ id }) => {
       </div>
 
       {/* Albums Section */}
-      <div className="px-5 md:px-16 py-6 mt-10">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-3xl font-bold mb-6">{`${infoDataState.info.name}'s Albums`}</h2>
-          {albumsDataState.albums?.length && (
+      {albumsDataState.albums?.length && (
+        <div className="px-5 md:px-16 py-6 mt-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-3xl font-bold mb-6">{`${infoDataState.info.name}'s Albums`}</h2>
             <div className="flex gap-2">
               <button
                 onClick={() => handlePrevious(setVisibleAlbums, visibleAlbums)}
@@ -478,45 +479,39 @@ const ArtistDetails = ({ id }) => {
                 <FaChevronRight />
               </button>
             </div>
-          )}
-        </div>
-        {albumsDataState.albumslength > 0 ? (
-          <div className="flex gap-4">
-            {albums
+          </div>
+          {/* Album Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {albumsDataState.albums
               .slice(visibleAlbums, visibleAlbums + cardsPerSet)
               .map((album) => (
                 <button
                   key={album.id}
                   onClick={() => handleAlbumClick(album)}
-                  className="flex flex-col bg-white bg-opacity-[2%] rounded-xl w-[11.45rem] h-full p-3 gap-4 hover:border-none transition-all relative group hover:bg-opacity-5"
+                  className="flex max-w-full flex-col bg-white/6 rounded-xl min-h-[16rem] p-2 gap-4 hover:border-none transition-all relative group hover:bg-opacity-5"
                 >
                   <div className="opacity-0 group-hover:opacity-100 flex bg-white w-10 h-10 rounded-full shadow-2xl absolute right-6 top-[7.5rem] hover:scale-110 transition-all duration-300">
                     <FaPlay className="m-auto shadow-lg fill-background" />
                   </div>
-                  <div className="aspect-w-1 aspect-h-1 w-full">
-                    <img
-                      src={album.image || fetchRandomImage("albums", album.id)}
-                      className="rounded-xl w-full h-full object-cover"
-                      alt={album.title}
-                    />
-                  </div>
-                  <div className="flex flex-col text-left">
-                    <p className="font-bold text-lg">
-                      {truncateTitle(album.title, 12)}
-                    </p>
-                    <p className="font-bold text-sm text-neutral-400">
-                      {truncateTitle(album.artist, 18)}
-                    </p>
-                  </div>
+
+                  <MusicCard
+                    variant="default"
+                    bgImageUrl={
+                      album.image || fetchRandomImage("albums", album.id)
+                    }
+                    className="w-full"
+                  >
+                    <div className="flex flex-col text-left px-2">
+                      <p className="line-clamp-3 text-ellipsis font-medium leading-tight text-xl w-full truncate whitespace-pre-wrap  dark:text-neutral-100 text-neutral-900">
+                        {album.title}
+                      </p>
+                    </div>
+                  </MusicCard>
                 </button>
               ))}
           </div>
-        ) : (
-          <p className="text-neutral-400">
-            {infoDataState.info.name}&nbsp;has no albums
-          </p>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Similar Artists Section */}
       <div className="px-5 md:px-16 py-6 mt-10">
@@ -543,7 +538,7 @@ const ArtistDetails = ({ id }) => {
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 @sm:grid-cols-2 @md:grid-cols-3 @lg:grid-cols-4 gap-4">
           {similarDataState.similar
             ?.slice(visibleArtists, visibleArtists + cardsPerSet)
             .map((artist) => (

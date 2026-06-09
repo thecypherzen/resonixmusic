@@ -120,7 +120,7 @@ export class Cache {
   log(message) {
     const date = new Date().toLocaleDateString();
     if (this.debug) {
-      console.log(`[Cache ${date}] ${message}`);
+      //console.log(`[Cache ${date}] ${message}`);
     }
   }
 }
