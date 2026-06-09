@@ -266,7 +266,7 @@ const ArtistDetails = ({ id }) => {
   if (isLoading) return <LoadingState />;
 
   return (
-    <div className="flex-1 overflow-hidden w-full @container">
+    <div className="flex-1 overflow-hidden w-full">
       {/* Artist Header */}
       <div className="relative">
         {/* Background Image and Gradient */}
@@ -460,7 +460,7 @@ const ArtistDetails = ({ id }) => {
 
       {/* Albums Section */}
       {albumsDataState.albums?.length && (
-        <div className="px-5 md:px-16 py-6 mt-10">
+        <div className="px-5 md:px-16 py-6 mt-10 @container">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-3xl font-bold mb-6">{`${infoDataState.info.name}'s Albums`}</h2>
             <div className="flex gap-2">
@@ -481,7 +481,7 @@ const ArtistDetails = ({ id }) => {
             </div>
           </div>
           {/* Album Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @4xl:grid-cols-4 @5xl:grid-cols-5 gap-4">
             {albumsDataState.albums
               .slice(visibleAlbums, visibleAlbums + cardsPerSet)
               .map((album) => (
@@ -514,7 +514,7 @@ const ArtistDetails = ({ id }) => {
       )}
 
       {/* Similar Artists Section */}
-      <div className="px-5 md:px-16 py-6 mt-10">
+      <div className="px-5 md:px-16 py-6 mt-10 @container">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-bold mb-6">Artists you may like</h2>
           <div className="flex gap-2">
@@ -538,7 +538,7 @@ const ArtistDetails = ({ id }) => {
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-1 @sm:grid-cols-2 @md:grid-cols-3 @lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @4xl:grid-cols-4 @5xl:grid-cols-6 gap-4">
           {similarDataState.similar
             ?.slice(visibleArtists, visibleArtists + cardsPerSet)
             .map((artist) => (

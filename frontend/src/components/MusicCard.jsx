@@ -14,7 +14,7 @@ function MusicCard({ variant = "default", bgImageUrl, children, className }) {
           )}
         >
           <div
-            className="h-full w-full absolute inset-0 bg-cover bg-center bg-no-repeat group-hover:scale-105 transition-transform duration-300 ease-in overfow-hidden rounded-lg"
+            className="h-full w-full absolute inset-0 bg-cover bg-top bg-no-repeat group-hover:scale-105 transition-transform duration-300 ease-in overfow-hidden rounded-lg"
             style={{
               backgroundImage: bgImageUrl
                 ? `url(${bgImageUrl})`
