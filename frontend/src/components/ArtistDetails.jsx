@@ -17,26 +17,6 @@ import { UseRandomImages } from "@/hooks/UseRandomImages";
 import { ThumbsUp } from "lucide-react";
 import MusicCard from "./MusicCard";
 
-const DEFAULT_THUMBNAIL = "/thumbnail.png";
-
-const truncateTitle = (title, maxLength) => {
-  if (!title) return "";
-  return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
-};
-
-const stripHtmlTags = (html) => {
-  if (!html) return "";
-  return html
-    .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .trim();
-};
-
 const ArtistDetails = ({ id }) => {
   const navigate = useNavigate();
   const menuRef = useRef(null);
@@ -229,23 +209,6 @@ const ArtistDetails = ({ id }) => {
     navigate(`/album/${album.id}`);
   };
 
-  const handleArtistClick = (artist) => {
-    window.scrollTo(0, 0);
-    navigate(`/artist/${artist.id}`);
-  };
-
-  const handleNext = (setVisible, visible, totalItems) => {
-    if (visible + cardsPerSet < totalItems) {
-      setVisible(visible + cardsPerSet);
-    }
-  };
-
-  const handlePrevious = (setVisible, visible) => {
-    if (visible - cardsPerSet >= 0) {
-      setVisible(visible - cardsPerSet);
-    }
-  };
-
   const stripHtmlTags = (html) => {
     if (!html) return "";
     return html
@@ -406,12 +369,9 @@ const ArtistDetails = ({ id }) => {
               >
                 <div className="flex relative">
                   <img
-                    src={song.thumbnail}
+                    src={song.thumbnail || fetchRandomImage("tracks", song.id)}
                     className="h-[3rem] w-[3rem] rounded-lg object-cover"
                     alt={song.title}
-                    onError={(e) => {
-                      e.target.src = DEFAULT_THUMBNAIL;
-                    }}
                     style={{ fontSize: "0.75rem" }}
                   />
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 rounded-lg transition-opacity">
