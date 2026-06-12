@@ -225,7 +225,7 @@ const ArtistDetails = ({ id }) => {
 
   const handleAlbumClick = (album) => {
     window.scrollTo(0, 0);
-    navigate(`/album/${album.id}`);
+    navigate(`/albums/${album.id}`);
   };
 
   const stripHtmlTags = (html) => {
