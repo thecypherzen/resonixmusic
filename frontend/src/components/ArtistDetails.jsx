@@ -12,8 +12,14 @@ import { useFetch } from "../hooks/useFetch";
 import { MdErrorOutline } from "react-icons/md";
 import ArtistCard from "./ArtistCard";
 import UsePlayer from "@/hooks/UsePlayer";
-import { transformArtist, transformTrack, transformAlbum } from "@/lib/utils";
+import {
+  transformArtist,
+  transformTrack,
+  transformAlbum,
+  dataPaginator,
+} from "@/lib/utils";
 import { UseRandomImages } from "@/hooks/UseRandomImages";
+import { useIsMedia } from "@/hooks/useIsMobile";
 import { ThumbsUp } from "lucide-react";
 import MusicCard from "./MusicCard";
 
@@ -21,11 +27,13 @@ const ArtistDetails = ({ id }) => {
   const navigate = useNavigate();
   const menuRef = useRef(null);
   const player = UsePlayer();
+  const isMobile = useIsMedia();
 
   const { handleTrackSelect, currentTrack, isPlaying } = player;
+  const [visibleArtists, setVisibleArtists] = useState(null);
+  const [visibleTracks, setVisibleTracks] = useState(null);
+  const [visibleAlbums, setVisibleAlbums] = useState(null);
   const { fetchRandomImage } = UseRandomImages();
-  const [visibleAlbums, setVisibleAlbums] = useState(0);
-  const [visibleArtists, setVisibleArtists] = useState(0);
   const [showMenu, setShowMenu] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [infoDataState, setinfoDataState] = useState({
@@ -45,7 +53,7 @@ const ArtistDetails = ({ id }) => {
     similar: null,
   });
   const [showFullDescription, setShowFullDescription] = useState(false);
-  const cardsPerSet = 5;
+  const defaultPageItems = 6;
 
   const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -115,13 +123,11 @@ const ArtistDetails = ({ id }) => {
 
   /**
    * @hook
-   * Set artists tracks when ready
+   * Set artist's tracks when ready
    */
   useEffect(() => {
-    if (!infoDataState.info) return;
-    const name = infoDataState.info.name;
     if (tracksData) {
-      const artistTracks = setTracksDataState({
+      setTracksDataState({
         error: null,
         tracks: tracksData
           .filter((art) => art.id === id)[0]
@@ -139,7 +145,6 @@ const ArtistDetails = ({ id }) => {
    */
   useEffect(() => {
     if (!infoDataState.info) return;
-    const name = infoDataState.info.name;
     if (albumsData) {
       setAlbumsDataState({
         error: null,
@@ -149,7 +154,7 @@ const ArtistDetails = ({ id }) => {
       console.error("albumsError:", albumsError);
       setAlbumsDataState({ error: albumsError, albums: null });
     }
-  }, [albumsData, albumsError, infoDataState.info]);
+  }, [albumsData, albumsError]);
 
   /**
    * @hook
@@ -175,6 +180,14 @@ const ArtistDetails = ({ id }) => {
       tracksDataState.tracks &&
       similarDataState.similar
     ) {
+      setVisibleAlbums(dataPaginator(albumsDataState.albums, defaultPageItems));
+      setVisibleArtists(
+        dataPaginator(similarDataState.similar, defaultPageItems),
+      );
+      setVisibleTracks(
+        dataPaginator(tracksDataState.tracks, isMobile ? 9 : 12),
+      );
+      console.log("turning off isloading");
       setIsLoading(false);
     }
   }, [
@@ -232,219 +245,282 @@ const ArtistDetails = ({ id }) => {
     <div className="flex-1 overflow-hidden w-full">
       {/* Artist Header */}
       <div className="relative">
-        {/* Background Image and Gradient */}
-        <div className="inset-0 absolute top-0 left-0">
-          <img
-            src={
-              infoDataState.info.thumbnail || fetchRandomImage("artists", id)
-            }
-            alt={infoDataState.info.name}
-            className="w-full h-full object-cover opacity-15"
-          />
-          <div className="absolute bottom-0 w-full bg-gradient-to-b from-transparent via-background h-[15rem]" />
-        </div>
-
-        {/* Content Container*/}
-        <div className="relative z-10 px-5 md:px-16 pt-[6rem] pb-[1rem]">
-          <h1 className="text-4xl md:text-7xl font-bold mb-6">
-            {infoDataState.info.name}
-          </h1>
-
-          {/* Description Container*/}
-          <div
-            className={`transform ${
-              showFullDescription
-                ? "-translate-y-0 opacity-100"
-                : "translate-y-0 opacity-100"
-            }`}
-          >
-            {/* Description Section */}
-            {infoDataState.info.musicInfo?.description?.en && (
-              <div className="mb-6">
-                <div
-                  className={`text-md text-white max-w-[40rem] ${
-                    showFullDescription ? "" : "line-clamp-2"
-                  }`}
-                >
-                  {stripHtmlTags(infoDataState.info.musicInfo.description.en)}
-                </div>
-                <button
-                  onClick={() => setShowFullDescription(!showFullDescription)}
-                  className="bg-transparent text-neutral-400 hover:text-white text-sm mt-2"
-                >
-                  {showFullDescription ? "Show less" : "Show more"}
-                </button>
-              </div>
-            )}
-
-            {/* Tags and btn actions Section */}
-            <div
-              className={`transition-all duration-300 ease-in-out transform ${
-                showFullDescription ? "-translate-y-4" : "translate-y-0"
-              }`}
-            >
-              {infoDataState.info.musicInfo?.tags &&
-                infoDataState.info.musicInfo.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {infoDataState.info.musicInfo.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="px-4 py-1 bg-neutral-800 rounded-full text-sm text-neutral-300"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-              {/* Action Buttons */}
-              <div className="flex items-center gap-8 mb-8">
-                <button
-                  onClick={handlePlayAll}
-                  className="px-5 md:px-8 py-1 md:py-2 bg-highlight text-highlight-foreground rounded-full hover:bg-highlight-dark transition-all flex items-center gap-2"
-                >
-                  <FaPlay /> Play all
-                </button>
-
-                <button className="bg-transparent text-white">
-                  <FaHeart
-                    size={24}
-                    className="hover:fill-red-500 transition-colors duration-300"
-                  />
-                </button>
-
-                <div className="relative" ref={menuRef}>
-                  <button
-                    onClick={handleMenuToggle}
-                    className="bg-transparent hover:bg-white/10 p-2 rounded-full"
-                  >
-                    <FaEllipsisH size={24} />
-                  </button>
-
-                  {showMenu && (
-                    <div className="absolute left-0 mt-2 w-48 bg-[#282828] rounded-lg shadow-xl border border-neutral-600 z-50">
-                      {infoDataState.info?.website && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open(infoDataState.info.website, "_blank");
-                            setShowMenu(false);
-                          }}
-                          className="bg-transparent w-full text-left px-4 py-3 hover:bg-white/10 rounded-none"
-                        >
-                          Website
-                        </button>
-                      )}
-                      {infoDataState.info?.shareUrl && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open(infoDataState.info.shareUrl, "_blank");
-                            setShowMenu(false);
-                          }}
-                          className="bg-transparent w-full text-left px-4 py-3 hover:bg-white/10 rounded-none"
-                        >
-                          Share
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+        {infoDataState.error ? (
+          <div className="px-5 md:px-16 py-6 mt-10">
+            Failed to fetch data because: {infoDataState.error.reason}
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Background Image and Gradient */}
+            <div className="inset-0 absolute top-0 left-0">
+              <img
+                src={
+                  infoDataState.info.thumbnail ||
+                  fetchRandomImage("artists", id)
+                }
+                alt={infoDataState.info.name}
+                className="w-full h-full object-cover opacity-15"
+              />
+              <div className="absolute bottom-0 w-full bg-gradient-to-b from-transparent via-background h-[15rem]" />
+            </div>
+
+            {/* Content Container*/}
+            <div className="relative z-10 px-5 md:px-16 pt-[6rem] pb-[1rem]">
+              {infoDataState.info ? (
+                <>
+                  <h1 className="text-4xl md:text-7xl font-bold mb-6">
+                    {infoDataState.info.name}
+                  </h1>
+
+                  {/* Description Container*/}
+                  <div
+                    className={`transform ${
+                      showFullDescription
+                        ? "-translate-y-0 opacity-100"
+                        : "translate-y-0 opacity-100"
+                    }`}
+                  >
+                    {/* Description Section */}
+                    {infoDataState.info.musicInfo?.description?.en && (
+                      <div className="mb-6">
+                        <div
+                          className={`text-md text-white max-w-[40rem] ${
+                            showFullDescription ? "" : "line-clamp-2"
+                          }`}
+                        >
+                          {stripHtmlTags(
+                            infoDataState.info.musicInfo.description.en,
+                          )}
+                        </div>
+                        <button
+                          onClick={() =>
+                            setShowFullDescription(!showFullDescription)
+                          }
+                          className="bg-transparent text-neutral-400 hover:text-white text-sm mt-2"
+                        >
+                          {showFullDescription ? "Show less" : "Show more"}
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Tags and btn actions Section */}
+                    <div
+                      className={`transition-all duration-300 ease-in-out transform ${
+                        showFullDescription ? "-translate-y-4" : "translate-y-0"
+                      }`}
+                    >
+                      {infoDataState.info.musicInfo?.tags &&
+                        infoDataState.info.musicInfo.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-6">
+                            {infoDataState.info.musicInfo.tags.map(
+                              (tag, index) => (
+                                <span
+                                  key={index}
+                                  className="px-4 py-1 bg-neutral-800 rounded-full text-sm text-neutral-300"
+                                >
+                                  {tag}
+                                </span>
+                              ),
+                            )}
+                          </div>
+                        )}
+
+                      {/* Action Buttons */}
+                      <div className="flex items-center gap-8 mb-8">
+                        <button
+                          onClick={handlePlayAll}
+                          className="px-5 md:px-8 py-1 md:py-2 bg-highlight text-highlight-foreground rounded-full hover:bg-highlight-dark transition-all flex items-center gap-2"
+                        >
+                          <FaPlay /> Play all
+                        </button>
+
+                        <button className="bg-transparent text-white">
+                          <FaHeart
+                            size={24}
+                            className="hover:fill-red-500 transition-colors duration-300"
+                          />
+                        </button>
+
+                        <div className="relative" ref={menuRef}>
+                          <button
+                            onClick={handleMenuToggle}
+                            className="bg-transparent hover:bg-white/10 p-2 rounded-full"
+                          >
+                            <FaEllipsisH size={24} />
+                          </button>
+
+                          {showMenu && (
+                            <div className="absolute left-0 mt-2 w-48 bg-[#282828] rounded-lg shadow-xl border border-neutral-600 z-50">
+                              {infoDataState.info?.website && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open(
+                                      infoDataState.info.website,
+                                      "_blank",
+                                    );
+                                    setShowMenu(false);
+                                  }}
+                                  className="bg-transparent w-full text-left px-4 py-3 hover:bg-white/10 rounded-none"
+                                >
+                                  Website
+                                </button>
+                              )}
+                              {infoDataState.info?.shareUrl && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open(
+                                      infoDataState.info.shareUrl,
+                                      "_blank",
+                                    );
+                                    setShowMenu(false);
+                                  }}
+                                  className="bg-transparent w-full text-left px-4 py-3 hover:bg-white/10 rounded-none"
+                                >
+                                  Share
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="px-5 md:px-16 py-6 mt-10">
+                  An error occurred while fetching track data <br />
+                  Try again Later
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Songs Section */}
       <div className="px-5 md:px-16 mt-10 ">
-        <h2 className="text-3xl font-bold mb-6">{`Songs by ${infoDataState.info.name}`}</h2>
-        {tracksDataState.tracks?.length ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2">
-            {tracksDataState.tracks.map((song, index) => (
-              <button
-                key={song.id}
-                onClick={() => handlePlayTrack(song, index)}
-                className="flex flex-row bg-transparent hover:bg-white/10 p-2 rounded-xl gap-3 group text-left transition-all"
-              >
-                <div className="flex relative">
-                  <img
-                    src={song.thumbnail || fetchRandomImage("tracks", song.id)}
-                    className="h-[3rem] w-[3rem] rounded-lg object-cover"
-                    alt={song.title}
-                    style={{ fontSize: "0.75rem" }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 rounded-lg transition-opacity">
-                    {isTrackPlaying(song, currentTrack) ? (
-                      <FaPause className="fill-white drop-shadow-lg" />
-                    ) : (
-                      <FaPlay className="fill-white drop-shadow-lg" />
-                    )}
-                  </div>
-                </div>
-                <div className="flex flex-col flex-1 min-w-0">
-                  <p
-                    className={`text-base truncate ${
-                      isTrackPlaying(song, currentTrack) ? "text-highlight" : ""
-                    }`}
-                  >
-                    {song.title}
-                  </p>
-                  <div className="flex flex-row items-center gap-2">
-                    {song.album_name && (
-                      <>
-                        <p className="text-sm opacity-45 truncate">
-                          {song.album_name}
-                        </p>
-                        <span className="h-1.5 w-1.5 bg-white opacity-45 rounded-full flex-shrink-0"></span>
-                      </>
-                    )}
-                    <p className="text-sm opacity-45 truncate flex gap-1">
-                      {song.likes}&nbsp;
-                      <span>
-                        <ThumbsUp size={16} />
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              </button>
-            ))}
+        {tracksDataState.error ? (
+          <div className="px-5 md:px-16 py-6 mt-10">
+            {tracksDataState.error.reason} while fetching tracks
           </div>
         ) : (
-          <p className="text-muted">
-            {" "}
-            {infoDataState.info.name}&nbsp;has no songs{" "}
-          </p>
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-3xl font-bold mb-6">{`Songs by ${infoDataState.info.name}`}</h2>
+              {/* Navigation buttons */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setVisibleTracks(visibleTracks.prev())}
+                  className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-background/80"
+                >
+                  <FaChevronLeft />
+                </button>
+                <button
+                  onClick={() => setVisibleTracks(visibleTracks.next())}
+                  className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800"
+                >
+                  <FaChevronRight />
+                </button>
+              </div>
+            </div>
+
+            {visibleTracks?.items ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2">
+                {visibleTracks.items.map((song, index) => (
+                  <button
+                    key={song.id}
+                    onClick={() => handlePlayTrack(song, index)}
+                    className="flex flex-row bg-transparent hover:bg-white/10 p-2 rounded-xl gap-3 group text-left transition-all"
+                  >
+                    <div className="flex relative">
+                      <img
+                        src={
+                          song.thumbnail || fetchRandomImage("tracks", song.id)
+                        }
+                        className="h-[3rem] w-[3rem] rounded-lg object-cover"
+                        alt={song.title}
+                        style={{ fontSize: "0.75rem" }}
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 rounded-lg transition-opacity">
+                        {isTrackPlaying(song, currentTrack) ? (
+                          <FaPause className="fill-white drop-shadow-lg" />
+                        ) : (
+                          <FaPlay className="fill-white drop-shadow-lg" />
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex flex-col flex-1 min-w-0">
+                      <p
+                        className={`text-base truncate ${
+                          isTrackPlaying(song, currentTrack)
+                            ? "text-highlight"
+                            : ""
+                        }`}
+                      >
+                        {song.title}
+                      </p>
+                      <div className="flex flex-row items-center gap-2">
+                        {song.album_name && (
+                          <>
+                            <p className="text-sm opacity-45 truncate">
+                              {song.album_name}
+                            </p>
+                            <span className="h-1.5 w-1.5 bg-white opacity-45 rounded-full flex-shrink-0"></span>
+                          </>
+                        )}
+                        <p className="text-sm opacity-45 truncate flex gap-1">
+                          {song.likes}&nbsp;
+                          <span>
+                            <ThumbsUp size={16} />
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted">
+                {" "}
+                {infoDataState.info.name}&nbsp;has no songs{" "}
+              </p>
+            )}
+          </>
         )}
       </div>
 
       {/* Albums Section */}
-      {albumsDataState.albums?.length && (
-        <div className="px-5 md:px-16 py-6 mt-10 @container">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-3xl font-bold mb-6">{`${infoDataState.info.name}'s Albums`}</h2>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handlePrevious(setVisibleAlbums, visibleAlbums)}
-                className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-background/80"
-              >
-                <FaChevronLeft />
-              </button>
-              <button
-                onClick={() =>
-                  handleNext(setVisibleAlbums, visibleAlbums, albums?.length)
-                }
-                className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800"
-              >
-                <FaChevronRight />
-              </button>
+
+      {albumsDataState.error ? (
+        <div className="px-5 md:px-16 py-6 mt-10">
+          {albumsDataState.error.reason} while fetching albums
+        </div>
+      ) : (
+        visibleAlbums.items && (
+          <div className="px-5 md:px-16 py-6 mt-10 @container">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-3xl font-bold mb-6">{`${infoDataState.info.name}'s Albums`}</h2>
+              {/* Navigation buttons */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setVisibleAlbums(visibleAlbums.prev())}
+                  className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-background/80"
+                >
+                  <FaChevronLeft />
+                </button>
+                <button
+                  onClick={() => setVisibleAlbums(visibleAlbums.next())}
+                  className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800"
+                >
+                  <FaChevronRight />
+                </button>
+              </div>
             </div>
-          </div>
-          {/* Album Cards */}
-          <div className="grid grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @4xl:grid-cols-4 @5xl:grid-cols-5 gap-4">
-            {albumsDataState.albums
-              .slice(visibleAlbums, visibleAlbums + cardsPerSet)
-              .map((album) => (
+            {/* Album Cards */}
+            <div className="grid grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @4xl:grid-cols-4 @5xl:grid-cols-5 gap-4">
+              {visibleAlbums.items.map((album) => (
                 <button
                   key={album.id}
                   onClick={() => handleAlbumClick(album)}
@@ -469,8 +545,9 @@ const ArtistDetails = ({ id }) => {
                   </MusicCard>
                 </button>
               ))}
+            </div>
           </div>
-        </div>
+        )
       )}
 
       {/* Similar Artists Section */}
@@ -479,19 +556,13 @@ const ArtistDetails = ({ id }) => {
           <h2 className="text-3xl font-bold mb-6">Artists you may like</h2>
           <div className="flex gap-2">
             <button
-              onClick={() => handlePrevious(setVisibleArtists, visibleArtists)}
+              onClick={() => setVisibleArtists(visibleArtists.prev())}
               className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800"
             >
               <FaChevronLeft />
             </button>
             <button
-              onClick={() =>
-                handleNext(
-                  setVisibleArtists,
-                  visibleArtists,
-                  similarArtists?.length,
-                )
-              }
+              onClick={() => setVisibleArtists(visibleArtists.next())}
               className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800"
             >
               <FaChevronRight />
@@ -499,16 +570,20 @@ const ArtistDetails = ({ id }) => {
           </div>
         </div>
         <div className="grid grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @4xl:grid-cols-4 @5xl:grid-cols-6 gap-4">
-          {similarDataState.similar
-            ?.slice(visibleArtists, visibleArtists + cardsPerSet)
-            .map((artist) => (
+          {similarDataState.error ? (
+            <div className="px-5 md:px-16 py-6 mt-10">
+              {similarDataState.error.reason} while fetching data
+            </div>
+          ) : (
+            visibleArtists?.items.map((artist) => (
               <ArtistCard
                 key={artist.id}
                 artist={artist}
-                onClick={handleArtistClick}
+                onClick={() => navigate(`/artist/${artist.id}`)}
                 namespace="artists"
               />
-            ))}
+            ))
+          )}
         </div>
       </div>
     </div>

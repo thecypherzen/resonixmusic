@@ -95,7 +95,7 @@ const fallbackArtworks = [
   "/artworks/artwork_10.jpg",
 ];
 
-export function generatorFromArray(arr) {
+export function iteratorFromArray(arr) {
   let div = 1;
   const len = arr.length;
   while (Math.floor(len / div) > 0) div *= 10;
@@ -138,3 +138,64 @@ export function getRandomImages(
       return fallbackArtworks;
     });
 }
+
+export const dataPaginator = (items, itemsPerPage) => {
+  if (Object.getPrototypeOf(items).constructor.name !== "Array") {
+    throw new Error("Pagination items must be an array");
+  }
+  const totalPages = Math.ceil(items.length / itemsPerPage);
+  let currentPage = 1;
+
+  // Calculate the items to be displayed on the current page
+  const getPageItems = (page) =>
+    items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  // Handler for navigating pages
+  const next = () => {
+    console.log(
+      "current page:",
+      currentPage,
+      "fetching next page:",
+      Math.min(currentPage + 1, totalPages),
+      "totalPages",
+      totalPages,
+      `(${items.length})`,
+    );
+    currentPage = Math.min(currentPage + 1, totalPages);
+    return {
+      currentPage,
+      totalPages,
+      items: getPageItems(currentPage),
+      next,
+      prev,
+    };
+  };
+  // Handler for previous page
+  const prev = () => {
+    console.log(
+      "current page:",
+      currentPage,
+      "fetching previous page:",
+      Math.max(currentPage - 1, 1),
+
+      "totalPages",
+      totalPages,
+      `(${items.length})`,
+    );
+    currentPage = Math.max(currentPage - 1, 1);
+    return {
+      currentPage,
+      totalPages,
+      items: getPageItems(currentPage),
+      next,
+      prev,
+    };
+  };
+
+  return {
+    currentPage,
+    totalPages,
+    items: getPageItems(currentPage),
+    next,
+    prev,
+  };
+};
