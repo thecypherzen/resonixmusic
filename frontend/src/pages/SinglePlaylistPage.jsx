@@ -35,14 +35,14 @@ const SinglePlaylistPage = () => {
       extras: { params: { id: selectedPlaylist?.tracks } },
     },
     !!!selectedPlaylist,
-    [selectedPlaylist]
+    [selectedPlaylist],
   );
   useEffect(() => {
     if (id === null || id === undefined) return;
     if (playlistWithTracksErr) {
       console.error(
         "Failed to fetch playlist with tracks:",
-        playlistWithTracksErr
+        playlistWithTracksErr,
       );
       setError(playlistWithTracksErr);
       return;
@@ -80,7 +80,7 @@ const SinglePlaylistPage = () => {
     <div className="flex-1 w-full min-h-[calc(100vh-3.5rem-26px)]">
       <div className="flex flex-col">
         <DetailsPageHeader
-          type="playlist"
+          type="playlists"
           dataSet={selectedPlaylist}
           tracksCount={playlistTracks.length ?? 0}
         />

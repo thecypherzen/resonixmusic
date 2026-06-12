@@ -15,19 +15,31 @@ import { useTheme } from "@/hooks/useTheme";
  */
 export function DetailsPageHeader({ type, dataSet, tracksCount }) {
   const [ownerThumbnail, setOwnerThumbnail] = useState(null);
+  const [bgImage, setBgImage] = useState(null);
   const { downloadZip, isLoading: isDownloading } = UseDownload();
   const { isPlaying } = UsePlayer();
-  const { image: bgImageUrl, imageGenerator } = UseRandomImages(
+  const { fetchRandomImage, imageGenerator } = UseRandomImages(
     type,
-    dataSet?.id
+    dataSet?.id,
   );
   const { theme } = useTheme();
-  console.log("dataset:", dataSet, "type:", type);
   useEffect(() => {
     if (imageGenerator) {
-      setOwnerThumbnail(imageGenerator.next().value);
+      setOwnerThumbnail(fetchRandomImage(`${type}-owner`, dataSet?.id ?? 1));
+      setBgImage(fetchRandomImage(type, dataSet?.id ?? 1));
     }
   }, [imageGenerator]);
+
+  useEffect(() => {
+    console.log(
+      "Details Header\ndataset:",
+      dataSet,
+      "type:",
+      type,
+      "ownerThumbnail",
+      ownerThumbnail,
+    );
+  }, [type, dataSet, tracksCount, ownerThumbnail, bgImage]);
 
   return (
     <>
@@ -41,9 +53,9 @@ export function DetailsPageHeader({ type, dataSet, tracksCount }) {
           style={{
             backgroundImage: dataSet.thumbnail
               ? `url(${dataSet.thumbnail})`
-              : bgImageUrl?.startsWith("/")
-              ? `url(${bgImageUrl})`
-              : `url(${bgImageUrl}&w=800&dpr=2)`,
+              : bgImage?.startsWith("/")
+                ? `url(${bgImage})`
+                : `url(${bgImage}&w=800&dpr=2)`,
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center center",
@@ -57,13 +69,13 @@ export function DetailsPageHeader({ type, dataSet, tracksCount }) {
         ></div>
         {/* Main Item Image */}
         <div
-          className="w-[10.75rem] h-[10.75rem] shadow-2xl rounded-lg"
+          className="size-[10.85rem] shadow-2xl rounded-lg"
           style={{
             backgroundImage: dataSet.thumbnail
               ? `url(${dataSet.thumbnail})`
-              : bgImageUrl?.startsWith("/")
-              ? `url(${bgImageUrl})`
-              : `url(${bgImageUrl}&w=300&dpr=2)`,
+              : bgImage?.startsWith("/")
+                ? `url(${bgImage})`
+                : `url(${bgImage}&w=300&dpr=2)`,
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center center",
@@ -75,14 +87,16 @@ export function DetailsPageHeader({ type, dataSet, tracksCount }) {
           <h1 className="text-[5rem] font-bold leading-tight truncate max-w-full overflow-hidden whitespace-nowrap">
             {capitalise(dataSet.title)}
           </h1>
-          {/* Artist Info */}
+          {/* Element Info */}
           <div className="flex items-center gap-2 text-md">
             <div
-              className="w-7 aspect-square border-1 border-white/50 rounded-full"
+              className="w-8 aspect-square rounded-full"
               style={{
                 backgroundImage: dataSet.ownerThumbnail
                   ? `url(${dataSet.ownerThumbnail})`
-                  : `url(${ownerThumbnail}&w=300&dpr=2)`,
+                  : ownerThumbnail?.startsWith("/")
+                    ? `url(${ownerThumbnail})`
+                    : `url(${ownerThumbnail}&w=300&dpr=2)`,
                 backgroundSize: "cover",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center center",
@@ -90,7 +104,7 @@ export function DetailsPageHeader({ type, dataSet, tracksCount }) {
             ></div>
             {}
             <span className="font-bold">
-              {type === "playlist" ? dataSet.userName : dataSet.artist}
+              {type === "playlists" ? dataSet.userName : dataSet.artist}
             </span>
             <span className="text-neutral-400">
               •&nbsp; {new Date(dataSet.releaseDate).getFullYear()}

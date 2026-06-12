@@ -5,17 +5,13 @@ import { useTheme } from "../hooks/useTheme";
 import { cn } from "../lib/utils";
 import { UseRandomImages } from "@/hooks/UseRandomImages";
 
-const PlaylistCard = ({ playlist, onClick }) => {
+const PlaylistCard = ({ playlist, onClick, namespace = "playlists" }) => {
   const [bgImageUrl, setBgImageUrl] = useState(null);
   const { theme } = useTheme();
-  const { image: imageUrl } = UseRandomImages("playlist", playlist.id);
+  const { fetchRandomImage } = UseRandomImages(namespace, playlist.id);
   useEffect(() => {
-    if (imageUrl) {
-      setBgImageUrl(
-        imageUrl.startsWith("/") ? imageUrl : `${imageUrl}&w=400&dpr=2`
-      );
-    }
-  }, [imageUrl]);
+    setBgImageUrl(fetchRandomImage(namespace, playlist.id));
+  }, [playlist.id, fetchRandomImage]);
 
   useEffect(() => {}, [bgImageUrl]);
   return (
@@ -25,7 +21,7 @@ const PlaylistCard = ({ playlist, onClick }) => {
         "flex flex-col bg-opacity-[2%] rounded-xl h-full gap-4 hover:border-none transition-all relative group hover:bg-opacity-5",
         theme === "dark"
           ? "bg-neutral-400/10"
-          : "bg-gradient-to-b from-neutral-800 to-neutral-900"
+          : "bg-gradient-to-b from-neutral-800 to-neutral-900",
       )}
       data-theme={theme}
     >
@@ -34,7 +30,9 @@ const PlaylistCard = ({ playlist, onClick }) => {
       </div>
       <MusicCard
         variant="boxed"
-        bgImageUrl={bgImageUrl}
+        bgImageUrl={
+          bgImageUrl?.startsWith("/") ? bgImageUrl : `${bgImageUrl}&w=400&dpr=2`
+        }
         className="w-[160px] md:w-[200px]"
       >
         <p className="font-bold text-md w-full truncate text-ellipsis dark:text-neutral-100/90 text-neutral-900">
