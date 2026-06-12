@@ -1,4 +1,4 @@
-import { generatorFromArray, getRandomImages } from "@/lib/utils";
+import { iteratorFromArray, getRandomImages } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { UseAppState } from "./UseAppState";
 import { dataCache } from "@/utils/cache";
@@ -35,7 +35,7 @@ export const UseRandomImages = (namespace, id) => {
   useEffect(() => {
     if (!randomImages) {
       getRandomImages().then((res) => {
-        setImageGenerator(generatorFromArray(res));
+        setImageGenerator(iteratorFromArray(res));
         setRandomImages(res);
       });
     }
@@ -56,7 +56,7 @@ export const UseRandomImages = (namespace, id) => {
       return;
     }
     if (randomImages) {
-      setImageGenerator(generatorFromArray(randomImages));
+      setImageGenerator(iteratorFromArray(randomImages));
       return;
     }
     getRandomImages().then((res) => {
