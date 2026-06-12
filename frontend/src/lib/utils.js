@@ -131,10 +131,11 @@ export function getRandomImages(
       },
     })
     .then((res) => {
+      console.log("res from imageClient:", res);
       return res?.data?.map((m) => m.urls?.[type]);
     })
     .catch((err) => {
-      console.error(err);
+      console.error("err from imageclient:", err);
       return fallbackArtworks;
     });
 }

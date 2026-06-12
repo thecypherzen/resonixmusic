@@ -14,7 +14,7 @@ const AppLayout = () => {
   const { theme } = useTheme();
   return (
     <div
-      className="grid grid-cols-1 md:grid-cols-[1fr_3fr] w-full h-screen dark:bg-[#121212] neutral-900 dark:text-neutral-200 overflow-y-auto"
+      className="grid grid-cols-1 md:grid-cols-[1fr_3fr] w-screen h-screen dark:bg-background neutral-900 dark:text-neutral-200 overflow-y-auto"
       data-theme={theme}
     >
       <SideBar />

@@ -47,7 +47,7 @@ const HomePage = () => {
   return (
     <div
       id="player-home"
-      className="flex flex-col px-5 md:px-10 lg:px-16 gap-10 transition-all duration-300 py-10 max-h-screen overflow-y-scroll"
+      className="flex flex-col px-5 md:px-10 lg:px-16 gap-10 transition-all duration-300 py-10 max-h-screen w-full overflow-y-scroll"
       data-theme={theme}
     >
       <PopularArtists />

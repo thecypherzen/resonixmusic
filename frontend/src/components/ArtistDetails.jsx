@@ -17,6 +17,7 @@ import {
   transformTrack,
   transformAlbum,
   dataPaginator,
+  cn,
 } from "@/lib/utils";
 import { UseRandomImages } from "@/hooks/UseRandomImages";
 import { useIsMedia } from "@/hooks/useIsMobile";
@@ -180,12 +181,17 @@ const ArtistDetails = ({ id }) => {
       tracksDataState.tracks &&
       similarDataState.similar
     ) {
-      setVisibleAlbums(dataPaginator(albumsDataState.albums, defaultPageItems));
+      setVisibleAlbums(
+        dataPaginator(albumsDataState.albums, isMobile ? 5 : defaultPageItems),
+      );
       setVisibleArtists(
-        dataPaginator(similarDataState.similar, defaultPageItems),
+        dataPaginator(
+          similarDataState.similar,
+          isMobile ? 5 : defaultPageItems,
+        ),
       );
       setVisibleTracks(
-        dataPaginator(tracksDataState.tracks, isMobile ? 9 : 12),
+        dataPaginator(tracksDataState.tracks, isMobile ? 12 : 15),
       );
       console.log("turning off isloading");
       setIsLoading(false);
@@ -242,11 +248,11 @@ const ArtistDetails = ({ id }) => {
   if (isLoading) return <LoadingState />;
 
   return (
-    <div className="flex-1 overflow-hidden w-full">
+    <div className="overflow-hidden w-full">
       {/* Artist Header */}
       <div className="relative">
         {infoDataState.error ? (
-          <div className="px-5 md:px-16 py-6 mt-10">
+          <div className="px-5 md:px-8 lg:px-16 py-6 mt-10">
             Failed to fetch data because: {infoDataState.error.reason}
           </div>
         ) : (
@@ -265,7 +271,7 @@ const ArtistDetails = ({ id }) => {
             </div>
 
             {/* Content Container*/}
-            <div className="relative z-10 px-5 md:px-16 pt-[6rem] pb-[1rem]">
+            <div className="relative z-10 px-5 md:px-8 lg:px-16 pt-[6rem] pb-[1rem]">
               {infoDataState.info ? (
                 <>
                   <h1 className="text-4xl md:text-7xl font-bold mb-6">
@@ -389,7 +395,7 @@ const ArtistDetails = ({ id }) => {
                   </div>
                 </>
               ) : (
-                <div className="px-5 md:px-16 py-6 mt-10">
+                <div className="px-5 md:px-8 lg:px-16 py-6 mt-10">
                   An error occurred while fetching track data <br />
                   Try again Later
                 </div>
@@ -400,9 +406,9 @@ const ArtistDetails = ({ id }) => {
       </div>
 
       {/* Songs Section */}
-      <div className="px-5 md:px-16 mt-10 ">
+      <div className="px-5 md:px-8 lg:px-16 mt-10 @container">
         {tracksDataState.error ? (
-          <div className="px-5 md:px-16 py-6 mt-10">
+          <div className="px-5 md:px-8 lg:px-16 py-6 mt-10">
             {tracksDataState.error.reason} while fetching tracks
           </div>
         ) : (
@@ -411,15 +417,29 @@ const ArtistDetails = ({ id }) => {
               <h2 className="text-3xl font-bold mb-6">{`Songs by ${infoDataState.info.name}`}</h2>
               {/* Navigation buttons */}
               <div className="flex gap-2">
+                {/* Previous btn */}
                 <button
                   onClick={() => setVisibleTracks(visibleTracks.prev())}
-                  className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-background/80"
+                  className={cn(
+                    "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
+                    visibleTracks.currentPage == 1 &&
+                      "cursor-not-allowed hover:bg-transparent opacity-50",
+                  )}
+                  disabled={visibleTracks.currentPage == 1}
                 >
                   <FaChevronLeft />
                 </button>
+                {/* Next btn */}
                 <button
                   onClick={() => setVisibleTracks(visibleTracks.next())}
-                  className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800"
+                  className={cn(
+                    "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
+                    visibleTracks.currentPage == visibleTracks.totalPages &&
+                      "cursor-not-allowed hover:bg-transparent opacity-50",
+                  )}
+                  disabled={
+                    visibleTracks.currentPage == visibleTracks.totalPages
+                  }
                 >
                   <FaChevronRight />
                 </button>
@@ -427,7 +447,7 @@ const ArtistDetails = ({ id }) => {
             </div>
 
             {visibleTracks?.items ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2">
+              <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 @4xl:grid-cols-4 gap-2 space-between">
                 {visibleTracks.items.map((song, index) => (
                   <button
                     key={song.id}
@@ -494,25 +514,39 @@ const ArtistDetails = ({ id }) => {
       {/* Albums Section */}
 
       {albumsDataState.error ? (
-        <div className="px-5 md:px-16 py-6 mt-10">
+        <div className="px-5 md:px-8 lg:px-16 py-6 mt-10">
           {albumsDataState.error.reason} while fetching albums
         </div>
       ) : (
         visibleAlbums.items && (
-          <div className="px-5 md:px-16 py-6 mt-10 @container">
+          <div className="px-5 md:px-8 lg:px-16 py-6 mt-10 @container">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-3xl font-bold mb-6">{`${infoDataState.info.name}'s Albums`}</h2>
               {/* Navigation buttons */}
               <div className="flex gap-2">
+                {/* Previous btn */}
                 <button
                   onClick={() => setVisibleAlbums(visibleAlbums.prev())}
-                  className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-background/80"
+                  className={cn(
+                    "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
+                    visibleAlbums.currentPage == 1 &&
+                      "cursor-not-allowed hover:bg-transparent opacity-50",
+                  )}
+                  disabled={visibleAlbums.currentPage == 1}
                 >
                   <FaChevronLeft />
                 </button>
+                {/* Next btn */}
                 <button
                   onClick={() => setVisibleAlbums(visibleAlbums.next())}
-                  className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800"
+                  className={cn(
+                    "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
+                    visibleAlbums.currentPage == visibleAlbums.totalPages &&
+                      "cursor-not-allowed hover:bg-transparent opacity-50",
+                  )}
+                  disabled={
+                    visibleAlbums.currentPage == visibleAlbums.totalPages
+                  }
                 >
                   <FaChevronRight />
                 </button>
@@ -551,27 +585,40 @@ const ArtistDetails = ({ id }) => {
       )}
 
       {/* Similar Artists Section */}
-      <div className="px-5 md:px-16 py-6 mt-10 @container">
+      <div className="px-5 md:px-8 lg:px-16 py-6 mt-10 @container">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-bold mb-6">Artists you may like</h2>
+          {/* Navigation buttons */}
           <div className="flex gap-2">
+            {/* Previous btn */}
             <button
               onClick={() => setVisibleArtists(visibleArtists.prev())}
-              className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800"
+              className={cn(
+                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
+                visibleArtists.currentPage == 1 &&
+                  "cursor-not-allowed hover:bg-transparent opacity-50",
+              )}
+              disabled={visibleArtists.currentPage == 1}
             >
               <FaChevronLeft />
             </button>
+            {/* Next btn */}
             <button
               onClick={() => setVisibleArtists(visibleArtists.next())}
-              className="p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800"
+              className={cn(
+                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
+                visibleArtists.currentPage == visibleArtists.totalPages &&
+                  "cursor-not-allowed hover:bg-transparent opacity-50",
+              )}
+              disabled={visibleArtists.currentPage == visibleArtists.totalPages}
             >
               <FaChevronRight />
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @4xl:grid-cols-4 @5xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @4xl:grid-cols-4 @5xl:grid-cols-5 gap-4">
           {similarDataState.error ? (
-            <div className="px-5 md:px-16 py-6 mt-10">
+            <div className="px-5 md:px-8 lg:px-16 py-6 mt-10">
               {similarDataState.error.reason} while fetching data
             </div>
           ) : (

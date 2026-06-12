@@ -6,9 +6,9 @@ const ArtistPage = () => {
   const { id } = useParams();
   console.log("USERID:", id);
   return (
-    <div className="flex min-h-screen w-full bg-background">
+    <div className="flex min-h-screen w-full bg-background ">
       {/* Artist Content */}
-      <div className="pb-[2rem] relative">
+      <div className="pb-[2rem] relative w-full">
         <ArtistDetails id={id} />
       </div>
       {/* Bottom Player */}
