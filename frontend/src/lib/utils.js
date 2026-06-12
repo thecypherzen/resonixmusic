@@ -151,15 +151,6 @@ export const dataPaginator = (items, itemsPerPage) => {
     items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
   // Handler for navigating pages
   const next = () => {
-    console.log(
-      "current page:",
-      currentPage,
-      "fetching next page:",
-      Math.min(currentPage + 1, totalPages),
-      "totalPages",
-      totalPages,
-      `(${items.length})`,
-    );
     currentPage = Math.min(currentPage + 1, totalPages);
     return {
       currentPage,
@@ -171,16 +162,6 @@ export const dataPaginator = (items, itemsPerPage) => {
   };
   // Handler for previous page
   const prev = () => {
-    console.log(
-      "current page:",
-      currentPage,
-      "fetching previous page:",
-      Math.max(currentPage - 1, 1),
-
-      "totalPages",
-      totalPages,
-      `(${items.length})`,
-    );
     currentPage = Math.max(currentPage - 1, 1);
     return {
       currentPage,
