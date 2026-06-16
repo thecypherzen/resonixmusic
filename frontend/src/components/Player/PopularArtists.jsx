@@ -5,10 +5,11 @@ import ArtistCard from "../ArtistCard";
 import SectionErrorDisplay from "./SectionErrorDisplay";
 import { useTheme } from "../../hooks/useTheme";
 import HeadingText from "../HeadingText";
-import ActionButton from "./ActionButton";
 import { useNavigate } from "react-router-dom";
 import { UseAppState } from "@/hooks/UseAppState";
-import { transformArtist } from "@/lib/utils";
+import { transformArtist, dataPaginator, cn } from "@/lib/utils";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { useIsMedia } from "@/hooks/useIsMobile";
 
 /**
  * @function PopularArtists
@@ -16,12 +17,18 @@ import { transformArtist } from "@/lib/utils";
  * @param props.cardsSet default number of cards to first render
  * @returns {React.ReactNode}
  */
-const PopularArtists = ({ cardsPerSet = 12 }) => {
-  const [visibleArtists] = useState(0);
-  const { artists, setArtists } = UseAppState();
+const PopularArtists = () => {
+  const {
+    artists,
+    setArtists,
+    error: appError,
+    setError: setAppError,
+  } = UseAppState();
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const [isMobile, isMd] = [useIsMedia(768), useIsMedia(900)];
+  const pageSize = isMobile ? 4 : isMd ? 8 : 12;
 
   // Fetch artists
   const { data, error } = useFetch({
@@ -36,49 +43,77 @@ const PopularArtists = ({ cardsPerSet = 12 }) => {
 
   useEffect(() => {
     if (data) {
-      setArtists(data.map(transformArtist));
+      setArtists(dataPaginator(data.map(transformArtist), pageSize));
       setIsLoading(false);
     } else if (error) {
-      setDataState({
-        error,
-        artists: null,
-      });
+      setArtists(null);
+      setAppError(error);
       setIsLoading(false);
     }
   }, [data, error]);
 
   return isLoading ? (
-    <SectionSkeleton cardsPerset={cardsPerSet} />
-  ) : artists?.length ? (
+    <SectionSkeleton cardsPerset={pageSize} />
+  ) : appError ? (
+    <SectionErrorDisplay
+      reason={appError?.reason || "An unknown reason"}
+      prefix={"Loading Artists failed due to"}
+      message={appError?.message}
+    />
+  ) : artists?.items?.length ? (
     <div className="flex flex-col flex-wrap mb-5 w-full" data-theme={theme}>
       <div className="flex flex-row w-full mb-4 items-center ">
         <HeadingText text={"Popular Artists"} />
         <div className="ml-auto flex gap-1 md:gap-2 items-center text-xs transition-all duration-300">
-          <ActionButton text={"More"} />
+          {/* Navigation buttons */}
+          <div className="flex gap-2">
+            {/* Previous btn */}
+            <button
+              onClick={() => setArtists(artists.prev())}
+              className={cn(
+                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
+                artists.currentPage == 1 &&
+                  "cursor-not-allowed hover:bg-transparent opacity-50",
+              )}
+              disabled={artists.currentPage == 1}
+            >
+              <FaChevronLeft />
+            </button>
+            {/* Next btn */}
+            <button
+              onClick={() => setArtists(artists.next())}
+              className={cn(
+                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
+                artists.currentPage == artists.totalPages &&
+                  "cursor-not-allowed hover:bg-transparent opacity-50",
+              )}
+              disabled={artists.currentPage == artists.totalPages}
+            >
+              <FaChevronRight />
+            </button>
+          </div>
         </div>
       </div>
-      <div className="grid grid-rows-2 auto-cols-[minmax(220px,1fr)] grid-flow-col  bg-transparent w-full gap-4 mt-4 @container overflow-x-scroll overflow-y-hidden py-4 px-2">
-        {artists
-          .slice(visibleArtists, visibleArtists + cardsPerSet)
-          .map((artist) => (
-            <ArtistCard
-              key={artist.id}
-              artist={artist}
-              onClick={() => {
-                const t = setTimeout(() => {
-                  navigate(`/artists/${artist.id}`);
-                  clearTimeout(t);
-                }, 200);
-              }}
-            />
-          ))}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] bg-transparent w-full gap-4 mt-4 @container overflow-x-scroll  py-4 px-2">
+        {artists.items.map((artist) => (
+          <ArtistCard
+            key={artist.id}
+            artist={artist}
+            onClick={() => {
+              const t = setTimeout(() => {
+                navigate(`/artists/${artist.id}`);
+                clearTimeout(t);
+              }, 200);
+            }}
+          />
+        ))}
       </div>
     </div>
   ) : (
     <SectionErrorDisplay
-      reason={error?.reason || "An unknown reason"}
-      prefix={"Loading Artists failed due to"}
-      message={error?.message}
+      reason={"No playlists data to display"}
+      prefix={"Opps!"}
+      message={"Try refreshing the page or check back later."}
     />
   );
 };

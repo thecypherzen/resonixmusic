@@ -10,10 +10,9 @@ const PlaylistCard = ({ playlist, onClick, namespace = "playlists" }) => {
   const { theme } = useTheme();
   const { fetchRandomImage } = UseRandomImages(namespace, playlist.id);
   useEffect(() => {
-    setBgImageUrl(fetchRandomImage(namespace, playlist.id));
+    setBgImageUrl(fetchRandomImage());
   }, [playlist.id, fetchRandomImage]);
 
-  useEffect(() => {}, [bgImageUrl]);
   return (
     <button
       onClick={onClick}
@@ -35,7 +34,7 @@ const PlaylistCard = ({ playlist, onClick, namespace = "playlists" }) => {
         }
         className="w-[160px] md:w-[200px]"
       >
-        <p className="font-bold text-md w-full truncate text-ellipsis dark:text-neutral-100/90 text-neutral-900">
+        <p className="font-bold text-md w-full truncate text-ellipsis dark:text-neutral-100/90 text-neutral-900 whitespace-pre-wrap">
           {playlist.title}
         </p>
         <p className="font-normal text-[0.75rem] text-neutral-200/70 w-95/100 truncate text-ellipsis">

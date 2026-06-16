@@ -1,7 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
 
-const imagesStore = new Map();
-
 const AppStateContext = createContext({
   playlists: null,
   tracks: null,
@@ -13,7 +11,6 @@ const AppStateContext = createContext({
   setError: null,
   setSelectedPlaylist: null,
   setSelectedTracks: null,
-  imagesStore: null,
 });
 
 export function AppStateProvider({ children }) {
@@ -72,7 +69,6 @@ export function AppStateProvider({ children }) {
         setSelectedPlaylist,
         setSelectedTracks,
         setTrendingTracks,
-        imagesStore,
       }}
     >
       {children}
