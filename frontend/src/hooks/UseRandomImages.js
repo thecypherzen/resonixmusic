@@ -1,72 +1,63 @@
 import { iteratorFromArray, getRandomImages } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import { UseAppState } from "./UseAppState";
 import { dataCache } from "@/utils/cache";
 
 // Cache for storing generated patterns
 
 export const UseRandomImages = (namespace, id) => {
-  const { imagesStore } = UseAppState();
-  const [randomImages, setRandomImages] = useState(null);
+  const key = `${namespace}-${id}`;
   const [randomImage, setRandomImage] = useState(null);
-  const [imageGenerator, setImageGenerator] = useState(null);
+  const [imageIterator, setImageIterator] = useState(null);
 
   const cacheImage = (namespace, id, image) => {
     if (!namespace || !id) return;
-    const key = `${namespace}-${id}`;
     dataCache.set(key, image);
   };
 
   const getCachedImage = (namespace, id) => {
     if (!namespace || !id) return null;
-    const key = `${namespace}-${id}`;
     return dataCache.get(key);
   };
 
-  const fetchRandomImage = (namespace, id) => {
+  const fetchRandomImage = () => {
     let img = getCachedImage(namespace, id);
     if (!!img) return img;
-    if (!!!imageGenerator) return "";
-    img = imageGenerator.next().value;
+    if (!!!imageIterator) return "";
+    img = imageIterator.next().value;
     cacheImage(namespace, id, img);
     return img;
   };
 
   useEffect(() => {
-    if (!randomImages) {
+    if (!imageIterator) {
       getRandomImages().then((res) => {
-        setImageGenerator(iteratorFromArray(res));
-        setRandomImages(res);
+        setImageIterator(iteratorFromArray(res));
       });
     }
   }, []);
 
   useEffect(() => {
     if (!namespace || !id) return;
-
+    // check if image in cache and return if true
     const key = `${namespace}-${id}`;
-    if (imagesStore.has(key)) {
-      setRandomImage(imagesStore.get(key));
+    let v = dataCache.get(key);
+    if (v) {
+      setRandomImage(v);
       return;
     }
-    if (imageGenerator) {
-      const img = imageGenerator.next().value;
-      setRandomImage(img);
-      imagesStore.set(key, img);
-      return;
-    }
-    if (randomImages) {
-      setImageGenerator(iteratorFromArray(randomImages));
-      return;
-    }
-    getRandomImages().then((res) => {
-      setRandomImages(res);
-    });
-  }, [namespace, id, randomImages, randomImage, imageGenerator, imagesStore]);
+    if (!imageIterator) return;
+
+    // pick next value from fallback bank of images
+
+    const img = imageIterator.next().value;
+    dataCache.set(key, img);
+    setRandomImage(img);
+    return;
+  }, [namespace, id, imageIterator]);
 
   return {
     image: randomImage,
-    imageGenerator,
+    imageIterator,
     cacheImage,
     getCachedImage,
     fetchRandomImage,

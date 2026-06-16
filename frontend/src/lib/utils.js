@@ -1,5 +1,6 @@
 import { UNSPLASH_CLIENT_ID } from "@/constants/config";
 import API from "@/services/api";
+import { dataCache } from "@/utils/cache";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -117,6 +118,10 @@ export function getRandomImages(
   type = "raw",
   count = 30,
 ) {
+  // first check cache if we've saved the data before
+  const cacheKey = "fallback-images";
+  const cachedImagesData = dataCache.get(cacheKey);
+  if (cachedImagesData) return Promise.resolve(JSON.parse(cachedImagesData));
   /*
    * Orientation values: landscape, portrait, squarish
    * Type values: raw, full, regular, small, thumb
@@ -131,11 +136,13 @@ export function getRandomImages(
       },
     })
     .then((res) => {
-      console.log("res from imageClient:", res);
-      return res?.data?.map((m) => m.urls?.[type]);
+      const d = res?.data?.map((m) => m.urls?.[type]);
+      dataCache.set(cacheKey, JSON.stringify(d));
+      return d;
     })
     .catch((err) => {
       console.error("err from imageclient:", err);
+      dataCache.set(cacheKey, JSON.stringify(fallbackArtworks));
       return fallbackArtworks;
     });
 }
