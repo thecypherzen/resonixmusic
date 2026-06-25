@@ -10,6 +10,7 @@ const PlaylistCard = ({ playlist, onClick, namespace = "playlists" }) => {
   const { theme } = useTheme();
   const { fetchRandomImage } = UseRandomImages(namespace, playlist.id);
   useEffect(() => {
+    if (!fetchRandomImage) return;
     setBgImageUrl(fetchRandomImage());
   }, [playlist.id, fetchRandomImage]);
 

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { LuSearch } from "react-icons/lu";
 import MobileNavigation from "./navs/MobileNavigation";
 import { useIsMedia } from "../hooks/useIsMobile";
@@ -8,13 +8,17 @@ import { ArrowLeft } from "lucide-react";
 function TopNav() {
   const isMobileBreakpoint = useIsMedia(767);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   useEffect(() => {}, [isMobileBreakpoint]);
 
   return (
     <div className="flex flex-row w-full bg-transparent items-center py-10 px-5 md:px-8 lg:px-12 max-h-[3.5rem] mx-auto sticky top-0 z-500 bg-white-400 bg-clip-padding backdrop-filter backdrop-blur-3xl bg-opacity-20 gap-4">
       {isMobileBreakpoint && <MobileNavigation />}
       {pathname !== "/" && (
-        <div className="p-[5.5px] rounded-full border border-neutral-500 text-neutral-500 hover:text-white active:text-white hover:border-white active:border-white transition-colors duration-300">
+        <div
+          className="p-[5.5px] rounded-full border border-neutral-500 text-neutral-500 hover:text-white active:text-white hover:border-white active:border-white transition-colors duration-300"
+          onClick={() => navigate(-1)}
+        >
           <ArrowLeft className="text-inherit font-bold" size="20px" />
         </div>
       )}

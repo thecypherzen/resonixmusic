@@ -53,6 +53,7 @@ const Playlists = ({ cardsPerSet = 6 }) => {
                     clearTimeout(t);
                   }, 200);
                 }}
+                namespace="playlists"
               />
             );
           })}

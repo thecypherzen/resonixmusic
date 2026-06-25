@@ -19,13 +19,12 @@ export const UseRandomImages = (namespace, id) => {
     return dataCache.get(key);
   };
 
-  const fetchRandomImage = () => {
-    let img = getCachedImage(namespace, id);
-    console.log("\n[FETCH RANDOM IMAGE]\n\n\tcached image **** ---> ", img);
+  const fetchRandomImage = (a = namespace, b = id) => {
+    let img = getCachedImage(a, b);
     if (!!img) return img;
     if (!!!imageIterator) return "";
     img = imageIterator.next().value;
-    cacheImage(namespace, id, img);
+    cacheImage(a, b, img);
     return img;
   };
 
