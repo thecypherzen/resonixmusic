@@ -27,7 +27,7 @@ const PopularArtists = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const [isMobile, isMd] = [useIsMedia(768), useIsMedia(900)];
+  const [isMobile, isMd] = [useIsMedia(768), useIsMedia(960)];
   const pageSize = isMobile ? 4 : isMd ? 8 : 12;
 
   // Fetch artists
@@ -45,12 +45,13 @@ const PopularArtists = () => {
     if (data) {
       setArtists(dataPaginator(data.map(transformArtist), pageSize));
       setIsLoading(false);
+      console.log("isMd:", isMd);
     } else if (error) {
       setArtists(null);
       setAppError(error);
       setIsLoading(false);
     }
-  }, [data, error]);
+  }, [data, error, isMd]);
 
   return isLoading ? (
     <SectionSkeleton cardsPerset={pageSize} />

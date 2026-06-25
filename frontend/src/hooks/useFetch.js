@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { dataCache } from "../utils/cache";
 import { CACHE_DEFAULTS } from "../constants/config";
 import api from "../services/api";

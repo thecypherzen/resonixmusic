@@ -20,6 +20,7 @@ const Playlists = ({ cardsPerSet = 6 }) => {
 
   useEffect(() => {
     if (data) {
+      console.log("***\nPLAYLISTS DATA:\n***", data);
       setPlaylists(data.map(transformPlaylist));
       setIsLoading(false);
     } else if (error) {

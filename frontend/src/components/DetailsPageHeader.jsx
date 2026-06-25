@@ -7,39 +7,32 @@ import { AlertCircle, Share2 } from "lucide-react";
 import { capitalise } from "@/lib/utils";
 import { UseRandomImages } from "@/hooks/UseRandomImages";
 import { useTheme } from "@/hooks/useTheme";
+import { useIsMedia } from "@/hooks/useIsMobile";
 
 /**
  * Todo:
  * - Fetch dataset owner's thumbnail and set ownerThumbnail
  * with it.
  */
-export function DetailsPageHeader({ type, dataSet, tracksCount }) {
+export function DetailsPageHeader({ type, dataSet, tracksCount, namespace }) {
   const [ownerThumbnail, setOwnerThumbnail] = useState(null);
   const [bgImage, setBgImage] = useState(null);
   const { downloadZip, isLoading: isDownloading } = UseDownload();
   const { isPlaying } = UsePlayer();
-  const { fetchRandomImage, imageGenerator } = UseRandomImages(
-    type,
+  const isMd = useIsMedia(768);
+  const { fetchRandomImage, imageIterator } = UseRandomImages(
+    namespace,
     dataSet?.id,
   );
   const { theme } = useTheme();
   useEffect(() => {
-    if (imageGenerator) {
-      setOwnerThumbnail(fetchRandomImage(`${type}-owner`, dataSet?.id ?? 1));
-      setBgImage(fetchRandomImage(type, dataSet?.id ?? 1));
+    if (imageIterator && fetchRandomImage) {
+      setOwnerThumbnail(
+        fetchRandomImage(`${namespace}-owner`, dataSet?.id ?? 1),
+      );
+      setBgImage(fetchRandomImage(namespace, dataSet?.id ?? 1));
     }
-  }, [imageGenerator]);
-
-  useEffect(() => {
-    console.log(
-      "Details Header\ndataset:",
-      dataSet,
-      "type:",
-      type,
-      "ownerThumbnail",
-      ownerThumbnail,
-    );
-  }, [type, dataSet, tracksCount, ownerThumbnail, bgImage]);
+  }, [imageIterator, fetchRandomImage, type, namespace, dataSet, dataSet?.id]);
 
   return (
     <>
@@ -68,22 +61,24 @@ export function DetailsPageHeader({ type, dataSet, tracksCount }) {
           data-theme={theme}
         ></div>
         {/* Main Item Image */}
-        <div
-          className="size-[10.85rem] shadow-2xl rounded-lg"
-          style={{
-            backgroundImage: dataSet.thumbnail
-              ? `url(${dataSet.thumbnail})`
-              : bgImage?.startsWith("/")
-                ? `url(${bgImage})`
-                : `url(${bgImage}&w=300&dpr=2)`,
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center center",
-          }}
-          data-theme={theme}
-        ></div>
+        {!isMd && (
+          <div
+            className="size-[10.85rem] shadow-2xl rounded-lg"
+            style={{
+              backgroundImage: ownerThumbnail?.startsWith("/")
+                ? `url(${ownerThumbnail})`
+                : `url(${ownerThumbnail}&w=300&dpr=2)`,
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center center",
+            }}
+            data-theme={theme}
+          ></div>
+        )}
         <div className="flex flex-col gap-3">
-          <span className="text-md font-bold">{capitalise(type)}</span>
+          <span className="text-md font-normal tracking-wide text-neutral-400">
+            {capitalise(type)}
+          </span>
           <h1 className="text-[5rem] font-bold leading-tight truncate max-w-full overflow-hidden whitespace-nowrap">
             {capitalise(dataSet.title)}
           </h1>
@@ -102,9 +97,8 @@ export function DetailsPageHeader({ type, dataSet, tracksCount }) {
                 backgroundPosition: "center center",
               }}
             ></div>
-            {}
             <span className="font-bold">
-              {type === "playlists" ? dataSet.userName : dataSet.artist}
+              {type === "playlist" ? dataSet.userName : dataSet.artist}
             </span>
             <span className="text-neutral-400">
               •&nbsp; {new Date(dataSet.releaseDate).getFullYear()}
@@ -118,7 +112,7 @@ export function DetailsPageHeader({ type, dataSet, tracksCount }) {
       <div className="flex items-center gap-8 p-6">
         <button
           onClick={() => {}}
-          className="font-medium flex items-center justify-center bg-[#08B2F0] hover:scale-[1.05] rounded-full transition-all duration-300 text-md px-10 py-3 gap-2 text-foreground dark:text-background"
+          className="font-medium flex items-center justify-center bg-highlight hover:scale-[1.05] hover:bg-highlight-dark active:scale-[1.05] active:bg-highlight-dark rounded-full transition-all duration-300 text-sm md:text-md px-5 md:px-10 py-3 gap-2 text-foreground dark:text-background"
           disabled={!dataSet.length || !tracksCount}
         >
           {isPlaying ? (

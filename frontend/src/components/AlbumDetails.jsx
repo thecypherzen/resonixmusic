@@ -1,10 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import { FaPlay, FaPause, FaHeart, FaEllipsisH, FaClock, FaDownload } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
+import {
+  FaPlay,
+  FaPause,
+  FaHeart,
+  FaEllipsisH,
+  FaClock,
+  FaDownload,
+} from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
-import { usePlayer } from '../context/PlayerContext';
-import api from '../services/api';
-import { saveAs } from 'file-saver';
+import { usePlayer } from "../context/PlayerContext";
+import api from "../services/api";
+import { saveAs } from "file-saver";
 
 const AlbumDetails = ({ id }) => {
   const player = usePlayer();
@@ -23,16 +30,16 @@ const AlbumDetails = ({ id }) => {
       try {
         setLoading(true);
         const response = await api.getAlbumDetails(id);
-        console.log('Album details response:', response);
+        console.log("Album details response:", response);
 
         if (response.data) {
           setAlbum(response.data.album);
           setTracks(response.data.tracks || []);
         } else {
-          throw new Error('No album data received');
+          throw new Error("No album data received");
         }
       } catch (err) {
-        console.error('Error fetching album details:', err);
+        console.error("Error fetching album details:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -47,7 +54,7 @@ const AlbumDetails = ({ id }) => {
     try {
       handleTrackSelect(tracks[0], tracks);
     } catch (error) {
-      console.error('Error playing track:', error);
+      console.error("Error playing track:", error);
     }
   };
 
@@ -55,19 +62,19 @@ const AlbumDetails = ({ id }) => {
     try {
       handleTrackSelect(track, tracks);
     } catch (error) {
-      console.error('Error playing track:', error);
+      console.error("Error playing track:", error);
     }
   };
 
   const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   const handleDownloadTrack = async (track) => {
     if (!track.download_url) {
-      console.error('No download URL available');
+      console.error("No download URL available");
       return;
     }
 
@@ -76,7 +83,7 @@ const AlbumDetails = ({ id }) => {
       const blob = await response.blob();
       saveAs(blob, `${track.title}.mp3`);
     } catch (error) {
-      console.error('Download failed:', error);
+      console.error("Download failed:", error);
     }
   };
 
@@ -84,7 +91,7 @@ const AlbumDetails = ({ id }) => {
     if (!tracks.length) return;
 
     // Create a zip file of all tracks
-    const JSZip = (await import('jszip')).default;
+    const JSZip = (await import("jszip")).default;
     const zip = new JSZip();
 
     try {
@@ -100,15 +107,15 @@ const AlbumDetails = ({ id }) => {
       await Promise.all(downloadPromises);
 
       // Generate and download zip
-      const content = await zip.generateAsync({ type: 'blob' });
+      const content = await zip.generateAsync({ type: "blob" });
       saveAs(content, `${album.title}.zip`);
     } catch (error) {
-      console.error('Album download failed:', error);
+      console.error("Album download failed:", error);
     }
   };
 
   const truncateTitle = (title, maxLength) => {
-    if (!title) return '';
+    if (!title) return "";
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
   };
 
@@ -119,8 +126,8 @@ const AlbumDetails = ({ id }) => {
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   const handleMenuToggle = (e) => {
@@ -136,25 +143,32 @@ const AlbumDetails = ({ id }) => {
     <div className="flex-1 overflow-y-auto w-full">
       <div className="flex flex-col bg-transparent px-10 -mt-16">
         {/* Album Header */}
-        <div className="flex items-end gap-6 p-6 h-[20rem] bg-transparent">
+        <div className="flex items-end gap-6 p-6 md:h-[30vh] bg-transparent">
           <img
             src={album.thumbnail}
             alt={album.title}
-            className="w-[10.75rem] h-[10.75rem] shadow-2xl rounded-lg"
+            className="size-[10rem] shadow-2xl rounded-lg"
           />
           <div className="flex flex-col gap-3">
             <span className="text-md font-bold">Album</span>
-            <h1 className="text-[5rem] font-bold leading-tight">{truncateTitle(album.title, 15)}</h1>
+            <h1 className="text-[5rem] font-bold leading-tight">
+              {truncateTitle(album.title, 15)}
+            </h1>
             <div className="flex items-center gap-2 text-md">
               <img
-                src={album.artist_image || `https://usercontent.jamendo.com?type=artist&id=${album.artist_id}&width=300`}
+                src={
+                  album.artist_image ||
+                  `https://usercontent.jamendo.com?type=artist&id=${album.artist_id}&width=300`
+                }
                 alt={album.artist}
                 className="w-6 h-6 rounded-full"
               />
               <span className="font-bold hover:underline cursor-pointer">
                 {album.artist}
               </span>
-              <span className="text-neutral-400">• {album.releaseDate?.split('-')[0]}</span>
+              <span className="text-neutral-400">
+                • {album.releaseDate?.split("-")[0]}
+              </span>
               <span className="text-neutral-400">• {tracks.length} songs</span>
             </div>
           </div>
@@ -178,7 +192,7 @@ const AlbumDetails = ({ id }) => {
             )}
           </button>
           <button className="bg-transparent text-white">
-            <FaHeart size={24} className='hover:fill-red-500' />
+            <FaHeart size={24} className="hover:fill-red-500" />
           </button>
           <button
             onClick={handleDownloadAlbum}
@@ -199,7 +213,7 @@ const AlbumDetails = ({ id }) => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      window.open(album.shareurl, '_blank');
+                      window.open(album.shareurl, "_blank");
                       setShowMenu(false);
                     }}
                     className="bg-transparent w-full text-left px-4 py-3 hover:bg-white/10 rounded-none"
@@ -239,7 +253,9 @@ const AlbumDetails = ({ id }) => {
                         <FaPause className="text-[#08B2F0]" />
                       ) : (
                         <>
-                          <span className="group-hover:hidden">{index + 1}</span>
+                          <span className="group-hover:hidden">
+                            {index + 1}
+                          </span>
                           <FaPlay className="hidden group-hover:block absolute -top-2 text-white" />
                         </>
                       )}
@@ -251,7 +267,7 @@ const AlbumDetails = ({ id }) => {
                         <img
                           src={track.thumbnail}
                           alt={track.title}
-                          className={`w-10 h-10 rounded ${player.isLoading && currentTrack?.id === track.id ? 'opacity-50' : ''}`}
+                          className={`w-10 h-10 rounded ${player.isLoading && currentTrack?.id === track.id ? "opacity-50" : ""}`}
                         />
                         {player.isLoading && currentTrack?.id === track.id && (
                           <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded">
@@ -260,8 +276,13 @@ const AlbumDetails = ({ id }) => {
                         )}
                       </div>
                       <div className="flex flex-col">
-                        <span className={`font-normal ${currentTrack?.id === track.id ? 'text-[#08B2F0]' : ''
-                          }`}>
+                        <span
+                          className={`font-normal ${
+                            currentTrack?.id === track.id
+                              ? "text-[#08B2F0]"
+                              : ""
+                          }`}
+                        >
                           {track.title}
                         </span>
                         <span className="text-sm text-neutral-400">
@@ -270,9 +291,7 @@ const AlbumDetails = ({ id }) => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-neutral-400">
-                    {track.likes}
-                  </td>
+                  <td className="px-4 py-3 text-neutral-400">{track.likes}</td>
                   <td className="px-4 py-3 text-center">
                     <button
                       onClick={(e) => {
@@ -314,7 +333,7 @@ const LoadingState = () => (
 const ErrorMessage = ({ message }) => (
   <div className="flex justify-center items-center h-[75vh] w-[60rem] mx-16 fixed">
     <div className="text-neutral-600 flex flex-col items-center">
-      <MdErrorOutline size={102} className='m-auto' />
+      <MdErrorOutline size={102} className="m-auto" />
       <p className="text-2xl mb-2 font-extrabold">Unable to load content</p>
       <p className="text-sm">{message}</p>
       <button

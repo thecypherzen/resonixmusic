@@ -19,7 +19,7 @@ class RequestAPI {
   async #makeRequest(
     requestFunction,
     funcParams = [],
-    extras = { retry: true }
+    extras = { retry: true },
   ) {
     try {
       const result = await requestFunction(...funcParams);
@@ -84,7 +84,7 @@ class RequestAPI {
           timestamp: new Date().toISOString(),
         });
         return Promise.reject(error);
-      }
+      },
     );
 
     //apiInstance.interceptors.response.use(
@@ -191,7 +191,11 @@ class RequestAPI {
       url,
       requestOptions,
     ]);
-    //console.log("\n\nGet Request Response", response);
+    //console.log("url", url, "options:", options);
+    if (url == "/artists/tracks") {
+      //console.log("requestOptions for tracks request:", requestOptions);
+      //console.log("\n\nGet Request Response", response);
+    }
     switch (response.success) {
       case true:
         return { success: true, data: response.data?.data?.results || [] };
@@ -263,7 +267,7 @@ class RequestAPI {
 
 const getRecentTracks = async (params = {}) => {
   try {
-    console.log("Fetching recent tracks...");
+    //console.log("Fetching recent tracks...");
     const response = await api.get("/tracks", {
       params: {
         orderby: ["releasedate_desc"],
@@ -271,7 +275,7 @@ const getRecentTracks = async (params = {}) => {
         ...params,
       },
     });
-    console.log("Recent tracks response:", response);
+    //console.log("Recent tracks response:", response);
 
     if (response.data && response.data.results) {
       return { data: response.data.results.map(transformTrackData) };
@@ -402,7 +406,7 @@ const getRecentTracks = async (params = {}) => {
 
 const getArtistAlbums = async (artistId) => {
   try {
-    console.log("Fetching artist albums for:", artistId);
+    //console.log("Fetching artist albums for:", artistId);
     const response = await api.get("/artists/albums", {
       params: {
         id: [artistId],
@@ -433,7 +437,7 @@ const getArtistAlbums = async (artistId) => {
 
 const getSimilarArtists = async (artistId) => {
   try {
-    console.log("Fetching similar artists for:", artistId);
+    //console.log("Fetching similar artists for:", artistId);
     const response = await api.get("/artists", {
       params: {
         format: "jsonpretty",

@@ -37,7 +37,7 @@ const SingleAlbumPage = () => {
       extras: { params: { id: selectedAlbum?.tracks } },
     },
     !!!selectedAlbum,
-    [selectedAlbum]
+    [selectedAlbum],
   );
 
   useEffect(() => {
@@ -79,6 +79,7 @@ const SingleAlbumPage = () => {
           type="album"
           dataSet={selectedAlbum}
           tracksCount={albumTracks.length ?? 0}
+          namespace="albums"
         />
         <TracksList tracks={albumTracks} />
       </div>

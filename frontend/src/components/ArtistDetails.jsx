@@ -80,9 +80,11 @@ const ArtistDetails = ({ id }) => {
   // Fetch artist's songs
   const { data: tracksData, error: tracksError } = useFetch({
     url: "/artists/tracks",
-    params: {
-      id: [id],
-      audioformat: "mp31",
+    extras: {
+      params: {
+        id: [id],
+        audioformat: "mp31",
+      },
     },
   });
 
@@ -130,9 +132,7 @@ const ArtistDetails = ({ id }) => {
     if (tracksData) {
       setTracksDataState({
         error: null,
-        tracks: tracksData
-          .filter((art) => art.id === id)[0]
-          .tracks.map(transformTrack),
+        tracks: tracksData[0].tracks.map(transformTrack),
       });
     } else if (tracksError) {
       setTracksDataState({ error: tracksError, tracks: null });

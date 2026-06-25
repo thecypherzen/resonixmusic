@@ -21,6 +21,7 @@ export const UseRandomImages = (namespace, id) => {
 
   const fetchRandomImage = () => {
     let img = getCachedImage(namespace, id);
+    console.log("\n[FETCH RANDOM IMAGE]\n\n\tcached image **** ---> ", img);
     if (!!img) return img;
     if (!!!imageIterator) return "";
     img = imageIterator.next().value;

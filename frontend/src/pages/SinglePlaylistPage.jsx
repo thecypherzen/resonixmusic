@@ -48,7 +48,7 @@ const SinglePlaylistPage = () => {
       return;
     }
     if (playlistWithTracks) {
-      //console.log("----> playlist with tracks: ", playlistWithTracks);
+      console.log("----> playlist with tracks: ", playlistWithTracks);
       setSelectedPlaylist(transformPlaylist(playlistWithTracks[0]));
     }
   }, [playlistWithTracks]);
@@ -71,7 +71,7 @@ const SinglePlaylistPage = () => {
     if (playlistTracks || error) {
       setIsLoading(false);
     }
-  }, [playlistTracks]);
+  }, [playlistTracks, error]);
 
   if (isLoading) return <LoadingState />;
   if (error) return <div>{error?.message ?? "A loading error occured"}</div>;
@@ -80,9 +80,10 @@ const SinglePlaylistPage = () => {
     <div className="flex-1 w-full min-h-[calc(100vh-3.5rem-26px)]">
       <div className="flex flex-col">
         <DetailsPageHeader
-          type="playlists"
+          type="playlist"
           dataSet={selectedPlaylist}
           tracksCount={playlistTracks.length ?? 0}
+          namespace="playlists"
         />
         <TracksList tracks={playlistTracks} />
       </div>
