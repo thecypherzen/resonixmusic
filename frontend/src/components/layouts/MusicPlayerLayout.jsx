@@ -16,7 +16,7 @@ const MusicPlayerLayout = () => {
   return (
     <>
       <div
-        className="grid bg-background w-full h-full overflow-y-scroll overflow-x-hidden"
+        className="bg-background w-full h-full overflow-y-scroll"
         data-theme={theme}
       >
         <TopNav />
