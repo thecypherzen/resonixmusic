@@ -11,6 +11,7 @@ import {
   FaRegThumbsDown,
   FaRegThumbsUp,
   FaThumbsDown,
+  FaShare,
 } from "react-icons/fa";
 
 export default function TracksList({ tracks = null }) {
@@ -146,17 +147,38 @@ export default function TracksList({ tracks = null }) {
                 {formatDuration(track.duration)}
               </span>
               <button
+                popovertarget={`track-${track.id}-menu`}
                 className={cn(
-                  "hidden group-hover:inline-block hover:bg-background rounded-full p-2",
+                  "tracks-context-menu-trigger hidden group-hover:inline-block hover:bg-background rounded-full p-2",
                   activeTrack === track.id &&
                     "inline-block active:bg-background",
                 )}
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
+                style={{ anchorName: `--track-${track.id}-menu` }}
               >
                 <EllipsisVerticalIcon size="20px" />
               </button>
+            </div>
+            <div
+              id={`track-${track.id}-menu`}
+              style={{
+                positionAnchor: `--track-${track.id}-menu`,
+              }}
+              className="bg-neutral-900 m-0 inset-auto absolute top-[anchor(top)] right-[anchor(left)] rounded-md border border-foreground/20 text-foreground min-h-16 content-center"
+              popover="auto"
+            >
+              <span className="py-2 px-5 hover:bg-neutral-700 flex gap-2">
+                <FaShare size="16" />
+                Share
+              </span>
+              {isMd && (
+                <span className="py-2 px-5 hover:bg-neutral-700 flex gap-2">
+                  <FaDownload size="16" />
+                  Download
+                </span>
+              )}
             </div>
           </div>
         );
