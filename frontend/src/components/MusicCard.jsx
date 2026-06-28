@@ -15,7 +15,7 @@ function MusicCard({
       return (
         <div
           className={cn(
-            "relative h-full w-full overflow-hidden p-3 group rounded-lg",
+            "relative h-full w-full overflow-hidden group rounded-lg",
             className,
           )}
         >
@@ -27,10 +27,11 @@ function MusicCard({
                 : "/thumbnail.png",
             }}
           >
-            <div className="absolute inset-0 bg-neutral-600/80 mix-blend-multiply"></div>
-            <div className="h-full w-full absolute inset-0 p-2 pb-5 flex items-end">
+            <div className="absolute inset-0 bg-neutral-200/50 mix-blend-multiply"></div>
+            <div className="h-full w-full absolute inset-0 p-2 pb-4 flex items-end z-3">
               {children}
             </div>
+            <div className="absolute left-0 bottom-0 h-3/5 w-full bg-linear-to-t from-background via-background/90 via-40% to-transparent z-2"></div>
           </div>
         </div>
       );

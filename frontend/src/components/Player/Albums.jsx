@@ -91,14 +91,14 @@ const Albums = ({ pageSize = 6 }) => {
                 clearTimeout(t);
               }, 200);
             }}
-            className="flex flex-col bg-gradient-neutral-tb bg-opacity-[2%] rounded-xl h-full gap-4 transition-all relative group hover:bg-opacity-5 over-flow-hidden"
+            className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] bg-gradient-neutral-tb bg-opacity-[2%] rounded-xl h-full gap-4 transition-all relative group hover:bg-opacity-5 over-flow-hidden"
           >
             <div className="opacity-0 group-hover:opacity-100 group-active:opacity-100 flex bg-gradient-to-b from-purple-300  to-blue-600 size-10 rounded-full shadow-2xl absolute right-6 top-[7.5rem] hover:scale-110 active:scale-110 transition-all duration-300 z-100 !text-white">
               <FaPlay className="m-auto text-shadow-lg fill-[currentColor] text-shadow-neutral-900/20" />
             </div>
             <MusicCard
               variant="overlay"
-              className="rounded-lg w-[160px] md:[200px] border shadow-md shadow-black "
+              className="rounded-lg w-full shadow-md shadow-black "
               bgImageUrl={album.thumbnail || "/thumbnail.png"}
             >
               <div className="flex flex-col text-left w-full">
