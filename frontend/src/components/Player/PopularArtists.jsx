@@ -45,20 +45,19 @@ const PopularArtists = () => {
     if (data) {
       setArtists(dataPaginator(data.map(transformArtist), pageSize));
       setIsLoading(false);
-      console.log("isMd:", isMd);
     } else if (error) {
       setArtists(null);
       setAppError(error);
       setIsLoading(false);
     }
-  }, [data, error, isMd]);
+  }, [data, error, isMd, isMobile]);
 
   return isLoading ? (
     <SectionSkeleton cardsPerset={pageSize} />
   ) : appError ? (
     <SectionErrorDisplay
       reason={appError?.reason || "An unknown reason"}
-      prefix={"Loading Artists failed due to"}
+      prefix={"Loading Artists failed due to:"}
       message={appError?.message}
     />
   ) : artists?.items?.length ? (

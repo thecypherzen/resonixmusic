@@ -42,6 +42,7 @@ export function AppStateProvider({ children }) {
     selectedAlbum,
     selectedPlaylist,
     selectedTracks,
+    trendingTracks,
     albums,
     playlists,
     error,

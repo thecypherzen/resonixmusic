@@ -6,99 +6,127 @@ import SectionErrorDisplay from "./SectionErrorDisplay";
 import { FaChevronLeft, FaChevronRight, FaPlay } from "react-icons/fa";
 import HeadingText from "../HeadingText";
 import ActionButton from "./ActionButton";
-
-const transformTracks = (track) => ({
-  id: track.id,
-  title: track.name || track.title,
-  artist: track.artist_name || track.artist,
-  thumbnail: track.image || track.thumbnail || DEFAULT_THUMBNAIL,
-  url: track.audio || track.url,
-  duration: track.duration,
-  likes: `${Math.floor((track.listened || 0) / 1000)}k Plays`,
-  album_name: track.album_name,
-  album_id: track.album_id,
-  releasedate: track.releasedate,
-  downloadable: track.autodownload_allowed,
-  download_url: track.audiodownload || "",
-});
+import { UseAppState } from "@/hooks/UseAppState";
+import { cn, dataPaginator, transformTrack } from "@/lib/utils";
+import { useIsMedia } from "@/hooks/useIsMobile";
 
 /**
  * @function TrendingTracks
  * @description Component that renders trending tracks
  * @returns {React.ReactNode}
  */
-const TrendingTracks = () => {
-  const trendingCardsPerPage = 12;
-  const [visibleTrending, setVisibleTrending] = useState(0);
-  const [dataState, setDataState] = useState({ tracks: null, error: null });
+const TrendingTracks = ({ pageSize = 12 }) => {
+  const {
+    trendingTracks,
+    setTrendingTracks,
+    error: appError,
+    setError: setAppError,
+  } = UseAppState();
+  const [isMobile, isMd] = [useIsMedia(768), useIsMedia(960)];
   const [isLoading, setIsLoading] = useState(true);
-  const DEFAULT_THUMBNAIL = "/thumbnail.png";
 
   const { data, error } = useFetch({ url: "/tracks", method: "get" });
 
   useEffect(() => {
     if (data) {
-      setDataState({ error: null, tracks: data.map(transformTracks) });
+      setTrendingTracks(
+        dataPaginator(
+          data.map(transformTrack),
+          isMobile ? 6 : isMd ? 8 : pageSize,
+        ),
+      );
       setIsLoading(false);
     } else if (error) {
-      setDataState({ error, tracks: null });
+      setTrendingTracks(null);
+      setAppError(error);
       setIsLoading(false);
     }
   }, [data, error]);
 
   return isLoading ? (
-    <SectionSkeleton />
-  ) : dataState.tracks?.length ? (
+    <SectionSkeleton cardsPerset={pageSize} />
+  ) : appError ? (
+    <SectionErrorDisplay
+      reason={appError?.reason || "An unknown reason"}
+      prefix={"Loading Tracks failed due to: "}
+      message={appError?.message}
+    />
+  ) : trendingTracks?.items?.length ? (
     <div className="w-full flex flex-col mb-10">
       {/* Heading and Action button */}
       <div className="flex flex-row w-full mb-4 items-center">
         <HeadingText text={"Trending Tracks"} />
         <div className="ml-auto flex gap-1 md:gap-2 items-center text-xs transition-all duration-300">
           <ActionButton text={"Play All"} />
+          {/* Navigation */}
+          <div className="flex gap-2">
+            {/* Previous btn */}
+            <button
+              onClick={() => setTrendingTracks(trendingTracks.prev())}
+              className={cn(
+                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
+                trendingTracks.currentPage == 1 &&
+                  "cursor-not-allowed hover:bg-transparent opacity-50",
+              )}
+              disabled={trendingTracks.currentPage == 1}
+            >
+              <FaChevronLeft />
+            </button>
+            {/* Next btn */}
+            <button
+              onClick={() => setTrendingTracks(trendingTracks.next())}
+              className={cn(
+                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
+                trendingTracks.currentPage == trendingTracks.totalPages &&
+                  "cursor-not-allowed hover:bg-transparent opacity-50",
+              )}
+              disabled={trendingTracks.currentPage == trendingTracks.totalPages}
+            >
+              <FaChevronRight />
+            </button>
+          </div>
         </div>
       </div>
       {/* Tracks */}
-      <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-1 transition-all duration-300 max-h-[50vh] overflow-y-auto @container">
-        {dataState.tracks
-          .slice(visibleTrending, visibleTrending + trendingCardsPerPage)
-          .map((song, index) => (
-            <button
-              key={song.id}
-              //onClick={() => handlePlaySong(song, index + visibleTrending)}
-              className="w-95/100 mx-auto flex bg-transparent hover:bg-gradient-to-r from-neutral-800 to-neutral-900 active:bg-gradient-to-r  px-2 py-4 rounded-xl gap-4 group text-left transition-all"
-            >
-              {/* Image */}
-              <div className="relative">
-                <div
-                  className="flex size-[62px] aspect-square bg-cover bg-center bg-no-repeat overflow-hidden rounded-lg"
-                  style={{
-                    backgroundImage: `url(${song.thumbnail})`,
-                  }}
-                ></div>
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                  <FaPlay className="fill-white drop-shadow-lg" />
-                </div>
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-1 transition-all duration-300 @container">
+        {trendingTracks.items.map((song) => (
+          <button
+            key={song.id}
+            //onClick={() => handlePlaySong(song, index + visibleTrending)}
+            className="w-95/100 mx-auto flex bg-transparent hover:bg-gradient-to-r from-neutral-800 to-neutral-900 active:bg-gradient-to-r  px-2 py-4 rounded-xl gap-4 group text-left transition-all"
+          >
+            {/* Image */}
+            <div className="relative">
+              <div
+                className="flex size-[62px] aspect-square bg-cover bg-center bg-no-repeat overflow-hidden rounded-lg"
+                style={{
+                  backgroundImage: `url(${song.thumbnail})`,
+                }}
+              ></div>
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <FaPlay className="fill-white drop-shadow-lg" />
               </div>
-              {/* Track details */}
-              <div className="flex flex-col w-4/5">
-                <p className="text-base w-9/10 truncate text-ellipsis">
-                  {song.title}
-                </p>
-                <div className="flex flex-row items-center gap-2">
-                  <p className="text-sm opacity-45 truncate">{song.artist}</p>
-                  <span className="h-2 w-2 bg-white opacity-45 rounded-full flex-shrink-0"></span>
-                  <p className="text-sm opacity-45 truncate">{song.likes}</p>
-                </div>
+            </div>
+            {/* Track details */}
+            <div className="flex flex-col w-4/5">
+              <p className="text-base w-9/10 truncate text-ellipsis">
+                {song.title}
+              </p>
+              <div className="flex flex-row items-center gap-2">
+                <p className="text-sm opacity-45 truncate">{song.artist}</p>
+                <span className="h-2 w-2 bg-white opacity-45 rounded-full flex-shrink-0"></span>
+                <p className="text-sm opacity-45 truncate">{song.likes}</p>
               </div>
-            </button>
-          ))}
+            </div>
+          </button>
+        ))}
       </div>
     </div>
   ) : (
     <SectionErrorDisplay
-      reason={dataState.error?.reason || "An unknown reason"}
-      prefix={"Loading Tracks failed due to"}
-      message={dataState.error?.message}
+      reason={"No tracks to display"}
+      prefix={"Opps!"}
+      message={"Try refreshing the page or check back later."}
     />
   );
 };
