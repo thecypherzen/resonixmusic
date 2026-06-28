@@ -1,7 +1,13 @@
 import { useEffect } from "react";
 import { cn } from "../lib/utils";
 
-function MusicCard({ variant = "default", bgImageUrl, children, className }) {
+function MusicCard({
+  variant = "default",
+  bgImageUrl,
+  children,
+  className,
+  imageClassName,
+}) {
   useEffect(() => {}, [bgImageUrl]);
   switch (variant) {
     case "default":
@@ -14,7 +20,7 @@ function MusicCard({ variant = "default", bgImageUrl, children, className }) {
           )}
         >
           <div
-            className="h-full w-full absolute inset-0 bg-cover bg-top bg-no-repeat group-hover:scale-105 transition-transform duration-300 ease-in overfow-hidden rounded-lg"
+            className="h-full w-full absolute inset-0 bg-cover bg-center bg-no-repeat group-hover:scale-105 transition-transform duration-300 ease-in overfow-hidden rounded-lg"
             style={{
               backgroundImage: bgImageUrl
                 ? `url(${bgImageUrl})`
@@ -37,7 +43,10 @@ function MusicCard({ variant = "default", bgImageUrl, children, className }) {
           )}
         >
           <div
-            className="img-container overflow-hidden rounded-lg bg-cover bg-center bg-no-repeat w-full h-2/3"
+            className={cn(
+              "img-container overflow-hidden rounded-lg bg-cover bg-top bg-no-repeat w-full h-2/3",
+              imageClassName,
+            )}
             style={{
               backgroundImage: bgImageUrl
                 ? `url(${bgImageUrl})`

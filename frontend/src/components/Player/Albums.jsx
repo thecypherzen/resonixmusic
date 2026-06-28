@@ -98,7 +98,7 @@ const Albums = ({ pageSize = 6 }) => {
             </div>
             <MusicCard
               variant="overlay"
-              className="rounded-lg w-[160px] md:[200px] "
+              className="rounded-lg w-[160px] md:[200px] border shadow-md shadow-black "
               bgImageUrl={album.thumbnail || "/thumbnail.png"}
             >
               <div className="flex flex-col text-left w-full">

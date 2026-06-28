@@ -33,7 +33,8 @@ const PlaylistCard = ({ playlist, onClick, namespace = "playlists" }) => {
         bgImageUrl={
           bgImageUrl?.startsWith("/") ? bgImageUrl : `${bgImageUrl}&w=400&dpr=2`
         }
-        className="w-[160px] md:w-[200px]"
+        className="w-full h-50"
+        imageClassName="h-4/5"
       >
         <p className="font-bold text-md w-full truncate text-ellipsis dark:text-neutral-100/90 text-neutral-900 whitespace-pre-wrap">
           {playlist.title}

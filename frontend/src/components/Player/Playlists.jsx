@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { UseAppState } from "@/hooks/UseAppState";
 import { cn, dataPaginator, transformPlaylist } from "@/lib/utils";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { useIsMedia } from "@/hooks/useIsMobile";
 
 const Playlists = ({ pageSize = 6 }) => {
   const {
@@ -20,22 +21,24 @@ const Playlists = ({ pageSize = 6 }) => {
   } = UseAppState();
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const [isMobile, isMd] = [useIsMedia(768), useIsMedia(1114)];
 
   const { data, error } = useFetch({ url: "/playlists", method: "get" });
+  const ps = isMobile ? 4 : isMd ? 6 : 8;
 
   useEffect(() => {
     if (data) {
-      setPlaylists(dataPaginator(data.map(transformPlaylist), pageSize));
+      setPlaylists(dataPaginator(data.map(transformPlaylist), ps));
       setIsLoading(false);
     } else if (error) {
       setPlaylists(null);
       setAppError(error);
       setIsLoading(false);
     }
-  }, [data, error]);
+  }, [data, error, isMobile, isMd]);
 
   return isLoading ? (
-    <SectionSkeleton cardsPerset={pageSize} />
+    <SectionSkeleton cardsPerset={ps} />
   ) : appError ? (
     <SectionErrorDisplay
       reason={appError?.reason || "some reason"}
@@ -78,7 +81,7 @@ const Playlists = ({ pageSize = 6 }) => {
         </div>
       </div>
       {/* Playlists */}
-      <div className="flex flex-row flex-wrap bg-transparent w-full gap-4 mt-4 @container py-4 px-2">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] bg-transparent w-full gap-4 mt-4 @container py-4 px-2">
         {playlists.items.map((playlist) => {
           return (
             <PlaylistCard

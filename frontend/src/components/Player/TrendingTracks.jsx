@@ -22,29 +22,24 @@ const TrendingTracks = ({ pageSize = 12 }) => {
     error: appError,
     setError: setAppError,
   } = UseAppState();
-  const [isMobile, isMd] = [useIsMedia(768), useIsMedia(960)];
+  const [isMobile, isMd] = [useIsMedia(768), useIsMedia(1114)];
   const [isLoading, setIsLoading] = useState(true);
-
   const { data, error } = useFetch({ url: "/tracks", method: "get" });
+  const ps = isMobile ? 6 : isMd ? 8 : pageSize;
 
   useEffect(() => {
     if (data) {
-      setTrendingTracks(
-        dataPaginator(
-          data.map(transformTrack),
-          isMobile ? 6 : isMd ? 8 : pageSize,
-        ),
-      );
+      setTrendingTracks(dataPaginator(data.map(transformTrack), ps));
       setIsLoading(false);
     } else if (error) {
       setTrendingTracks(null);
       setAppError(error);
       setIsLoading(false);
     }
-  }, [data, error]);
+  }, [data, error, isMd, isMobile]);
 
   return isLoading ? (
-    <SectionSkeleton cardsPerset={pageSize} />
+    <SectionSkeleton cardsPerset={ps} />
   ) : appError ? (
     <SectionErrorDisplay
       reason={appError?.reason || "An unknown reason"}

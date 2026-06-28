@@ -27,8 +27,8 @@ const PopularArtists = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const [isMobile, isMd] = [useIsMedia(768), useIsMedia(960)];
-  const pageSize = isMobile ? 4 : isMd ? 8 : 12;
+  const [isMobile, isMd] = [useIsMedia(768), useIsMedia(1114)];
+  const pageSize = isMobile ? 4 : isMd ? 6 : 12;
 
   // Fetch artists
   const { data, error } = useFetch({
