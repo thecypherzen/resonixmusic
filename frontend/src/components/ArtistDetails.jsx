@@ -23,6 +23,12 @@ import { UseRandomImages } from "@/hooks/UseRandomImages";
 import { useIsMedia } from "@/hooks/useIsMobile";
 import { ThumbsUp } from "lucide-react";
 import MusicCard from "./MusicCard";
+import { LoadingState } from "./ContentSection";
+import {
+  DetailsItemDescription,
+  DetailsItemTags,
+  DetailsPageHeader,
+} from "./DetailsPageHeader";
 
 const ArtistDetails = ({ id }) => {
   const navigate = useNavigate();
@@ -245,20 +251,41 @@ const ArtistDetails = ({ id }) => {
     setShowMenu((prev) => !prev);
   };
 
-  if (isLoading) return <LoadingState />;
+  if (isLoading) return <LoadingState component="artist-details" />;
 
   return (
     <div className="overflow-hidden w-full">
       {/* Artist Header */}
-      <div className="relative">
+      <div>
         {infoDataState.error ? (
           <div className="px-5 md:px-8 lg:px-16 py-6 mt-10">
             Failed to fetch data because: {infoDataState.error.reason}
           </div>
         ) : (
           <>
+            <DetailsPageHeader
+              type="artist"
+              dataSet={infoDataState.info}
+              namespace="artists"
+              hasOwner={false}
+            >
+              {infoDataState.info.musicInfo?.description?.en && (
+                <DetailsItemDescription
+                  value={stripHtmlTags(
+                    infoDataState.info.musicInfo.description.en,
+                  )}
+                  showAll={showFullDescription}
+                  setShowAll={setShowFullDescription}
+                />
+              )}
+              <DetailsItemDescription />
+              <DetailsItemTags
+                descIsFull={showFullDescription}
+                tags={infoDataState.info.musicInfo?.tags}
+              />
+            </DetailsPageHeader>
             {/* Background Image and Gradient */}
-            <div className="inset-0 absolute top-0 left-0">
+            {/*<div className="inset-0 absolute top-0 left-0">
               <img
                 src={
                   infoDataState.info.thumbnail ||
@@ -268,7 +295,7 @@ const ArtistDetails = ({ id }) => {
                 className="w-full h-full object-cover opacity-15"
               />
               <div className="absolute bottom-0 w-full bg-gradient-to-b from-transparent via-background h-[15rem]" />
-            </div>
+            </div>*/}
 
             {/* Content Container*/}
             <div className="relative z-10 px-5 md:px-8 lg:px-16 pt-[6rem] pb-[1rem]">
@@ -287,53 +314,12 @@ const ArtistDetails = ({ id }) => {
                     }`}
                   >
                     {/* Description Section */}
-                    {infoDataState.info.musicInfo?.description?.en && (
-                      <div className="mb-6">
-                        <div
-                          className={`text-md text-white max-w-[40rem] ${
-                            showFullDescription ? "" : "line-clamp-2"
-                          }`}
-                        >
-                          {stripHtmlTags(
-                            infoDataState.info.musicInfo.description.en,
-                          )}
-                        </div>
-                        <button
-                          onClick={() =>
-                            setShowFullDescription(!showFullDescription)
-                          }
-                          className="bg-transparent text-neutral-400 hover:text-white text-sm mt-2"
-                        >
-                          {showFullDescription ? "Show less" : "Show more"}
-                        </button>
-                      </div>
-                    )}
 
                     {/* Tags and btn actions Section */}
-                    <div
-                      className={`transition-all duration-300 ease-in-out transform ${
-                        showFullDescription ? "-translate-y-4" : "translate-y-0"
-                      }`}
-                    >
-                      {infoDataState.info.musicInfo?.tags &&
-                        infoDataState.info.musicInfo.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-6">
-                            {infoDataState.info.musicInfo.tags.map(
-                              (tag, index) => (
-                                <span
-                                  key={index}
-                                  className="px-4 py-1 bg-neutral-800 rounded-full text-sm text-neutral-300"
-                                >
-                                  {tag}
-                                </span>
-                              ),
-                            )}
-                          </div>
-                        )}
 
-                      {/* Action Buttons */}
-                      <div className="flex items-center gap-8 mb-8">
-                        <button
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-8 mb-8">
+                      {/*<button
                           onClick={handlePlayAll}
                           className="px-5 md:px-8 py-1 md:py-2 bg-highlight text-highlight-foreground rounded-full hover:bg-highlight-dark transition-all flex items-center gap-2"
                         >
@@ -345,17 +331,17 @@ const ArtistDetails = ({ id }) => {
                             size={24}
                             className="hover:fill-red-500 transition-colors duration-300"
                           />
-                        </button>
+                        </button>*/}
 
-                        <div className="relative" ref={menuRef}>
-                          <button
+                      <div className="relative" ref={menuRef}>
+                        {/*<button
                             onClick={handleMenuToggle}
                             className="bg-transparent hover:bg-white/10 p-2 rounded-full"
                           >
                             <FaEllipsisH size={24} />
-                          </button>
+                          </button>*/}
 
-                          {showMenu && (
+                        {/*{showMenu && (
                             <div className="absolute left-0 mt-2 w-48 bg-[#282828] rounded-lg shadow-xl border border-neutral-600 z-50">
                               {infoDataState.info?.website && (
                                 <button
@@ -388,8 +374,7 @@ const ArtistDetails = ({ id }) => {
                                 </button>
                               )}
                             </div>
-                          )}
-                        </div>
+                          )}*/}
                       </div>
                     </div>
                   </div>
@@ -406,7 +391,7 @@ const ArtistDetails = ({ id }) => {
       </div>
 
       {/* Songs Section */}
-      <div className="px-5 md:px-8 lg:px-16 mt-10 @container">
+      <div className="px-5 md:px-8 lg:px-16 mt-10 @container border border-blue-500">
         {tracksDataState.error ? (
           <div className="px-5 md:px-8 lg:px-16 py-6 mt-10">
             {tracksDataState.error.reason} while fetching tracks
@@ -636,44 +621,5 @@ const ArtistDetails = ({ id }) => {
     </div>
   );
 };
-
-const SectionLoadingMessage = () => (
-  <div className="animate-pulse flex flex-col">
-    <div className="h-10 w-[20rem] bg-neutral-800 rounded-2xl"></div>
-    <div className="grid grid-cols-5 gap-4 mt-[1rem]">
-      {[...Array(5)].map((_, i) => (
-        <div
-          key={i}
-          className="w-[11.5rem] h-[14rem] bg-neutral-800 mb-4 rounded-3xl"
-        ></div>
-      ))}
-    </div>
-  </div>
-);
-
-const LoadingState = () => (
-  <div className="flex mx-16 h-screen max-w-[60rem]">
-    <div className="flex flex-col mt-[1.75rem] gap-[5rem]">
-      {[...Array(3)].map((_, index) => (
-        <SectionLoadingMessage key={index} />
-      ))}
-    </div>
-  </div>
-);
-
-const ErrorMessage = ({ message, onRetry }) => (
-  <div className="flex justify-center items-center p-4 bg-neutral-900 rounded-lg">
-    <div className="text-neutral-400 flex flex-col items-center">
-      <MdErrorOutline size={24} className="mb-2" />
-      <p className="text-sm mb-2">{message}</p>
-      <button
-        onClick={onRetry}
-        className="text-sm px-4 py-2 bg-neutral-800 rounded-full hover:bg-neutral-700 transition-colors"
-      >
-        Retry
-      </button>
-    </div>
-  </div>
-);
 
 export default ArtistDetails;

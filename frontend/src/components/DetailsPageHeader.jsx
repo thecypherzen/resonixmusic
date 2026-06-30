@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { UseRandomImages } from "@/hooks/UseRandomImages";
 import { useTheme } from "@/hooks/useTheme";
 import { useIsMedia } from "@/hooks/useIsMobile";
+import { ContextMenu, ContextMenuTrigger } from "./ContextMenu";
 
 /**
  * Todo:
@@ -19,6 +20,7 @@ export function DetailsPageHeader({
   tracksCount,
   namespace,
   hasOwner = true,
+  children,
 }) {
   const [ownerThumbnail, setOwnerThumbnail] = useState(null);
   const [bgImage, setBgImage] = useState(null);
@@ -53,34 +55,54 @@ export function DetailsPageHeader({
             <DetailsItemMainImage image={ownerThumbnail} theme={theme} />
           )}
           <div className="space-y-3">
-            <DetailsItemTitle title={dataSet.title} className="capitalize" />
+            <DetailsItemTitle
+              title={type === "artist" ? dataSet.name : dataSet.title}
+              className="capitalize"
+            />
             {/* Element Info */}
-            <DetailsFooter className="flex flex-wrap space-y-2 gap-x-5">
-              <DetailsItemOwner
-                data={dataSet}
-                fallbackImg={ownerThumbnail}
-                type={type}
-                className="mr-auto max-w-4/5"
-              />
-              <div className="whitespace-nowrap space-x-5">
-                <span className="text-neutral-400">
-                  •&nbsp; {new Date(dataSet.releaseDate).getFullYear()}
-                </span>
-                {tracksCount && (
+            {type === "artist" && children}
+            {type !== "artist" && (
+              <DetailsFooter className="flex flex-wrap space-y-2 gap-x-5">
+                <DetailsItemOwner
+                  data={dataSet}
+                  fallbackImg={ownerThumbnail}
+                  type={type}
+                  className="mr-auto max-w-4/5"
+                />
+                <div className="whitespace-nowrap space-x-5">
                   <span className="text-neutral-400">
-                    • {tracksCount} songs
+                    •&nbsp; {new Date(dataSet.releaseDate).getFullYear()}
                   </span>
-                )}
-              </div>
-            </DetailsFooter>
+                  {tracksCount && (
+                    <span className="text-neutral-400">
+                      • {tracksCount} songs
+                    </span>
+                  )}
+                </div>
+              </DetailsFooter>
+            )}
           </div>
         </div>
-        {/* Controls */}
-        <div className="w-full z-21 flex items-center gap-8 pt-3 ">
-          <DetailsPlayBtn disabled={!dataSet?.length || !tracksCount} />
-          <DetailsLikeBtn />
-          <DetailsDownloadBtn data={dataSet} />
-        </div>
+        {/* Extras */}
+        {type !== "artist" && (
+          <div className="w-full z-21 flex items-center gap-8 pt-3 ">
+            <DetailsPlayBtn disabled={!dataSet?.length || !tracksCount} />
+            <DetailsLikeBtn />
+            <DetailsDownloadBtn data={dataSet} />
+            {type === "artist" && (
+              <ContextMenu>
+                <ContextMenuTrigger
+                  target={`artist-${dataSet.id}`}
+                  className={
+                    "bg-transparent hover:bg-white/10 p-2 rounded-full"
+                  }
+                >
+                  <FaEllipsisH size={24} />
+                </ContextMenuTrigger>
+              </ContextMenu>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );
@@ -90,6 +112,49 @@ export const DetailsMainContnet = ({ children }) => {
   return <main>{children}</main>;
 };
 
+export const DetailsItemTags = ({ descIsFull, tags }) => {
+  return tags && tags.length ? (
+    <div
+      className={cn(
+        "transition-all duration-300 ease-in-out transform",
+        descIsFull ? "-translate-y-4" : "translate-y-0",
+      )}
+    >
+      <div className="flex flex-wrap gap-2 mb-6">
+        {tags.map((tag, index) => (
+          <span
+            key={index}
+            className="px-4 py-1 bg-neutral-800 rounded-full text-sm text-neutral-300 border"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  ) : (
+    <></>
+  );
+};
+export const DetailsItemDescription = ({ value, showAll, setShowAll }) => {
+  return (
+    <div className="mb-6">
+      <div
+        className={cn(
+          "text-md text-white max-w-[40rem]",
+          showAll && "line-clamp-2",
+        )}
+      >
+        {value}
+      </div>
+      <button
+        onClick={() => setShowAll(!showAll)}
+        className="bg-transparent text-neutral-400 hover:text-white text-sm mt-2"
+      >
+        {showAll ? "Show less" : "Show more"}
+      </button>
+    </div>
+  );
+};
 export const DetailsItemTitle = ({ title, className }) => {
   return (
     <h2
