@@ -13,6 +13,11 @@ import {
   FaThumbsDown,
   FaShare,
 } from "react-icons/fa";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuTrigger,
+} from "./ContextMenu";
 
 export default function TracksList({
   tracks = null,
@@ -154,7 +159,31 @@ export default function TracksList({
               >
                 {formatDuration(track.duration)}
               </span>
-              <button
+              <ContextMenu>
+                <ContextMenuTrigger
+                  target={`track-${track.id}-menu`}
+                  className={cn(
+                    "tracks-context-menu-trigger hidden group-hover:inline-block hover:bg-background rounded-full p-2",
+                    activeTrack === track.id &&
+                      "inline-block active:bg-background",
+                  )}
+                >
+                  <EllipsisVerticalIcon size="20px" />
+                </ContextMenuTrigger>
+                <ContextMenuContent id={`track-${track.id}-menu`}>
+                  <span className="py-2 px-5 hover:bg-neutral-700 flex gap-2">
+                    <FaShare size="16" />
+                    Share
+                  </span>
+                  {isMd && (
+                    <span className="py-2 px-5 hover:bg-neutral-700 flex gap-2">
+                      <FaDownload size="16" />
+                      Download
+                    </span>
+                  )}
+                </ContextMenuContent>
+              </ContextMenu>
+              {/*<button
                 popovertarget={`track-${track.id}-menu`}
                 className={cn(
                   "tracks-context-menu-trigger hidden group-hover:inline-block hover:bg-background rounded-full p-2",
@@ -167,9 +196,9 @@ export default function TracksList({
                 style={{ anchorName: `--track-${track.id}-menu` }}
               >
                 <EllipsisVerticalIcon size="20px" />
-              </button>
+              </button>*/}
             </div>
-            <div
+            {/*<div
               id={`track-${track.id}-menu`}
               style={{
                 positionAnchor: `--track-${track.id}-menu`,
@@ -187,7 +216,7 @@ export default function TracksList({
                   Download
                 </span>
               )}
-            </div>
+            </div>*/}
           </div>
         );
       })}
