@@ -1,18 +1,17 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useFetch } from "../../hooks/useFetch";
 import { FaChevronLeft, FaChevronRight, FaPlay } from "react-icons/fa";
 import SectionSkeleton from "./SectionSkeleton";
-import SectionErrorDisplay from "./SectionErrorDisplay";
 import ActionButton from "./ActionButton";
 import HeadingText from "../HeadingText";
 import { useTheme } from "../../hooks/useTheme";
 import MusicCard from "../MusicCard";
 import { useNavigate } from "react-router-dom";
 import { UseAppState } from "@/hooks/UseAppState";
-import { cn, dataPaginator, transformAlbum } from "@/lib/utils";
+import { dataPaginator, transformAlbum } from "@/lib/utils";
+import { SectionDataNavigation, SectionErrorDisplay } from "../ContentSection";
 
 const Albums = ({ pageSize = 6 }) => {
-  const [visibleAlbums] = useState(0);
   const {
     albums,
     setAlbums,
@@ -50,32 +49,7 @@ const Albums = ({ pageSize = 6 }) => {
         <div className="ml-auto flex gap-2 items-center">
           <ActionButton text={"More"} />
           {/* Navigation */}
-          <div className="flex gap-2">
-            {/* Previous btn */}
-            <button
-              onClick={() => setAlbums(albums.prev())}
-              className={cn(
-                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
-                albums.currentPage == 1 &&
-                  "cursor-not-allowed hover:bg-transparent opacity-50",
-              )}
-              disabled={albums.currentPage == 1}
-            >
-              <FaChevronLeft />
-            </button>
-            {/* Next btn */}
-            <button
-              onClick={() => setAlbums(albums.next())}
-              className={cn(
-                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
-                albums.currentPage == albums.totalPages &&
-                  "cursor-not-allowed hover:bg-transparent opacity-50",
-              )}
-              disabled={albums.currentPage == albums.totalPages}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
+          <SectionDataNavigation items={albums} itemsSetter={setAlbums} />
         </div>
       </div>
       <div

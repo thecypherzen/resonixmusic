@@ -5,12 +5,11 @@ import PlaylistCard from "../PlaylistCard";
 import { useEffect, useState } from "react";
 import HeadingText from "../HeadingText";
 import ActionButton from "./ActionButton";
-import SectionErrorDisplay from "./SectionErrorDisplay";
 import { useNavigate } from "react-router-dom";
 import { UseAppState } from "@/hooks/UseAppState";
-import { cn, dataPaginator, transformPlaylist } from "@/lib/utils";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { dataPaginator, transformPlaylist } from "@/lib/utils";
 import { useIsMedia } from "@/hooks/useIsMobile";
+import { SectionDataNavigation, SectionErrorDisplay } from "../ContentSection";
 
 const Playlists = ({ pageSize = 6 }) => {
   const {
@@ -24,7 +23,7 @@ const Playlists = ({ pageSize = 6 }) => {
   const [isMobile, isMd] = [useIsMedia(768), useIsMedia(1114)];
 
   const { data, error } = useFetch({ url: "/playlists", method: "get" });
-  const ps = isMobile ? 4 : isMd ? 6 : 8;
+  const ps = isMobile ? 4 : isMd ? pageSize : 8;
 
   useEffect(() => {
     if (data) {
@@ -52,32 +51,7 @@ const Playlists = ({ pageSize = 6 }) => {
         <div className="ml-auto flex gap-2 items-center">
           <ActionButton text={"More"} />
           {/* Navigation */}
-          <div className="flex gap-2">
-            {/* Previous btn */}
-            <button
-              onClick={() => setPlaylists(playlists.prev())}
-              className={cn(
-                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
-                playlists.currentPage == 1 &&
-                  "cursor-not-allowed hover:bg-transparent opacity-50",
-              )}
-              disabled={playlists.currentPage == 1}
-            >
-              <FaChevronLeft />
-            </button>
-            {/* Next btn */}
-            <button
-              onClick={() => setPlaylists(playlists.next())}
-              className={cn(
-                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
-                playlists.currentPage == playlists.totalPages &&
-                  "cursor-not-allowed hover:bg-transparent opacity-50",
-              )}
-              disabled={playlists.currentPage == playlists.totalPages}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
+          <SectionDataNavigation items={playlists} itemsSetter={setPlaylists} />
         </div>
       </div>
       {/* Playlists */}

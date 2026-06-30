@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import api from "../../services/api";
 import { useFetch } from "../../hooks/useFetch";
 import SectionSkeleton from "./SectionSkeleton";
-import SectionErrorDisplay from "./SectionErrorDisplay";
-import { FaChevronLeft, FaChevronRight, FaPlay } from "react-icons/fa";
+import { FaPlay } from "react-icons/fa";
 import HeadingText from "../HeadingText";
 import ActionButton from "./ActionButton";
 import { UseAppState } from "@/hooks/UseAppState";
-import { cn, dataPaginator, transformTrack } from "@/lib/utils";
+import { dataPaginator, transformTrack } from "@/lib/utils";
 import { useIsMedia } from "@/hooks/useIsMobile";
+import { SectionDataNavigation, SectionErrorDisplay } from "../ContentSection";
 
 /**
  * @function TrendingTracks
@@ -54,32 +53,10 @@ const TrendingTracks = ({ pageSize = 12 }) => {
         <div className="ml-auto flex gap-1 md:gap-2 items-center text-xs transition-all duration-300">
           <ActionButton text={"Play All"} />
           {/* Navigation */}
-          <div className="flex gap-2">
-            {/* Previous btn */}
-            <button
-              onClick={() => setTrendingTracks(trendingTracks.prev())}
-              className={cn(
-                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
-                trendingTracks.currentPage == 1 &&
-                  "cursor-not-allowed hover:bg-transparent opacity-50",
-              )}
-              disabled={trendingTracks.currentPage == 1}
-            >
-              <FaChevronLeft />
-            </button>
-            {/* Next btn */}
-            <button
-              onClick={() => setTrendingTracks(trendingTracks.next())}
-              className={cn(
-                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
-                trendingTracks.currentPage == trendingTracks.totalPages &&
-                  "cursor-not-allowed hover:bg-transparent opacity-50",
-              )}
-              disabled={trendingTracks.currentPage == trendingTracks.totalPages}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
+          <SectionDataNavigation
+            items={trendingTracks}
+            itemsSetter={setTrendingTracks}
+          />
         </div>
       </div>
       {/* Tracks */}

@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { useFetch } from "../../hooks/useFetch";
 import SectionSkeleton from "./SectionSkeleton";
 import ArtistCard from "../ArtistCard";
-import SectionErrorDisplay from "./SectionErrorDisplay";
 import { useTheme } from "../../hooks/useTheme";
 import HeadingText from "../HeadingText";
 import { useNavigate } from "react-router-dom";
 import { UseAppState } from "@/hooks/UseAppState";
 import { transformArtist, dataPaginator, cn } from "@/lib/utils";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useIsMedia } from "@/hooks/useIsMobile";
+import { SectionDataNavigation, SectionErrorDisplay } from "../ContentSection";
 
 /**
  * @function PopularArtists
@@ -66,32 +65,7 @@ const PopularArtists = () => {
         <HeadingText text={"Popular Artists"} />
         <div className="ml-auto flex gap-1 md:gap-2 items-center text-xs transition-all duration-300">
           {/* Navigation buttons */}
-          <div className="flex gap-2">
-            {/* Previous btn */}
-            <button
-              onClick={() => setArtists(artists.prev())}
-              className={cn(
-                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
-                artists.currentPage == 1 &&
-                  "cursor-not-allowed hover:bg-transparent opacity-50",
-              )}
-              disabled={artists.currentPage == 1}
-            >
-              <FaChevronLeft />
-            </button>
-            {/* Next btn */}
-            <button
-              onClick={() => setArtists(artists.next())}
-              className={cn(
-                "p-2 rounded-full bg-transparent border border-neutral-800 hover:bg-neutral-800",
-                artists.currentPage == artists.totalPages &&
-                  "cursor-not-allowed hover:bg-transparent opacity-50",
-              )}
-              disabled={artists.currentPage == artists.totalPages}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
+          <SectionDataNavigation items={artists} itemsSetter={setArtists} />
         </div>
       </div>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] bg-transparent w-full gap-4 mt-4 @container overflow-x-scroll  py-4 px-2">

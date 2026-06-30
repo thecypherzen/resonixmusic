@@ -125,7 +125,7 @@ export default function TracksList({ tracks = null }) {
               <span>{track.likes || 0}</span>
               <FaThumbsUp size="14" className="mb-[4px]" />
             </div>
-            <div className="px-4 py-3 text-center hidden lg:block">
+            <div className="px-4 py-3 text-center hidden md:block">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
