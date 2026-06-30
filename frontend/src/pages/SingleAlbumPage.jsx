@@ -7,6 +7,7 @@ import { useFetch } from "@/hooks/useFetch";
 import { transformAlbum, transformTrack } from "@/lib/utils";
 import { DetailsPageHeader } from "@/components/DetailsPageHeader";
 import TracksList from "@/components/TracksList";
+import { ErrorMessage } from "@/components/ContentSection";
 
 const SingleAlbumPage = () => {
   const { id } = useParams();
@@ -91,21 +92,5 @@ const SingleAlbumPage = () => {
     </main>
   );
 };
-
-const ErrorMessage = ({ message }) => (
-  <div className="flex justify-center items-center h-[75vh] w-[60rem] mx-16 fixed">
-    <div className="text-neutral-600 flex flex-col items-center">
-      <MdErrorOutline size={102} className="m-auto" />
-      <p className="text-2xl mb-2 font-extrabold">Unable to load content</p>
-      <p className="text-sm">{message}</p>
-      <button
-        onClick={() => window.location.reload()}
-        className="text-sm mt-4 px-8 py-2 bg-transparent border rounded-full border-neutral-700 hover:bg-neutral-800 transition-all duration-200"
-      >
-        Retry
-      </button>
-    </div>
-  </div>
-);
 
 export default SingleAlbumPage;
