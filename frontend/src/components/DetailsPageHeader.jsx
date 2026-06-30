@@ -3,7 +3,7 @@ import UsePlayer from "../hooks/UsePlayer";
 import UseDownload from "../hooks/UseDownload";
 import { useEffect, useState } from "react";
 import { Spinner } from "./ui/spinner";
-import { capitalise, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { UseRandomImages } from "@/hooks/UseRandomImages";
 import { useTheme } from "@/hooks/useTheme";
 import { useIsMedia } from "@/hooks/useIsMobile";
@@ -13,7 +13,13 @@ import { useIsMedia } from "@/hooks/useIsMobile";
  * - Fetch dataset owner's thumbnail and set ownerThumbnail
  * with it.
  */
-export function DetailsPageHeader({ type, dataSet, tracksCount, namespace }) {
+export function DetailsPageHeader({
+  type,
+  dataSet,
+  tracksCount,
+  namespace,
+  hasOwner = true,
+}) {
   const [ownerThumbnail, setOwnerThumbnail] = useState(null);
   const [bgImage, setBgImage] = useState(null);
   const isMd = useIsMedia(768);
@@ -32,40 +38,45 @@ export function DetailsPageHeader({ type, dataSet, tracksCount, namespace }) {
   }, [imageIterator, fetchRandomImage, type, namespace, dataSet, dataSet?.id]);
 
   return (
-    <header className="relative h-[25rem] p-6">
+    <header className="relative h-[25rem] px-10 py-6">
       <DetailsBackdrop data={dataSet} theme={theme} bgImage={bgImage} />
       <div
         className="relative z-20 h-full flex flex-col gap-4 items-start justify-end"
         data-theme={theme}
       >
         <DetailsItemType
-          value={capitalise(type)}
-          className="mb-auto bg-neutral-900/80 text-neutral-300 backdrop-blur-sm rounded-full px-3 py-1 cursor-default border"
+          value={type}
+          className="mb-auto bg-neutral-900/80 text-neutral-300 backdrop-blur-sm rounded-full px-3 py-1 cursor-default border capitalize"
         />
         <div className="flex items-center gap-6">
-          {!isMd && (
+          {hasOwner && !!!isMd && (
             <DetailsItemMainImage image={ownerThumbnail} theme={theme} />
           )}
           <div className="space-y-3">
-            <DetailsItemTitle title={capitalise(dataSet.title)} />
+            <DetailsItemTitle title={dataSet.title} className="capitalize" />
             {/* Element Info */}
-            <DetailsFooter>
+            <DetailsFooter className="flex flex-wrap space-y-2 gap-x-5">
               <DetailsItemOwner
                 data={dataSet}
                 fallbackImg={ownerThumbnail}
                 type={type}
+                className="mr-auto max-w-4/5"
               />
-              <span className="text-neutral-400">
-                •&nbsp; {new Date(dataSet.releaseDate).getFullYear()}
-              </span>
-              {tracksCount && (
-                <span className="text-neutral-400">• {tracksCount} songs</span>
-              )}
+              <div className="whitespace-nowrap space-x-5">
+                <span className="text-neutral-400">
+                  •&nbsp; {new Date(dataSet.releaseDate).getFullYear()}
+                </span>
+                {tracksCount && (
+                  <span className="text-neutral-400">
+                    • {tracksCount} songs
+                  </span>
+                )}
+              </div>
             </DetailsFooter>
           </div>
         </div>
         {/* Controls */}
-        <div className="w-full z-21 flex items-center gap-8 pt-3">
+        <div className="w-full z-21 flex items-center gap-8 pt-3 ">
           <DetailsPlayBtn disabled={!dataSet?.length || !tracksCount} />
           <DetailsLikeBtn />
           <DetailsDownloadBtn data={dataSet} />
@@ -83,7 +94,7 @@ export const DetailsItemTitle = ({ title, className }) => {
   return (
     <h2
       className={cn(
-        "text-3xl md:text-4xl font-bold leading-tight truncate max-w-9/10 overflow-hidden whitespace-pre-wrap",
+        "text-4xl md:text-5xl font-bold leading-tight truncate overflow-hidden whitespace-pre-wrap",
         className,
       )}
     >
@@ -201,9 +212,9 @@ export const DetailsItemMainImage = ({ image, theme }) => {
   );
 };
 
-export const DetailsItemOwner = ({ fallbackImg, data, type }) => {
+export const DetailsItemOwner = ({ fallbackImg, data, type, className }) => {
   return (
-    <aside className="flex gap-3 items-center">
+    <aside className={cn("flex gap-3 items-center", className)}>
       <div
         className="w-8 aspect-square rounded-full"
         style={{
