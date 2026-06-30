@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useIsMedia } from "@/hooks/useIsMobile";
 import UsePlayer from "@/hooks/UsePlayer";
 import { cn, formatDuration } from "@/lib/utils";
@@ -14,7 +14,11 @@ import {
   FaShare,
 } from "react-icons/fa";
 
-export default function TracksList({ tracks = null }) {
+export default function TracksList({
+  tracks = null,
+  artistPerTrack = true,
+  className,
+}) {
   const [activeTrack, setActiveTrack] = useState("");
   const isMd = useIsMedia(768);
   const { isPlaying, currentTrack, isLoading } = UsePlayer();
@@ -29,7 +33,7 @@ export default function TracksList({ tracks = null }) {
     return <p className="text-center">No tracks available.</p>;
   }
   return (
-    <section className="px-6 pt-10 pb-36 w-full h-full">
+    <section className={cn("px-6 pt-10 pb-36 w-full h-full", className)}>
       {tracks.map((track, index) => {
         return (
           <div
@@ -68,13 +72,17 @@ export default function TracksList({ tracks = null }) {
             <div className="flex items-center justify-start gap-3 mr-auto max-w-3/5">
               <div className="flex flex-col">
                 <p
-                  className={`font-normal line-clamp-1 text-ellipsis ${
-                    currentTrack?.id === track.id ? "text-highlight" : ""
-                  }`}
+                  className={cn(
+                    "font-medium text-ellipsis",
+                    currentTrack?.id === track.id && "text-highlight",
+                    artistPerTrack ? "line-clamp-1" : "line-clamp-2",
+                  )}
                 >
                   {track.title}
                 </p>
-                <div className="text-sm text-neutral-400">{track.artist}</div>
+                {artistPerTrack && (
+                  <div className="text-sm text-neutral-400">{track.artist}</div>
+                )}
               </div>
             </div>
             {/* Like and dislike buttons */}
